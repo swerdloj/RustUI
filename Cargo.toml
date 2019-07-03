@@ -1,0 +1,8 @@
+[package]
+name = "Practicum"
+version = "0.1.0"
+authors = ["Swerdloj <swerdloj@andrews.edu>"]
+edition = "2018"
+
+[dependencies]
+sdl2 = "0.32.2"
