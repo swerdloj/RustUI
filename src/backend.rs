@@ -14,6 +14,7 @@ TODO: Should be able to support multiple windows at once
 */
 
 extern crate sdl2;
+use super::widgets;
 
 // use sdl2::rect::Rect;
 
@@ -39,7 +40,9 @@ pub mod system {
         use sdl2::pixels::Color;
         use sdl2::event::Event;
         use sdl2::keyboard::Keycode;
-
+        use sdl2::rect::Point;
+        use super::super::widgets;
+        
         pub struct Window {
             sdl_context: sdl2::Sdl,
             video_subsystem: sdl2::VideoSubsystem,
@@ -67,7 +70,8 @@ pub mod system {
             }
 
             // TODO: Allow multiple windows to run at once on multiple threads
-            pub fn start(mut self) {
+            // TODO: How to handle window size changing?
+            pub fn start(mut self, button: widgets::Button) {
                 self.canvas.set_draw_color(Color::RGB(50, 50, 100));
                 self.canvas.clear();
                 self.canvas.present();
@@ -80,14 +84,24 @@ pub mod system {
                                 break 'window_loop;
                             }
 
+                            Event::MouseButtonUp { x, y, .. } => {
+                                if button.rect.contains_point(Point::new(x, y)) {
+                                    (button.on_click)();
+                                }
+                            }
+
                             _ => {
                                 println!("Unhandled Event: {:?}", event);
                             }
                         }
                     }
-                }
+                    // TODO: Render window here
 
-                self.canvas.present();
+                    self.canvas.set_draw_color(Color::RGB(240, 240, 200));
+                    self.canvas.fill_rect(button.rect);
+
+                    self.canvas.present();
+                }
             }
         }
     }

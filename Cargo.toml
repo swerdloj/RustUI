@@ -1,5 +1,5 @@
 [package]
-name = "Practicum"
+name = "RustUI"
 version = "0.1.0"
 authors = ["Swerdloj <swerdloj@andrews.edu>"]
 edition = "2018"

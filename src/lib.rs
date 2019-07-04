@@ -78,6 +78,7 @@ See /bin/nested_structure_example.rs for dynamic, nested declarations
 // https://doc.rust-lang.org/rust-by-example/meta/doc.html
 
 pub mod backend;
+pub mod widgets;
 
 pub mod rust_gui {
     pub fn init() {
