@@ -16,6 +16,7 @@ fn main() {
     let main_window = window::Window::init("Test");
 
     let example_button = Button {
+        id: 10,
         rect: Rect::new(100, 200, 100, 40),
         // on_click: &|| {println!("Test")}, // Note there are 2 ways to pass callbacks
         on_click: &example_callback,

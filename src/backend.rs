@@ -71,10 +71,14 @@ pub mod system {
 
             // TODO: Allow multiple windows to run at once on multiple threads
             // TODO: How to handle window size changing?
+            // TODO: Change the single button for a list of components, then render all of these and check each one
+            //       Remember to use 'where T: Widget' to enforce the trait
             pub fn start(mut self, button: widgets::Button) {
                 self.canvas.set_draw_color(Color::RGB(50, 50, 100));
                 self.canvas.clear();
                 self.canvas.present();
+
+                let mut active_widget: Option<u32> = None;
 
                 'window_loop: loop {
                     'pump: for event in self.event_pump.poll_iter() {
@@ -84,9 +88,19 @@ pub mod system {
                                 break 'window_loop;
                             }
 
-                            Event::MouseButtonUp { x, y, .. } => {
+                            Event::MouseButtonDown { x, y, .. } => {
                                 if button.rect.contains_point(Point::new(x, y)) {
-                                    (button.on_click)();
+                                    active_widget = Some(button.id);
+                                } else {
+                                    active_widget = None;
+                                }
+                            }
+
+                            Event::MouseButtonUp { x, y, .. } => {
+                                if let Some(id) = active_widget {
+                                    if button.rect.contains_point(Point::new(x, y)) && id == button.id {
+                                        (button.on_click)();
+                                    }
                                 }
                             }
 

@@ -22,6 +22,7 @@ pub struct WidgetBase {
 }
 
 pub struct Button {
+    pub id: u32,
     pub rect: Rect,
     pub on_click: &'static Fn(), // TODO: Move this over to the trait below and allow the user to implement this??
 }
