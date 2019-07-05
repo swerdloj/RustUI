@@ -8,6 +8,7 @@ Jonathan Swerdlow
 
 extern crate sdl2;
 use sdl2::rect::Rect;
+use sdl2::pixels::Color;
 
 /// This is the base widget struct from which all other widgets are derived
 /// # Arguments
@@ -15,15 +16,19 @@ use sdl2::rect::Rect;
 /// * `x` - The widget's top-left x location within the window
 /// * `y` - The widget's top-left y location within the window
 /// * `id` - The widget's id as a string TODO: This should be a hash of the string instead for faster lookup.
-pub struct WidgetBase {
-    pub x: i32,
-    pub y: i32,
+pub struct WidgetData {
+    rect: Rect,
+    // TODO: Colors?
     pub id: &'static str,
 }
 
 pub struct Button {
     pub id: u32,
     pub rect: Rect,
+    pub is_active: bool,
+    pub primary_color: Color,
+    pub secondary_color: Color,
+    pub hover_color: Color,
     pub on_click: &'static Fn(), // TODO: Move this over to the trait below and allow the user to implement this??
 }
 
@@ -35,6 +40,18 @@ impl Widget for Button {
 
     fn get_id(&self) -> u32 {
         self.id
+    }
+
+    fn primary_color(&self) -> Color {
+        self.primary_color
+    }
+
+    fn secondary_color(&self) -> Color {
+        self.secondary_color
+    }
+
+    fn hover_color(&self) -> Color {
+        self.hover_color
     }
 
     fn on_click(&self) {
@@ -50,6 +67,7 @@ pub struct Text {
 
 impl Widget for Text {
     // TODO: This
+
     fn get_rect(&self) -> Rect {
         self.rect
     }
@@ -57,11 +75,28 @@ impl Widget for Text {
     fn get_id(&self) -> u32 {
         self.id
     }
+
+    fn primary_color(&self) -> Color {
+        Color::RGB(0, 0, 0)
+    }
+
+    fn secondary_color(&self) -> Color {
+        Color::RGB(0, 0, 0)
+    }
+
+    fn hover_color(&self) -> Color {
+        Color::RGB(0, 0, 0)
+    }
+
 }
 
 pub trait Widget {
     fn get_rect(&self) -> Rect;
     fn get_id(&self) -> u32;
+    fn primary_color(&self) -> Color;
+    fn secondary_color(&self) -> Color;
+    fn hover_color(&self) -> Color; // TODO: This
+
     fn on_click(&self) {}
 
     /// Instatiate the widget at the given (x, y) coordinate with an optional id

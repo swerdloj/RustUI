@@ -45,6 +45,7 @@ pub mod system {
         
         pub struct Window {
             sdl_context: sdl2::Sdl,
+            ttf_context: sdl2::ttf::Sdl2TtfContext,
             video_subsystem: sdl2::VideoSubsystem,
             // window: sdl2::video::Window,
             canvas: sdl2::render::WindowCanvas,
@@ -53,15 +54,18 @@ pub mod system {
 
         impl Window {
             pub fn init(window_title: &str) -> Self {
-                let context = sdl2::init().unwrap();
-                let video_subsystem = context.video().unwrap();
+                let sdl_context = sdl2::init().unwrap();
+                let video_subsystem = sdl_context.video().unwrap();
+
+                let ttf_context = sdl2::ttf::init().map_err(|e| e.to_string()).unwrap();
 
                 let default_window = video_subsystem.window(window_title, 800, 600).position_centered().build().unwrap();
                 let default_window_canvas = default_window.into_canvas().accelerated().build().unwrap();
-                let default_window_event_pump = context.event_pump().unwrap();
+                let default_window_event_pump = sdl_context.event_pump().unwrap();
 
                 Window {
-                    sdl_context: context,
+                    sdl_context: sdl_context,
+                    ttf_context: ttf_context,
                     video_subsystem: video_subsystem,
                     // window: default_window,
                     canvas: default_window_canvas,
@@ -77,6 +81,7 @@ pub mod system {
                 self.canvas.present();
 
                 let mut active_widget: Option<u32> = None;
+                let mut hover_widget: Option<u32> = None;
 
                 'window_loop: loop {
                     'pump: for event in self.event_pump.poll_iter() {
@@ -86,44 +91,90 @@ pub mod system {
                                 break 'window_loop;
                             }
 
-                            Event::MouseButtonDown { x, y, .. } => {
+                            Event::MouseMotion { x, y, .. } => {
                                 let event_location = Point::new(x, y);
+
+                                hover_widget = None;
+
                                 for widget in &view {
                                     if widget.get_rect().contains_point(event_location) {
+                                        if let Some(active_id) = active_widget {
+                                            if active_id == widget.get_id() {
+                                                break; // Hovering over already active widget
+                                            }
+                                        } else {
+                                            hover_widget = Some(widget.get_id());
+                                        }
+                                    }
+                                }
+                            }
+
+                            Event::MouseButtonDown { x, y, .. } => {
+                                let event_location = Point::new(x, y);
+
+                                active_widget = None;
+
+                                for widget in &view {
+                                    if widget.get_rect().contains_point(event_location) {
+                                        if let Some(hover_id) = hover_widget {
+                                            if hover_id == widget.get_id() {
+                                                hover_widget = None; // Cannot be both hover & active
+                                            }
+                                        }
                                         active_widget = Some(widget.get_id());
-                                        break;
-                                    } else {
-                                        active_widget = None;
+                                        break; // Found a widget, don't need to keep checking
                                     }
                                 }
                             }
 
                             Event::MouseButtonUp { x, y, .. } => {
                                 let event_location = Point::new(x, y);
-                                if let Some(id) = active_widget {
+                                if let Some(active_id) = active_widget {
                                     // TODO: Replace the for loop with hash table lookup (should be part of the view)
                                     for widget in &view {
-                                        if widget.get_rect().contains_point(event_location) && id == widget.get_id() {
+                                        if widget.get_rect().contains_point(event_location) && active_id == widget.get_id() {
                                             widget.on_click();
+                                            // TODO: This logic won't work for anything other than buttons
+                                            hover_widget = active_widget; // no longer active, but hovering
+                                            active_widget = None;
+                                        } else {
+                                            active_widget = None;
                                         }
                                     }
                                 }
                             }
 
+                            // All unhandled events match here
                             _ => {
-                                println!("Unhandled Event: {:?}", event);
+                                // println!("Unhandled Event: {:?}", event);
                             }
                         }
                     }
-                    // TODO: Render window here
-
-                    self.canvas.set_draw_color(Color::RGB(240, 240, 200));
+                    // Render window below
 
                     for widget in &view {
+                        // Default to primary
+                        self.canvas.set_draw_color(widget.primary_color());
+
+                        if let Some(active_id) = active_widget {
+                            if active_id == widget.get_id() {
+                                self.canvas.set_draw_color(widget.secondary_color());
+                            }
+                        }
+
+                        if let Some(hover_id) = hover_widget {
+                            if hover_id == widget.get_id() {
+                                self.canvas.set_draw_color(widget.hover_color());
+                            }
+                        }
+
                         self.canvas.fill_rect(widget.get_rect()).unwrap();
                     }
 
                     self.canvas.present();
+
+                    // FIXME: Hard-limit to 60fps to avoid excessive rendering (lowers GPU usage by 80%)
+                    ::std::thread::sleep(std::time::Duration::new(0, 1_000_000_000u32 / 60));
                 }
             }
         }
