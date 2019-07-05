@@ -27,41 +27,93 @@ pub struct Button {
     pub on_click: &'static Fn(), // TODO: Move this over to the trait below and allow the user to implement this??
 }
 
-trait Widget {
+impl Widget for Button {
+    // TODO: This
+    fn get_rect(&self) -> Rect {
+        self.rect
+    }
+
+    fn get_id(&self) -> u32 {
+        self.id
+    }
+
+    fn on_click(&self) {
+        (self.on_click)();
+    }
+}
+
+pub struct Text {
+    pub id: u32,
+    pub rect: Rect,
+    // TODO: Implement text (sdl2 ttf extension)
+}
+
+impl Widget for Text {
+    // TODO: This
+    fn get_rect(&self) -> Rect {
+        self.rect
+    }
+
+    fn get_id(&self) -> u32 {
+        self.id
+    }
+}
+
+pub trait Widget {
+    fn get_rect(&self) -> Rect;
+    fn get_id(&self) -> u32;
+    fn on_click(&self) {}
+
     /// Instatiate the widget at the given (x, y) coordinate with an optional id
-    fn new(x: i32, y: i32, id: &str) {
+    fn new(x: i32, y: i32, id: &str) 
+    where Self: Sized
+    {
         
     }
 
     /// Draw the widget to the window
-    fn draw() {
+    fn draw() 
+    where Self: Sized
+    {
 
     }
 
     // TODO: Inputs & return types (pass mouse locations, keys pressed, etc.)
 
 
-    fn on_hover() {
+    fn on_hover() 
+    where Self: Sized
+    {
         // Mouse hovers over widget
     }
 
-    fn on_click() {
-        // User clicks, then releases the mouse
-    }
+    // fn on_click() 
+    // where Self: Sized
+    // {
+    //     // User clicks, then releases the mouse
+    // }
 
-    fn on_mouse_down() {
+    fn on_mouse_down() 
+    where Self: Sized
+    {
         // User clicks (consider this for widgets such as sliders)
     }
 
-    fn on_mouse_up() {
+    fn on_mouse_up() 
+    where Self: Sized
+    {
         // User releasese mouse (consider this for widgets such as sliders)
     }
 
-    fn on_key_down() {
+    fn on_key_down() 
+    where Self: Sized
+    {
         // The user presses down a key with the current widget selected (TODO: How to select a widget? 'Highlight current'?)
     }
 
-    fn on_key_up() {
+    fn on_key_up() 
+    where Self: Sized
+    {
         // The user releases a pressed key (see on_key_down)
     }
 }

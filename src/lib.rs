@@ -79,6 +79,7 @@ See /bin/nested_structure_example.rs for dynamic, nested declarations
 
 pub mod backend;
 pub mod widgets;
+pub mod view;
 
 pub mod rust_gui {
     pub fn init() {

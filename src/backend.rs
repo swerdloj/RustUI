@@ -14,7 +14,7 @@ TODO: Should be able to support multiple windows at once
 */
 
 extern crate sdl2;
-use super::widgets;
+use super::view;
 
 // use sdl2::rect::Rect;
 
@@ -41,7 +41,7 @@ pub mod system {
         use sdl2::event::Event;
         use sdl2::keyboard::Keycode;
         use sdl2::rect::Point;
-        use super::super::widgets;
+        use super::super::view::{View};
         
         pub struct Window {
             sdl_context: sdl2::Sdl,
@@ -71,9 +71,7 @@ pub mod system {
 
             // TODO: Allow multiple windows to run at once on multiple threads
             // TODO: How to handle window size changing?
-            // TODO: Change the single button for a list of components, then render all of these and check each one
-            //       Remember to use 'where T: Widget' to enforce the trait
-            pub fn start(mut self, button: widgets::Button) {
+            pub fn start(mut self, view: View) {
                 self.canvas.set_draw_color(Color::RGB(50, 50, 100));
                 self.canvas.clear();
                 self.canvas.present();
@@ -89,17 +87,25 @@ pub mod system {
                             }
 
                             Event::MouseButtonDown { x, y, .. } => {
-                                if button.rect.contains_point(Point::new(x, y)) {
-                                    active_widget = Some(button.id);
-                                } else {
-                                    active_widget = None;
+                                let event_location = Point::new(x, y);
+                                for widget in &view {
+                                    if widget.get_rect().contains_point(event_location) {
+                                        active_widget = Some(widget.get_id());
+                                        break;
+                                    } else {
+                                        active_widget = None;
+                                    }
                                 }
                             }
 
                             Event::MouseButtonUp { x, y, .. } => {
+                                let event_location = Point::new(x, y);
                                 if let Some(id) = active_widget {
-                                    if button.rect.contains_point(Point::new(x, y)) && id == button.id {
-                                        (button.on_click)();
+                                    // TODO: Replace the for loop with hash table lookup (should be part of the view)
+                                    for widget in &view {
+                                        if widget.get_rect().contains_point(event_location) && id == widget.get_id() {
+                                            widget.on_click();
+                                        }
                                     }
                                 }
                             }
@@ -112,7 +118,10 @@ pub mod system {
                     // TODO: Render window here
 
                     self.canvas.set_draw_color(Color::RGB(240, 240, 200));
-                    self.canvas.fill_rect(button.rect);
+
+                    for widget in &view {
+                        self.canvas.fill_rect(widget.get_rect()).unwrap();
+                    }
 
                     self.canvas.present();
                 }
