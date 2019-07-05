@@ -21,25 +21,30 @@ fn main() {
     let example_button1 = Button {
         id: 10,
         rect: Rect::new(100, 200, 100, 40),
-        is_active: false,
         primary_color: Color::RGB(240, 240, 200),
         secondary_color: Color::RGB(100, 100, 100),
         hover_color: Color::RGB(200, 200, 200),
         // on_click: &|| {println!("Test")}, // Note there are 2 ways to pass callbacks
-        on_click: &button1_callback,
+        on_click: Some(&button1_callback),
     };
 
     let example_button2 = Button {
         id: 12,
         rect: Rect::new(210, 200, 100, 40),
-        is_active: false,
         primary_color: Color::RGB(240, 240, 200),
         secondary_color: Color::RGB(100, 100, 100),
         hover_color: Color::RGB(200, 200, 200),
-        on_click: &button2_callback,
+        on_click: Some(&button2_callback),
     };
 
-    let test_view = example_view!(example_button1, example_button2);
+    let example_button3 = Button::new("Test")
+                          .with_on_click(&button3_callback)
+                          .with_rect(Rect::new(100, 250, 100, 40));
+
+    let test_view = example_view!(example_button1, 
+                                  example_button2,
+                                  example_button3
+                                 );
 
 
     main_window.start(test_view);
@@ -51,4 +56,8 @@ fn button1_callback() {
 
 fn button2_callback() {
     println!("Button 2 was clicked");
+}
+
+fn button3_callback() {
+    println!("Button 3 was clicked");
 }

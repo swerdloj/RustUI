@@ -10,32 +10,65 @@ extern crate sdl2;
 use sdl2::rect::Rect;
 use sdl2::pixels::Color;
 
+// TODO: Document everything once the design is set
+
 /// This is the base widget struct from which all other widgets are derived
 /// # Arguments
 /// 
-/// * `x` - The widget's top-left x location within the window
-/// * `y` - The widget's top-left y location within the window
 /// * `id` - The widget's id as a string TODO: This should be a hash of the string instead for faster lookup.
 pub struct WidgetData {
-    rect: Rect,
-    // TODO: Colors?
-    pub id: &'static str,
+    // TODO: Ensure the id is truly unique
+    id: u32, // The widget's *unique* id
+    rect: Rect, // Width, height, and location
+    primary_color: Color, // The widget's base color (e.g.: button base color or text color)
+    
 }
 
 // TODO: See view.rs
 
+// TODO: When instiating a widget, this is potential syntax via a builder:
+// Button::new().primary_color(...).padding(...).hover_color(...)
+// Consider replacing Button::new() with just 'Button!' to keep the syntax design philosophy in tact
+// Doing the above will allow for me to implement default values without worrying about complexity/viability
+
+// TODO: Consider accepting the sdl2 canvas into a render function as well as relevant state information
+// This will avoid requiring things like "secondary_color" for widgets like text where this doesn't make sense
+// This will also allow for custom logic when dealing with unique widgets (rather than treating them all the same)
+
 pub struct Button {
     pub id: u32,
     pub rect: Rect,
-    pub is_active: bool,
     pub primary_color: Color,
     pub secondary_color: Color,
     pub hover_color: Color,
-    pub on_click: &'static Fn(), // TODO: Move this over to the trait below and allow the user to implement this??
+    pub on_click: Option<&'static Fn()>, // TODO: Move this over to the trait below and allow the user to implement this??
+}
+
+impl Button {
+    // TODO: How to adjust these?? Keeping them default like this can't be good unless the view adjusts it
+    pub fn new(id: &str) -> Self {
+        Button {
+            id: 0,
+            rect: Rect::new(0, 0, 0, 0),
+            primary_color: Color::RGB(240, 240, 200),
+            secondary_color: Color::RGB(100, 100, 100),
+            hover_color: Color::RGB(200, 200, 200),
+            on_click: None,
+        }
+    }
+
+    pub fn with_on_click(mut self, callback: &'static Fn()) -> Self {
+        self.on_click = Some(callback);
+        self
+    }
+
+    pub fn with_rect(mut self, rect: Rect) -> Self {
+        self.rect = rect;
+        self
+    }
 }
 
 impl Widget for Button {
-    // TODO: This
     fn get_rect(&self) -> Rect {
         self.rect
     }
@@ -57,19 +90,21 @@ impl Widget for Button {
     }
 
     fn on_click(&self) {
-        (self.on_click)();
+        if let Some(on_click_function) = self.on_click {
+            (on_click_function)();
+        }
+        // (self.on_click)();
     }
 }
 
 pub struct Text {
-    pub id: u32,
-    pub rect: Rect,
+    id: u32,
+    rect: Rect,
     // TODO: Implement text (sdl2 ttf extension)
 }
 
+// TODO: The Widget trait is only for characteristics shared by ALL widgets
 impl Widget for Text {
-    // TODO: This
-
     fn get_rect(&self) -> Rect {
         self.rect
     }
@@ -101,12 +136,11 @@ pub trait Widget {
 
     fn on_click(&self) {}
 
-    /// Instatiate the widget at the given (x, y) coordinate with an optional id
-    fn new(x: i32, y: i32, id: &str) 
-    where Self: Sized
-    {
-        
-    }
+    /// Instatiate the widget with the given id.
+    /// All widget fields are filled with defaults. Builder methods may be used to adjust these fields.
+    // TODO: Can I not require Self::new as part of the trait?
+    // fn new(id: &str) -> Self
+    // where Self: Sized;
 
     /// Draw the widget to the window
     fn draw() 
