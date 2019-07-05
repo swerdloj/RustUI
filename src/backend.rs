@@ -135,11 +135,19 @@ pub mod system {
                                         if widget.get_rect().contains_point(event_location) && active_id == widget.get_id() {
                                             widget.on_click();
                                             // TODO: This logic won't work for anything other than buttons
-                                            hover_widget = active_widget; // no longer active, but hovering
-                                            active_widget = None;
-                                        } else {
-                                            active_widget = None;
-                                        }
+                                            hover_widget = active_widget; // no longer active, now hovering
+                                        } 
+                                        active_widget = None;
+                                    }
+                                }
+
+                                // FIXME: This is an expensive workaround for a bug:
+                                //        When releasing the mouse on some widgets, they are no longer active,
+                                //        but they are not assigned as the hover widget for some reason (above)
+                                for widget in &view {
+                                    if widget.get_rect().contains_point(event_location) {
+                                        hover_widget = Some(widget.get_id());
+                                        break;
                                     }
                                 }
                             }
@@ -158,12 +166,14 @@ pub mod system {
 
                         if let Some(active_id) = active_widget {
                             if active_id == widget.get_id() {
+                                // println!("A widget is active");
                                 self.canvas.set_draw_color(widget.secondary_color());
                             }
                         }
 
                         if let Some(hover_id) = hover_widget {
                             if hover_id == widget.get_id() {
+                                // println!("The mouse is hovering over a widget");
                                 self.canvas.set_draw_color(widget.hover_color());
                             }
                         }
