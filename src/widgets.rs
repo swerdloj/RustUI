@@ -22,6 +22,8 @@ pub struct WidgetData {
     pub id: &'static str,
 }
 
+// TODO: See view.rs
+
 pub struct Button {
     pub id: u32,
     pub rect: Rect,

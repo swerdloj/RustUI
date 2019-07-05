@@ -40,6 +40,7 @@ pub mod system {
         use sdl2::pixels::Color;
         use sdl2::event::Event;
         use sdl2::keyboard::Keycode;
+        use sdl2::mouse::MouseButton;
         use sdl2::rect::Point;
         use super::super::view::{View};
         
@@ -102,14 +103,14 @@ pub mod system {
                                             if active_id == widget.get_id() {
                                                 break; // Hovering over already active widget
                                             }
-                                        } else {
-                                            hover_widget = Some(widget.get_id());
                                         }
+                                        // Hovering over inactive widget -> set it as hover
+                                        hover_widget = Some(widget.get_id());
                                     }
                                 }
                             }
 
-                            Event::MouseButtonDown { x, y, .. } => {
+                            Event::MouseButtonDown { mouse_btn: MouseButton::Left, x, y, .. } => {
                                 let event_location = Point::new(x, y);
 
                                 active_widget = None;
@@ -127,34 +128,26 @@ pub mod system {
                                 }
                             }
 
-                            Event::MouseButtonUp { x, y, .. } => {
+                            Event::MouseButtonUp { mouse_btn: MouseButton::Left, x, y, .. } => {
                                 let event_location = Point::new(x, y);
-                                if let Some(active_id) = active_widget {
+                                if let Some(active_id) = active_widget { // If there is an active widget
                                     // TODO: Replace the for loop with hash table lookup (should be part of the view)
-                                    for widget in &view {
-                                        if widget.get_rect().contains_point(event_location) && active_id == widget.get_id() {
-                                            widget.on_click();
+                                    for widget in &view { // Look at each widget
+                                        if widget.get_rect().contains_point(event_location) { // If the mouse was released on any widget
+                                            if active_id == widget.get_id() { // Trigger the callback if that widget was active
+                                                widget.on_click();
+                                            }
                                             // TODO: This logic won't work for anything other than buttons
-                                            hover_widget = active_widget; // no longer active, now hovering
-                                        } 
-                                        active_widget = None;
-                                    }
-                                }
-
-                                // FIXME: This is an expensive workaround for a bug:
-                                //        When releasing the mouse on some widgets, they are no longer active,
-                                //        but they are not assigned as the hover widget for some reason (above)
-                                for widget in &view {
-                                    if widget.get_rect().contains_point(event_location) {
-                                        hover_widget = Some(widget.get_id());
-                                        break;
+                                            hover_widget = Some(widget.get_id()); // If the mouse is on a widget, it is now hovering
+                                        }
+                                        active_widget = None; // Mouse was released, so nothing should be active
                                     }
                                 }
                             }
 
                             // All unhandled events match here
                             _ => {
-                                // println!("Unhandled Event: {:?}", event);
+                                println!("Unhandled Event: {:?}", event);
                             }
                         }
                     }
