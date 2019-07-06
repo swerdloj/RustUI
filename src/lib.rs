@@ -82,18 +82,5 @@ pub mod widgets;
 pub mod view;
 
 pub mod rust_gui {
-    pub fn init() {
-        
-    }
 
-    // Note that traits can be both overwritten and extended (by calling super?)
-
-
-    // TODO: Worry about this after widgets are implemented (Also move this to another file)
-    trait View {
-        // TODO: How to work this idea into the program?
-        fn generate() {
-            // Build the view (would the user implement this function? e.g.: don't provide a default?)
-        }
-    }
 }

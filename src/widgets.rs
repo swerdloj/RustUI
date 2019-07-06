@@ -62,18 +62,25 @@ impl Button {
         self
     }
 
+    // TODO: The user should not need this (delete this later)
     pub fn with_rect(mut self, rect: Rect) -> Self {
         self.rect = rect;
+        self
+    }
+
+    // TODO: id should be hashed from new(str), delete this later
+    pub fn with_id(mut self, id: u32) -> Self {
+        self.id = id;
         self
     }
 }
 
 impl Widget for Button {
-    fn get_rect(&self) -> Rect {
+    fn rect(&self) -> Rect {
         self.rect
     }
 
-    fn get_id(&self) -> u32 {
+    fn id(&self) -> u32 {
         self.id
     }
 
@@ -105,11 +112,11 @@ pub struct Text {
 
 // TODO: The Widget trait is only for characteristics shared by ALL widgets
 impl Widget for Text {
-    fn get_rect(&self) -> Rect {
+    fn rect(&self) -> Rect {
         self.rect
     }
 
-    fn get_id(&self) -> u32 {
+    fn id(&self) -> u32 {
         self.id
     }
 
@@ -128,8 +135,8 @@ impl Widget for Text {
 }
 
 pub trait Widget {
-    fn get_rect(&self) -> Rect;
-    fn get_id(&self) -> u32;
+    fn rect(&self) -> Rect;
+    fn id(&self) -> u32;
     fn primary_color(&self) -> Color;
     fn secondary_color(&self) -> Color;
     fn hover_color(&self) -> Color; // TODO: This

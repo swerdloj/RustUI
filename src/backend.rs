@@ -53,6 +53,8 @@ pub mod system {
             event_pump: sdl2::EventPump,
         }
 
+        // TODO: Create a builder similar to widget declaration
+        //       include things like .scale, .resizable, .accelerated, .background_color, etc.
         impl Window {
             pub fn init(window_title: &str) -> Self {
                 let sdl_context = sdl2::init().unwrap();
@@ -98,14 +100,14 @@ pub mod system {
                                 hover_widget = None;
 
                                 for widget in &view {
-                                    if widget.get_rect().contains_point(event_location) {
+                                    if widget.rect().contains_point(event_location) {
                                         if let Some(active_id) = active_widget {
-                                            if active_id == widget.get_id() {
+                                            if active_id == widget.id() {
                                                 break; // Hovering over already active widget
                                             }
                                         }
                                         // Hovering over inactive widget -> set it as hover
-                                        hover_widget = Some(widget.get_id());
+                                        hover_widget = Some(widget.id());
                                     }
                                 }
                             }
@@ -114,15 +116,14 @@ pub mod system {
                                 let event_location = Point::new(x, y);
 
                                 active_widget = None;
-
                                 for widget in &view {
-                                    if widget.get_rect().contains_point(event_location) {
+                                    if widget.rect().contains_point(event_location) {
                                         if let Some(hover_id) = hover_widget {
-                                            if hover_id == widget.get_id() {
+                                            if hover_id == widget.id() {
                                                 hover_widget = None; // Cannot be both hover & active
                                             }
                                         }
-                                        active_widget = Some(widget.get_id());
+                                        active_widget = Some(widget.id());
                                         break; // Found a widget, don't need to keep checking
                                     }
                                 }
@@ -133,12 +134,12 @@ pub mod system {
                                 if let Some(active_id) = active_widget { // If there is an active widget
                                     // TODO: Replace the for loop with hash table lookup (should be part of the view)
                                     for widget in &view { // Look at each widget
-                                        if widget.get_rect().contains_point(event_location) { // If the mouse was released on any widget
-                                            if active_id == widget.get_id() { // Trigger the callback if that widget was active
+                                        if widget.rect().contains_point(event_location) { // If the mouse was released on any widget
+                                            if active_id == widget.id() { // Trigger the callback if that widget was active
                                                 widget.on_click();
                                             }
                                             // TODO: This logic won't work for anything other than buttons
-                                            hover_widget = Some(widget.get_id()); // If the mouse is on a widget, it is now hovering
+                                            hover_widget = Some(widget.id()); // If the mouse is on a widget, it is now hovering
                                         }
                                         active_widget = None; // Mouse was released, so nothing should be active
                                     }
@@ -158,20 +159,20 @@ pub mod system {
                         self.canvas.set_draw_color(widget.primary_color());
 
                         if let Some(active_id) = active_widget {
-                            if active_id == widget.get_id() {
+                            if active_id == widget.id() {
                                 // println!("A widget is active");
                                 self.canvas.set_draw_color(widget.secondary_color());
                             }
                         }
 
                         if let Some(hover_id) = hover_widget {
-                            if hover_id == widget.get_id() {
+                            if hover_id == widget.id() {
                                 // println!("The mouse is hovering over a widget");
                                 self.canvas.set_draw_color(widget.hover_color());
                             }
                         }
 
-                        self.canvas.fill_rect(widget.get_rect()).unwrap();
+                        self.canvas.fill_rect(widget.rect()).unwrap();
                     }
 
                     self.canvas.present();

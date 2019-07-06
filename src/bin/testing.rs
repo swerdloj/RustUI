@@ -13,40 +13,41 @@ use RustUI::backend::system::window;
 use RustUI::widgets::*;
 use RustUI::view::{View};
 use sdl2::rect::Rect;
-use sdl2::pixels::Color;
+// use sdl2::pixels::Color;
 
 fn main() {
     let main_window = window::Window::init("Test");
 
-    let example_button1 = Button {
-        id: 10,
-        rect: Rect::new(100, 200, 100, 40),
-        primary_color: Color::RGB(240, 240, 200),
-        secondary_color: Color::RGB(100, 100, 100),
-        hover_color: Color::RGB(200, 200, 200),
-        // on_click: &|| {println!("Test")}, // Note there are 2 ways to pass callbacks
-        on_click: Some(&button1_callback),
-    };
+    // let mut button_clicks: u16 = 0;
 
-    let example_button2 = Button {
-        id: 12,
-        rect: Rect::new(210, 200, 100, 40),
-        primary_color: Color::RGB(240, 240, 200),
-        secondary_color: Color::RGB(100, 100, 100),
-        hover_color: Color::RGB(200, 200, 200),
-        on_click: Some(&button2_callback),
-    };
+    // TODO: Need some way to pass mutable state around
+    // let example_state_modifier = || {button_clicks = button_clicks + 1;};
 
-    let example_button3 = Button::new("Test")
-                          .with_on_click(&button3_callback)
-                          .with_rect(Rect::new(100, 250, 100, 40));
+    // TODO: the view macro must handle default layout/padding according to the view type
+    let test_view = example_view!(
+        Button::new("Test")
+            .with_id(1)
+            .with_on_click(&button1_callback)
+            .with_rect(Rect::new(100, 200, 100, 40)), 
 
-    let test_view = example_view!(example_button1, 
-                                  example_button2,
-                                  example_button3
-                                 );
+        Button::new("Test")
+            .with_id(2)
+            .with_on_click(&button2_callback)
+            .with_rect(Rect::new(210, 200, 100, 40)),
 
+        Button::new("Test")
+            .with_id(3)
+            .with_on_click(&button3_callback)
+            .with_rect(Rect::new(100, 250, 100, 40)),
 
+        Button::new("Test")
+            .with_id(4)
+            .with_on_click(&|| {println!("Button 4 was clicked");})
+            .with_rect(Rect::new(210, 250, 100, 40))
+        );
+
+    // TODO: This should also accept the application state as mutable
+    //       Must allow buttons, etc. to modify state
     main_window.start(test_view);
 }
 
