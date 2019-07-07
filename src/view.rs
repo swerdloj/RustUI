@@ -27,10 +27,13 @@ macro_rules! example_view {
 
             // Begin repetition
             $(
+                // TODO: Widget positioning, padding, etc. will be determined here
+                
                 // This will happen to each element
                 view.push(Box::new($x));
             )+
             
+            // and this is the output
             view
         }
     };

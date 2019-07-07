@@ -10,6 +10,8 @@ extern crate sdl2;
 use sdl2::rect::Rect;
 use sdl2::pixels::Color;
 
+use super::backend::system::state::State;
+
 // TODO: Document everything once the design is set
 
 /// This is the base widget struct from which all other widgets are derived
@@ -41,7 +43,7 @@ pub struct Button {
     pub primary_color: Color,
     pub secondary_color: Color,
     pub hover_color: Color,
-    pub on_click: Option<&'static Fn()>, // TODO: Move this over to the trait below and allow the user to implement this??
+    pub on_click: Option<Box<Fn(&mut State)>>,
 }
 
 impl Button {
@@ -57,7 +59,8 @@ impl Button {
         }
     }
 
-    pub fn with_on_click(mut self, callback: &'static Fn()) -> Self {
+    pub fn with_on_click(mut self, callback: Box<Fn(&mut State)>) -> Self
+    {
         self.on_click = Some(callback);
         self
     }
@@ -96,11 +99,10 @@ impl Widget for Button {
         self.hover_color
     }
 
-    fn on_click(&self) {
-        if let Some(on_click_function) = self.on_click {
-            (on_click_function)();
+    fn on_click(&self, state: &mut State) {
+        if let Some(ref on_click_function) = self.on_click {
+            (on_click_function)(state);
         }
-        // (self.on_click)();
     }
 }
 
@@ -132,6 +134,8 @@ impl Widget for Text {
         Color::RGB(0, 0, 0)
     }
 
+    fn on_click(&self, state: &mut State) {}
+
 }
 
 pub trait Widget {
@@ -141,7 +145,7 @@ pub trait Widget {
     fn secondary_color(&self) -> Color;
     fn hover_color(&self) -> Color; // TODO: This
 
-    fn on_click(&self) {}
+    fn on_click(&self, state: &mut State);
 
     /// Instatiate the widget with the given id.
     /// All widget fields are filled with defaults. Builder methods may be used to adjust these fields.
