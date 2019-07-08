@@ -34,6 +34,8 @@ use super::view;
 // TODO: Call this 'context' instead of 'system'?
 pub mod system {
     // TODO: Is this right? Then the user can implement State for their application
+    // TODO: Consider just replacing the State trait with a generic type (boxed?)
+    //       then, implement a "BaseState" for things like hover, etc. and include the generic there
     pub mod state {
         pub trait State {
             // TODO: What is needed here, if anything?

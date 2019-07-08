@@ -50,17 +50,20 @@ fn main() {
     let test_view = example_view!(
         Button::new("Test")
             .with_id(1)
-            .with_on_click(Box::new(|state| {println!("Can't access non-trait fields...");}))
+            .with_on_click(Box::new(|state| {
+                state.do_something();
+                println!("Clicked the button {} times", state.get_something());
+                }))
             .with_rect(Rect::new(100, 200, 100, 40)), 
 
         Button::new("Test")
             .with_id(2)
-            .with_on_click(Box::new(|state| {state.do_something();}))
+            .with_on_click(Box::new(|state| {println!("Can't access non-trait fields...");}))
             .with_rect(Rect::new(210, 200, 100, 40)),
 
         Button::new("Test")
             .with_id(3)
-            .with_on_click(Box::new(|state| {println!{"Clicked the button {} times", state.get_something()}}))
+            .with_on_click(Box::new(|state| {println!("This button does nothing.")}))
             .with_rect(Rect::new(100, 250, 100, 40)),
 
         Button::new("Test")
