@@ -10,7 +10,7 @@ extern crate sdl2;
 use sdl2::rect::Rect;
 use sdl2::pixels::Color;
 
-use super::backend::system::state::State;
+use crate::backend::system::state::State;
 
 // TODO: Document everything once the design is set
 

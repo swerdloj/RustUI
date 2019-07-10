@@ -14,7 +14,6 @@ TODO: Should be able to support multiple windows at once
 */
 
 extern crate sdl2;
-use super::view;
 
 // use sdl2::rect::Rect;
 
@@ -37,6 +36,11 @@ pub mod system {
     // TODO: Consider just replacing the State trait with a generic type (boxed?)
     //       then, implement a "BaseState" for things like hover, etc. and include the generic there
     pub mod state {
+        pub struct BaseState {
+            hovering: Option<u32>, // Widget being hovered over
+            clicking: Option<u32>, // Widget being clicked (left mouse down)
+        }
+
         pub trait State {
             // TODO: What is needed here, if anything?
             fn do_something(&mut self);
@@ -53,7 +57,7 @@ pub mod system {
         use sdl2::keyboard::Keycode;
         use sdl2::mouse::MouseButton;
         use sdl2::rect::Point;
-        use super::super::view::{View};
+        use crate::view::{View};
         use super::state::State;
         
         // Expected lifetime ('a) -> the initializing function containing the .start() call
