@@ -10,8 +10,19 @@ Jonathan Swerdlow
 extern crate sdl2;
 use sdl2::rect::Rect;
 use sdl2::pixels::Color;
+use sdl2::render::WindowCanvas as Canvas;
 
 // TODO: Document everything once the design is set
+
+
+pub enum WidgetState {
+    // TODO: Should the state be called 'Active' or 'Clicking'?
+    //       or should these be two different states?
+    Active,
+    Hovering,
+    Base,
+    // can include structs, algebraic types, etc.
+}
 
 /// This is the base widget struct from which all other widgets are derived
 /// # Arguments
@@ -81,6 +92,16 @@ impl<T> Button<T> {
 }
 
 impl<T> Widget<T> for Button<T> {
+    fn render(&self, canvas: &mut Canvas, widget_state: WidgetState) {
+        match widget_state {
+            WidgetState::Hovering => {canvas.set_draw_color(self.hover_color);}
+            WidgetState::Active => {canvas.set_draw_color(self.secondary_color);}
+            _ => {canvas.set_draw_color(self.primary_color);}
+        }
+
+        canvas.fill_rect(self.rect).unwrap();
+    }
+
     fn rect(&self) -> Rect {
         self.rect
     }
@@ -136,8 +157,13 @@ impl<T> Widget<T> for Text {
         Color::RGB(0, 0, 0)
     }
 
-    fn on_click(&self, state: &mut T) {}
+    fn on_click(&self, state: &mut T) {
 
+    }
+
+    fn render(&self, canvas: &mut Canvas, widget_state: WidgetState) {
+
+    }
 }
 
 pub trait Widget<T> {
@@ -149,6 +175,8 @@ pub trait Widget<T> {
 
     fn on_click(&self, state: &mut T);
 
+    fn render(&self, canvas: &mut Canvas, widget_state: WidgetState); 
+
     /// Instatiate the widget with the given id.
     /// All widget fields are filled with defaults. Builder methods may be used to adjust these fields.
     
@@ -156,12 +184,8 @@ pub trait Widget<T> {
     // fn new(id: &str) -> Self
     // where Self: Sized;
 
-    /// Draw the widget to the window
-    fn draw() 
-    where Self: Sized
-    {
+    /// Render the widget to the window
 
-    }
 
     // TODO: Inputs & return types (pass mouse locations, keys pressed, etc.)
 

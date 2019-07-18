@@ -68,6 +68,7 @@ pub mod system {
         use sdl2::mouse::MouseButton;
         use sdl2::rect::Point;
         use crate::view::{View};
+        use crate::widgets::WidgetState;
         use super::state::{ApplicationState};
         
         // Expected lifetime ('a) -> the initializing function containing the .start() call
@@ -182,25 +183,23 @@ pub mod system {
                     }
                     // Render window below
 
+                    // Render each widget
                     for widget in &view {
-                        // Default to primary
-                        self.canvas.set_draw_color(widget.primary_color());
-
                         if let Some(active_id) = self.window_state.clicking {
                             if active_id == widget.id() {
-                                // println!("A widget is active");
-                                self.canvas.set_draw_color(widget.secondary_color());
+                                widget.render(&mut self.canvas, WidgetState::Active);
+                                continue;
                             }
                         }
 
                         if let Some(hover_id) = self.window_state.hovering {
                             if hover_id == widget.id() {
-                                // println!("The mouse is hovering over a widget");
-                                self.canvas.set_draw_color(widget.hover_color());
+                                widget.render(&mut self.canvas, WidgetState::Hovering);
+                                continue;
                             }
                         }
 
-                        self.canvas.fill_rect(widget.rect()).unwrap();
+                        widget.render(&mut self.canvas, WidgetState::Base);
                     }
 
                     self.canvas.present();
