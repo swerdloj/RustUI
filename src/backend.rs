@@ -206,8 +206,8 @@ pub mod system {
 
                     // FIXME: Hard-limit to 60fps to avoid excessive rendering (lowers GPU usage by 80%)
                     ::std::thread::sleep(std::time::Duration::new(0, 1_000_000_000u32 / 60));
-                }
-            }
-        }
-    }
-}
+                } // end event loop
+            } // end start() method
+        } // end imple window
+    } // end mod window
+} // end mod system

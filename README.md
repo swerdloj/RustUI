@@ -6,7 +6,7 @@ Different executables can be tested by including them in src/bin.
 Run them via `cargo run --bin file_name`
 
 ## Current Standing
-Setup phase
+Very early development
 
 ## Dependencies
 The following items are required to run RustUI projects:
@@ -20,7 +20,7 @@ The following items are required to run RustUI projects:
   - zlib1.dll
 
 ### TODOs:
-- [ ] Move & require widget rendering to within the Widget trait definition
+- [x] Move & require widget rendering to within the Widget trait definition
 - [ ] Replace "Widget.with_on_click(Box::new(|state: &mut State| {...}))" with something more concise. Maybe instatiate widgets with a convenient macro
 - [ ] Implement widgets
 - [ ] Accept widget ids as strings, then store their hashes
