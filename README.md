@@ -21,7 +21,7 @@ The following items are required to run RustUI projects:
 
 ### TODOs:
 - [ ] Move & require widget rendering to within the Widget trait definition
-- [ ] Replace "Widget.with_on_click(Box::new(|state: &mut State| {...})) with something more concise"
+- [ ] Replace "Widget.with_on_click(Box::new(|state: &mut State| {...}))" with something more concise. Maybe instatiate widgets with a convenient macro
 - [ ] Implement widgets
 - [ ] Accept widget ids as strings, then store their hashes
 - [ ] Store a view's widget ids in a hash table

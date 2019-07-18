@@ -47,6 +47,7 @@ pub struct Button<T> {
     pub on_click: Option<Box<Fn(&mut T)>>,
 }
 
+// FIXME: .with_rect() & .with_id() are only for testing purposes. The user should never access these
 impl<T> Button<T> {
     // TODO: How to adjust these?? Keeping them default like this can't be good unless the view adjusts it
     pub fn new(id: &str) -> Self {
