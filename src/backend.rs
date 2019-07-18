@@ -35,8 +35,8 @@ pub mod system {
     // TODO: Is this right? Then the user can implement custom state structs for their application
     pub mod state {
         pub struct ApplicationState<'a, T> {
-            hovering: Option<u32>, // Widget being hovered over
-            clicking: Option<u32>, // Widget being clicked (left mouse down)
+            pub hovering: Option<u32>, // Widget being hovered over
+            pub clicking: Option<u32>, // Widget being clicked (left mouse down)
             state: &'a mut T,
         }
 
@@ -88,9 +88,8 @@ pub mod system {
         //       include things like .scale, .resizable, .accelerated, .background_color, etc.
         impl<'a, T> Window<'a, T> {
             pub fn init(window_title: &str, state: &'a mut T) -> Self {
-                let sdl_context = sdl2::init().unwrap();
-                let video_subsystem = sdl_context.video().unwrap();
-
+                let sdl_context = sdl2::init().map_err(|e| e.to_string()).unwrap();
+                let video_subsystem = sdl_context.video().map_err(|e| e.to_string()).unwrap();
                 let ttf_context = sdl2::ttf::init().map_err(|e| e.to_string()).unwrap();
 
                 let default_window = video_subsystem.window(window_title, 800, 600).position_centered().build().unwrap();
@@ -115,10 +114,6 @@ pub mod system {
                 self.canvas.clear();
                 self.canvas.present();
 
-                // TODO: Give these more literal, generic names like ('clicked_widget')
-                let mut active_widget: Option<u32> = None;
-                let mut hover_widget: Option<u32> = None;
-
                 'window_loop: loop {
                     'pump: for event in self.event_pump.poll_iter() {
                         match event {
@@ -130,17 +125,17 @@ pub mod system {
                             Event::MouseMotion { x, y, .. } => {
                                 let event_location = Point::new(x, y);
 
-                                hover_widget = None;
+                                self.window_state.hovering = None;
 
                                 for widget in &view {
                                     if widget.rect().contains_point(event_location) {
-                                        if let Some(active_id) = active_widget {
+                                        if let Some(active_id) = self.window_state.clicking {
                                             if active_id == widget.id() {
                                                 break; // Hovering over already active widget
                                             }
                                         }
                                         // Hovering over inactive widget -> set it as hover
-                                        hover_widget = Some(widget.id());
+                                        self.window_state.hovering = Some(widget.id());
                                     }
                                 }
                             }
@@ -148,15 +143,15 @@ pub mod system {
                             Event::MouseButtonDown { mouse_btn: MouseButton::Left, x, y, .. } => {
                                 let event_location = Point::new(x, y);
 
-                                active_widget = None;
+                                self.window_state.clicking = None;
                                 for widget in &view {
                                     if widget.rect().contains_point(event_location) {
-                                        if let Some(hover_id) = hover_widget {
+                                        if let Some(hover_id) = self.window_state.hovering {
                                             if hover_id == widget.id() {
-                                                hover_widget = None; // Cannot be both hover & active
+                                                self.window_state.hovering = None; // Cannot be both hover & active
                                             }
                                         }
-                                        active_widget = Some(widget.id());
+                                        self.window_state.clicking = Some(widget.id());
                                         break; // Found a widget, don't need to keep checking
                                     }
                                 }
@@ -164,7 +159,7 @@ pub mod system {
 
                             Event::MouseButtonUp { mouse_btn: MouseButton::Left, x, y, .. } => {
                                 let event_location = Point::new(x, y);
-                                if let Some(active_id) = active_widget { // If there is an active widget
+                                if let Some(active_id) = self.window_state.clicking { // If there is an active widget
                                     // TODO: Replace the for loop with hash table lookup (should be part of the view)
                                     for widget in &view { // Look at each widget
                                         if widget.rect().contains_point(event_location) { // If the mouse was released on any widget
@@ -172,9 +167,9 @@ pub mod system {
                                                 widget.on_click(self.window_state.get_state());
                                             }
                                             // TODO: This logic won't work for anything other than buttons
-                                            hover_widget = Some(widget.id()); // If the mouse is on a widget, it is now hovering
+                                            self.window_state.hovering = Some(widget.id()); // If the mouse is on a widget, it is now hovering
                                         }
-                                        active_widget = None; // Mouse was released, so nothing should be active
+                                        self.window_state.clicking = None; // Mouse was released, so nothing should be active
                                     }
                                 }
                             }
@@ -191,14 +186,14 @@ pub mod system {
                         // Default to primary
                         self.canvas.set_draw_color(widget.primary_color());
 
-                        if let Some(active_id) = active_widget {
+                        if let Some(active_id) = self.window_state.clicking {
                             if active_id == widget.id() {
                                 // println!("A widget is active");
                                 self.canvas.set_draw_color(widget.secondary_color());
                             }
                         }
 
-                        if let Some(hover_id) = hover_widget {
+                        if let Some(hover_id) = self.window_state.hovering {
                             if hover_id == widget.id() {
                                 // println!("The mouse is hovering over a widget");
                                 self.canvas.set_draw_color(widget.hover_color());

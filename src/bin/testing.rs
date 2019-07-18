@@ -10,7 +10,6 @@ extern crate RustUI;
 extern crate sdl2;
 
 use RustUI::backend::system::window::Window;
-use RustUI::backend::system::state::{ApplicationState};
 use RustUI::widgets::*;
 use RustUI::view::{View};
 use sdl2::rect::Rect;
@@ -20,11 +19,19 @@ struct State {
     button_clicks: u16,
 }
 
+impl State {
+    fn new() -> Self {
+        State {
+            button_clicks: 0,
+        }
+    }
+}
+
 
 fn main() {
-    let mut app_state = State { button_clicks: 0 };
+    let mut app_state = State::new();
 
-    let main_window: Window<State> = Window::init("Test", &mut app_state);
+    let main_window = Window::init("Test", &mut app_state);
 
     // TODO: the view macro must handle default layout/padding according to the view type
     let test_vstack = VStack!(

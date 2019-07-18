@@ -8,7 +8,6 @@ pub type View<T> = Vec<Box<Widget<T>>>;
 
 // Macro assistance: https://danielkeep.github.io/tlborm/book/mbe-macro-rules.html
 
-// TODO: Make Widget Rect an Option, then assign the rect here according to view properties (padding, etc.)
 #[macro_export]
 macro_rules! example_view {
     (
