@@ -3,7 +3,7 @@ use super::widgets::*;
 // extern crate proc_macro;
 // use proc_macro::TokenStream;
 
-pub type View = Vec<Box<Widget>>;
+pub type View<T> = Vec<Box<Widget<T>>>;
 
 
 // Macro assistance: https://danielkeep.github.io/tlborm/book/mbe-macro-rules.html

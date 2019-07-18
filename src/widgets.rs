@@ -4,13 +4,12 @@ Widget functionality
 
 Jonathan Swerdlow
 7-2-19
+
 */
 
 extern crate sdl2;
 use sdl2::rect::Rect;
 use sdl2::pixels::Color;
-
-use crate::backend::system::state::State;
 
 // TODO: Document everything once the design is set
 
@@ -23,7 +22,6 @@ pub struct WidgetData {
     id: u32, // The widget's *unique* id
     rect: Rect, // Width, height, and location
     primary_color: Color, // The widget's base color (e.g.: button base color or text color)
-    
 }
 
 // TODO: See view.rs
@@ -37,16 +35,19 @@ pub struct WidgetData {
 // This will avoid requiring things like "secondary_color" for widgets like text where this doesn't make sense
 // This will also allow for custom logic when dealing with unique widgets (rather than treating them all the same)
 
-pub struct Button {
+// TODO: Replace 'T' with 'S' for the sake of clarity?
+// NOTE: In this module, the generic type 'T' refers EXCLUSIVELY to user-defined state
+
+pub struct Button<T> {
     pub id: u32,
     pub rect: Rect,
     pub primary_color: Color,
     pub secondary_color: Color,
     pub hover_color: Color,
-    pub on_click: Option<Box<Fn(&mut State)>>,
+    pub on_click: Option<Box<Fn(&mut T)>>,
 }
 
-impl Button {
+impl<T> Button<T> {
     // TODO: How to adjust these?? Keeping them default like this can't be good unless the view adjusts it
     pub fn new(id: &str) -> Self {
         Button {
@@ -59,7 +60,7 @@ impl Button {
         }
     }
 
-    pub fn with_on_click(mut self, callback: Box<Fn(&mut State)>) -> Self
+    pub fn with_on_click(mut self, callback: Box<Fn(&mut T)>) -> Self
     {
         self.on_click = Some(callback);
         self
@@ -78,7 +79,7 @@ impl Button {
     }
 }
 
-impl Widget for Button {
+impl<T> Widget<T> for Button<T> {
     fn rect(&self) -> Rect {
         self.rect
     }
@@ -99,7 +100,7 @@ impl Widget for Button {
         self.hover_color
     }
 
-    fn on_click(&self, state: &mut State) {
+    fn on_click(&self, state: &mut T) {
         if let Some(ref on_click_function) = self.on_click {
             (on_click_function)(state);
         }
@@ -113,7 +114,7 @@ pub struct Text {
 }
 
 // TODO: The Widget trait is only for characteristics shared by ALL widgets
-impl Widget for Text {
+impl<T> Widget<T> for Text {
     fn rect(&self) -> Rect {
         self.rect
     }
@@ -134,21 +135,22 @@ impl Widget for Text {
         Color::RGB(0, 0, 0)
     }
 
-    fn on_click(&self, state: &mut State) {}
+    fn on_click(&self, state: &mut T) {}
 
 }
 
-pub trait Widget {
+pub trait Widget<T> {
     fn rect(&self) -> Rect;
     fn id(&self) -> u32;
     fn primary_color(&self) -> Color;
     fn secondary_color(&self) -> Color;
     fn hover_color(&self) -> Color; // TODO: This
 
-    fn on_click(&self, state: &mut State);
+    fn on_click(&self, state: &mut T);
 
     /// Instatiate the widget with the given id.
     /// All widget fields are filled with defaults. Builder methods may be used to adjust these fields.
+    
     // TODO: Can I not require Self::new as part of the trait?
     // fn new(id: &str) -> Self
     // where Self: Sized;

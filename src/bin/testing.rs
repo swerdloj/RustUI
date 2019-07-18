@@ -9,36 +9,37 @@ It will be structured as though creating a real project using this library.
 extern crate RustUI;
 extern crate sdl2;
 
-use RustUI::backend::system::{ window, state::State };
+use RustUI::backend::system::window::Window;
+use RustUI::backend::system::state::{ApplicationState};
 use RustUI::widgets::*;
 use RustUI::view::{View};
 use sdl2::rect::Rect;
 // use sdl2::pixels::Color;
 
-struct ApplicationState {
+struct State {
     button_clicks: u16,
 }
 
-impl ApplicationState {
-    fn click(&mut self) {
-        self.button_clicks += 1;
-    }
-}
+// impl ApplicationState {
+//     fn click(&mut self) {
+//         self.button_clicks += 1;
+//     }
+// }
 
-impl State for ApplicationState {
-    fn do_something(&mut self) {
-        self.click();
-    }
+// impl State for ApplicationState {
+//     fn do_something(&mut self) {
+//         self.click();
+//     }
 
-    fn get_something(&self) -> u16 {
-        self.button_clicks
-    }
-}
+//     fn get_something(&self) -> u16 {
+//         self.button_clicks
+//     }
+// }
 
 fn main() {
-    let mut app_state = ApplicationState { button_clicks: 0 };
+    let mut app_state = State { button_clicks: 0 };
 
-    let main_window = window::Window::init("Test", &mut app_state);
+    let main_window: Window<State> = Window::init("Test", &mut app_state);
 
     // let mut button_clicks: u16 = 0;
 
@@ -50,9 +51,10 @@ fn main() {
     let test_view = example_view!(
         Button::new("Test")
             .with_id(1)
-            .with_on_click(Box::new(|state| {
-                state.do_something();
-                println!("Clicked the button {} times", state.get_something());
+            .with_on_click(Box::new(|state: &mut State| {
+                state.button_clicks += 1;
+                // state.do_something();
+                println!("Clicked the button {} times", state.button_clicks);
                 }))
             .with_rect(Rect::new(100, 200, 100, 40)), 
 

@@ -20,13 +20,16 @@ The following items are required to run RustUI projects:
   - zlib1.dll
 
 ### TODOs:
+- [ ] Move & require widget rendering to within the Widget trait definition
+- [ ] Replace "Widget.with_on_click(Box::new(|state: &mut State| {...})) with something more concise"
 - [ ] Implement widgets
 - [ ] Accept widget ids as strings, then store their hashes
 - [ ] Store a view's widget ids in a hash table
 - [x] Iterate through all active widgets in event loop
-- [ ] Allow for Python tkinter-style callbacks
+- [x] Allow for Python tkinter-style callbacks
 - [ ] Implement text
 - [ ] Stabilize FPS
 - [ ] Implement graphics
 - [ ] Run callbacks on separate threads
 - [ ] At some point, should be able to simply pass a canvas and render UI to *existing* canvas
+- [ ] Support multiple windows
