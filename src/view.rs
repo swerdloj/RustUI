@@ -45,9 +45,6 @@ macro_rules! VStack {
         {
             let mut view = View::new();
 
-            let default_button_width = 100;
-            let default_button_height = 40;
-
             let default_padding = 10;
             // Current draw location
             let mut current_y = 0;
@@ -60,11 +57,12 @@ macro_rules! VStack {
                 view.push(Box::new(
                     $x
                     // TODO: Consider replacing .with_rect with ".at". This will not override rect dimensions.
-                    .with_rect(Rect::new(default_padding, current_y + default_padding, 
-                                         default_button_width, default_button_height))
                     .with_id(current_id)    
+                    .place(default_padding, current_y + default_padding)
                 ));
-                current_y += default_button_height as i32 + default_padding;
+                // TODO: Fix the below line
+                // current_y += $x.rect().height() as i32 + default_padding;
+                current_y += 40 as i32 + default_padding;
                 current_id += 1;
             )+
 

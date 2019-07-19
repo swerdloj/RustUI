@@ -4,3 +4,4 @@ Cargo.lock
 *.dll
 *.lib
 /res/font/*.ttf
+*.bat

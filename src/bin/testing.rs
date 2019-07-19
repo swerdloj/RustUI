@@ -47,12 +47,16 @@ fn main() {
         Button::new("Test")
             .with_on_click(Box::new(|_| {
                 println!("This doesn't increment anything");
-            })),
+            }))
+            .with_text("This is a long message"),
+
+        Text::new("Test", "Text Widget"),
 
         Button::new("Test")
             .with_on_click(Box::new(|state: &mut State| {
                 example_callback(state);
             }))
+            .with_text("Button")
     );
 
     // TODO: This must allow some mechanism for dynamic views
