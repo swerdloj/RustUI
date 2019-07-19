@@ -35,13 +35,14 @@ fn main() {
 
     // TODO: the view macro must handle default layout/padding according to the view type
     let test_vstack = VStack!(
-        Text::new("Text", "text here"),
+        // Text::new("Text", "text here"),
 
         Button::new("Test")
             .with_on_click(Box::new(|state: &mut State| {
                 state.button_clicks += 1;
                 println!("Clicked the button {} times", state.button_clicks);
-            })),
+            }))
+            .with_text("Increment"),
 
         Button::new("Test")
             .with_on_click(Box::new(|_| {

@@ -19,17 +19,18 @@ The following items are required to run RustUI projects:
   - libfreetype-6.dll
   - zlib1.dll
 
+## Usage (not final)
+1. Download the above dependencies, and place into project root directory
+2. When using text, place the .ttf font in /res/font/
+3. In widget.rs, update the Text widget's render function with the new font file
+
 ### TODOs:
-- [x] Move & require widget rendering to within the Widget trait definition
-- [ ] Replace "Widget.with_on_click(Box::new(|state: &mut State| {...}))" with something more concise. Maybe instatiate widgets with a convenient macro
-- [ ] Implement widgets
-- [ ] Accept widget ids as strings, then store their hashes
-- [ ] Store a view's widget ids in a hash table
-- [x] Iterate through all active widgets in event loop
-- [x] Allow for Python tkinter-style callbacks
-- [ ] Implement text
-- [ ] Stabilize FPS
-- [ ] Implement graphics
-- [ ] Run callbacks on separate threads
-- [ ] At some point, should be able to simply pass a canvas and render UI to *existing* canvas
-- [ ] Support multiple windows
+- Replace "Widget.with_on_click(Box::new(|state: &mut State| {...}))" with something more concise. Maybe instatiate widgets with a convenient macro
+- Implement widgets
+- Accept widget ids as strings, then store their hashes
+- Store a view's widget ids in a hash table
+- Stabilize FPS (without fixed loop dealys) -- implement delta time
+- Implement graphics
+- Run callbacks on separate threads
+- At some point, should be able to simply pass a canvas and render UI to *existing* canvas
+- Support multiple windows

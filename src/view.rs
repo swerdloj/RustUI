@@ -59,6 +59,7 @@ macro_rules! VStack {
             $(
                 view.push(Box::new(
                     $x
+                    // TODO: Consider replacing .with_rect with ".at". This will not override rect dimensions.
                     .with_rect(Rect::new(default_padding, current_y + default_padding, 
                                          default_button_width, default_button_height))
                     .with_id(current_id)    

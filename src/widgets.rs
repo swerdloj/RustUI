@@ -14,8 +14,6 @@ use sdl2::pixels::Color;
 // use sdl2::render::WindowCanvas as Canvas;
 use crate::backend::system::window::Window;
 
-// TODO: Document everything once the design is set
-
 
 pub enum WidgetState {
     // TODO: Should the state be called 'Active' or 'Clicking'?
@@ -57,6 +55,7 @@ pub struct Button<T> {
     pub primary_color: Color,
     pub secondary_color: Color,
     pub hover_color: Color,
+    pub text: Option<Text>,
     pub on_click: Option<Box<Fn(&mut T)>>,
 }
 
@@ -70,8 +69,16 @@ impl<T> Button<T> {
             primary_color: Color::RGB(240, 240, 200),
             secondary_color: Color::RGB(100, 100, 100),
             hover_color: Color::RGB(200, 200, 200),
+            text: None,
             on_click: None,
         }
+    }
+
+    pub fn with_text(mut self, text: &str) -> Self {
+        // TODO: How to hanle the sub-widget's id?
+        //       Note that the sub-widget is not actually part of the view
+        self.text = Some(Text::new("", text));
+        self
     }
 
     pub fn with_on_click(mut self, callback: Box<Fn(&mut T)>) -> Self
@@ -102,6 +109,10 @@ impl<T> Widget<T> for Button<T> {
         }
 
         window.canvas.fill_rect(self.rect).unwrap();
+        // pay attention to draw order
+        if let Some(button_text) = &self.text {
+            button_text.render(window, widget_state);
+        }
     }
 
     fn rect(&self) -> Rect {
@@ -191,6 +202,7 @@ impl<T> Widget<T> for Text {
     fn render(&self, window: &mut Window<T>, widget_state: WidgetState) {
         // FIXME: Allocating texture_creator here is probably bad if we use it each render
         let texture_creator = window.canvas.texture_creator();
+        // FIXME: Same here. Consider storing loaded fonts into some data structure
         let font = window.ttf_context.load_font(
             std::path::Path::new("./res/font/OpenSans-Regular.ttf"), 
             20
