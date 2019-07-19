@@ -22,10 +22,10 @@ The following items are required to run RustUI projects:
 ## Usage (not final)
 1. Download the above dependencies, and place into project root directory
 2. When using text, place the .ttf font in /res/font/
-3. In widget.rs, update the Text widget's render function with the new font file
+3. In widgets.rs, update the Text widget's render function with the new font file
 
 ### TODOs:
-- Replace "Widget.with_on_click(Box::new(|state: &mut State| {...}))" with something more concise. Maybe instatiate widgets with a convenient macro
+- Replace `Widget.with_on_click(Box::new(|state: &mut State| {...}))` with something more concise. Maybe instatiate widgets with a convenient macro
 - Implement widgets
 - Accept widget ids as strings, then store their hashes
 - Store a view's widget ids in a hash table
