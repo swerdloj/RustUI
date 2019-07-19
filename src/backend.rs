@@ -75,10 +75,11 @@ pub mod system {
         // Generic type (T) -> The user-defined application state struct for use with callbacks
         pub struct Window<'a, T> {
             sdl_context: sdl2::Sdl,
-            ttf_context: sdl2::ttf::Sdl2TtfContext,
+            pub ttf_context: sdl2::ttf::Sdl2TtfContext,
             video_subsystem: sdl2::VideoSubsystem,
             // window: sdl2::video::Window,
-            canvas: sdl2::render::WindowCanvas,
+            
+            pub canvas: sdl2::render::WindowCanvas,
             event_pump: sdl2::EventPump,
 
             //TODO: Is this the best way to handle state? Shouldn't it be shared across multiple windows, etc?
@@ -96,6 +97,10 @@ pub mod system {
                 let default_window = video_subsystem.window(window_title, 800, 600).position_centered().build().unwrap();
                 let default_window_canvas = default_window.into_canvas().accelerated().build().unwrap();
                 let default_window_event_pump = sdl_context.event_pump().unwrap();
+
+                // let default_font = ttf_context.load_font(
+                //     std::path::Path::new("./res/font/OpenSans-Semibold.ttf"), 10
+                // ).expect("Failed to load font");
 
                 Window {
                     sdl_context: sdl_context,
@@ -187,19 +192,19 @@ pub mod system {
                     for widget in &view {
                         if let Some(active_id) = self.window_state.clicking {
                             if active_id == widget.id() {
-                                widget.render(&mut self.canvas, WidgetState::Active);
+                                widget.render(&mut self, WidgetState::Active);
                                 continue;
                             }
                         }
 
                         if let Some(hover_id) = self.window_state.hovering {
                             if hover_id == widget.id() {
-                                widget.render(&mut self.canvas, WidgetState::Hovering);
+                                widget.render(&mut self, WidgetState::Hovering);
                                 continue;
                             }
                         }
 
-                        widget.render(&mut self.canvas, WidgetState::Base);
+                        widget.render(&mut self, WidgetState::Base);
                     }
 
                     self.canvas.present();

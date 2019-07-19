@@ -9,8 +9,10 @@ Jonathan Swerdlow
 
 extern crate sdl2;
 use sdl2::rect::Rect;
+use sdl2::render::TextureQuery;
 use sdl2::pixels::Color;
-use sdl2::render::WindowCanvas as Canvas;
+// use sdl2::render::WindowCanvas as Canvas;
+use crate::backend::system::window::Window;
 
 // TODO: Document everything once the design is set
 
@@ -92,14 +94,14 @@ impl<T> Button<T> {
 }
 
 impl<T> Widget<T> for Button<T> {
-    fn render(&self, canvas: &mut Canvas, widget_state: WidgetState) {
+    fn render(&self, window: &mut Window<T>, widget_state: WidgetState) {
         match widget_state {
-            WidgetState::Hovering => {canvas.set_draw_color(self.hover_color);}
-            WidgetState::Active => {canvas.set_draw_color(self.secondary_color);}
-            _ => {canvas.set_draw_color(self.primary_color);}
+            WidgetState::Hovering => window.canvas.set_draw_color(self.hover_color),
+            WidgetState::Active => window.canvas.set_draw_color(self.secondary_color),
+            _ => window.canvas.set_draw_color(self.primary_color),
         }
 
-        canvas.fill_rect(self.rect).unwrap();
+        window.canvas.fill_rect(self.rect).unwrap();
     }
 
     fn rect(&self) -> Rect {
@@ -132,7 +134,32 @@ impl<T> Widget<T> for Button<T> {
 pub struct Text {
     id: u32,
     rect: Rect,
-    // TODO: Implement text (sdl2 ttf extension)
+    primary_color: Color,
+    // font: 
+    text: String,
+}
+
+impl Text {
+    pub fn new(id: &str, text: &str) -> Self {
+        Text {
+            id: 100,
+            rect: Rect::new(0, 0, 0, 0),
+            primary_color: Color::RGB(0, 0, 0),
+            text: String::from(text),
+        }
+    }
+
+    // TODO: The user should not need this (delete this later)
+    pub fn with_rect(mut self, rect: Rect) -> Self {
+        self.rect = rect;
+        self
+    }
+
+    // TODO: id should be hashed from new(str), delete this later
+    pub fn with_id(mut self, id: u32) -> Self {
+        self.id = id;
+        self
+    }
 }
 
 // TODO: The Widget trait is only for characteristics shared by ALL widgets
@@ -146,7 +173,7 @@ impl<T> Widget<T> for Text {
     }
 
     fn primary_color(&self) -> Color {
-        Color::RGB(0, 0, 0)
+        self.primary_color
     }
 
     fn secondary_color(&self) -> Color {
@@ -161,8 +188,22 @@ impl<T> Widget<T> for Text {
 
     }
 
-    fn render(&self, canvas: &mut Canvas, widget_state: WidgetState) {
+    fn render(&self, window: &mut Window<T>, widget_state: WidgetState) {
+        // FIXME: Allocating texture_creator here is probably bad if we use it each render
+        let texture_creator = window.canvas.texture_creator();
+        let font = window.ttf_context.load_font(
+            std::path::Path::new("./res/font/OpenSans-Regular.ttf"), 
+            20
+        ).expect("Failed to load font. Ensure the font path was correct.");
 
+        let surface = font.render(&self.text)
+            .blended(self.primary_color).unwrap();
+
+        let texture = texture_creator.create_texture_from_surface(&surface).unwrap();
+        let TextureQuery { width, height, .. } = texture.query();
+        let target = Rect::new(30, 30, width, height);
+
+        window.canvas.copy(&texture, None, Some(target)).unwrap();
     }
 }
 
@@ -175,7 +216,8 @@ pub trait Widget<T> {
 
     fn on_click(&self, state: &mut T);
 
-    fn render(&self, canvas: &mut Canvas, widget_state: WidgetState); 
+    // fn render(&self, canvas: &mut Canvas, widget_state: WidgetState);
+    fn render(&self, window: &mut Window<T>, widget_state: WidgetState);
 
     /// Instatiate the widget with the given id.
     /// All widget fields are filled with defaults. Builder methods may be used to adjust these fields.
