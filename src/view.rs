@@ -3,7 +3,24 @@ use super::widgets::*;
 // extern crate proc_macro;
 // use proc_macro::TokenStream;
 
-pub type View<T> = Vec<Box<Widget<T>>>;
+pub type SubView<T> = Vec<Box<Widget<T>>>;
+
+// TODO: subview should be able to iterate through all widgets and nested view widgets
+//       This capability must be reflected in the backend as well
+pub struct View<T> {
+    pub subview: SubView<T>,
+    pub view_width: u32,
+    pub view_height: u32,
+    pub fixed_size: bool,
+}
+
+impl<T> View<T> {
+    /// Lock the window's size (stops dynamic size adjustments)
+    pub fn with_fixed_size(mut self, width: u32, height: u32) -> Self {
+        self.fixed_size = true;
+        self
+    }
+}
 
 
 // Macro assistance: https://danielkeep.github.io/tlborm/book/mbe-macro-rules.html
@@ -22,7 +39,7 @@ macro_rules! example_view {
         +
     ) => {
         {
-            let mut view = View::new();
+            let mut view = SubView::new();
 
             // Begin repetition
             $(
@@ -33,7 +50,12 @@ macro_rules! example_view {
             )+
             
             // and this is the output
-            view
+            View {
+                subview: view,
+                view_width: 800,
+                view_height: 600,
+                fixed_size: true,
+            }
         }
     };
 }
@@ -43,11 +65,13 @@ macro_rules! example_view {
 macro_rules! VStack {
     ( $($x:expr), + ) => {
         {
-            let mut view = View::new();
+            let mut view = SubView::new();
 
             let default_padding = 10;
             // Current draw location
             let mut current_y = 0;
+
+            let mut max_x: u32 = 0;
 
             // FIXME: This should be handled by Button::new(str) and derive from the string
             let mut current_id = 0;
@@ -66,7 +90,19 @@ macro_rules! VStack {
                 current_id += 1;
             )+
 
-            view
+            for widget in &view {
+                let required_x = widget.rect().x() as u32 + widget.rect().width() as u32;
+                if required_x > max_x {
+                    max_x = required_x;
+                }
+            }
+
+            View {
+                subview: view,
+                view_width: max_x + default_padding as u32,
+                view_height: current_y as u32 + default_padding as u32,
+                fixed_size: false,
+            }
         }
     };
 }

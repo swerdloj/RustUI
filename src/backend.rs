@@ -113,13 +113,21 @@ pub mod system {
                 }
             }
 
+            fn resize_window(&mut self, width: u32, height: u32) {
+                self.canvas.window_mut().set_size(width, height).expect("Failed to resize");
+            }
+
             // TODO: Allow multiple windows to run at once on multiple threads
             // TODO: How to handle window size changing?
             pub fn start(mut self, mut view: View<T>) {
+                if !view.fixed_size {
+                    self.resize_window(view.view_width, view.view_height);
+                }
+
                 'window_loop: loop {
                     self.canvas.set_draw_color(Color::RGB(50, 50, 100));
                     self.canvas.clear();
-                    
+
                     'pump: for event in self.event_pump.poll_iter() {
                         match event {
                             Event::Quit {..} |
@@ -132,7 +140,7 @@ pub mod system {
 
                                 self.window_state.hovering = None;
 
-                                for widget in &view {
+                                for widget in &view.subview {
                                     if widget.rect().contains_point(event_location) {
                                         if let Some(active_id) = self.window_state.clicking {
                                             if active_id == widget.id() {
@@ -149,7 +157,7 @@ pub mod system {
                                 let event_location = Point::new(x, y);
 
                                 self.window_state.clicking = None;
-                                for widget in &view {
+                                for widget in &view.subview {
                                     if widget.rect().contains_point(event_location) {
                                         if let Some(hover_id) = self.window_state.hovering {
                                             if hover_id == widget.id() {
@@ -166,7 +174,7 @@ pub mod system {
                                 let event_location = Point::new(x, y);
                                 if let Some(active_id) = self.window_state.clicking { // If there is an active widget
                                     // TODO: Replace the for loop with hash table lookup (should be part of the view)
-                                    for widget in &view { // Look at each widget
+                                    for widget in &view.subview { // Look at each widget
                                         if widget.rect().contains_point(event_location) { // If the mouse was released on any widget
                                             if active_id == widget.id() { // Trigger the callback if that widget was active
                                                 widget.on_click(self.window_state.get_state());
@@ -188,7 +196,7 @@ pub mod system {
                     // Render window below
 
                     // Render each widget
-                    for widget in &mut view {
+                    for widget in &mut view.subview {
                         widget.update(self.window_state.state);
 
                         let mut widget_state = WidgetState::Base;
