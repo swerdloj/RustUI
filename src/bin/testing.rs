@@ -56,13 +56,19 @@ fn main() {
             .with_on_click(Box::new(|state: &mut State| {
                 example_callback(state);
             }))
-            .with_text("Button")
+            .with_text("Button"),
+
+        Text::new("Clicks", "Counter: 0")
+            .without_resize()
+            .with_text_update(Box::new(|state: &State| {
+                format!("Counter: {}", state.button_clicks)
+            }))
     );
 
     // TODO: This must allow some mechanism for dynamic views
     main_window.start(test_vstack);
 }
 
-fn example_callback(state: &mut State) {
+fn example_callback(_state: &mut State) {
     println!("This is a function");
 }

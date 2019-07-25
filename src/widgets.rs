@@ -59,7 +59,7 @@ pub struct Button<T> {
     pub primary_color: Color,
     pub secondary_color: Color,
     pub hover_color: Color,
-    pub text: Option<Text>,
+    pub text: Option<Text<T>>,
     pub on_click: Option<Box<Fn(&mut T)>>,
 }
 
@@ -146,6 +146,10 @@ impl<T> Widget<T> for Button<T> {
         self.hover_color
     }
 
+    fn update(&mut self, state: &T) {
+
+    }
+
     fn on_click(&self, state: &mut T) {
         if let Some(ref on_click_function) = self.on_click {
             (on_click_function)(state);
@@ -157,16 +161,20 @@ impl<T> Widget<T> for Button<T> {
 
 // TODO: Implement a text callback which takes in the state and updates the text accordingly
 //       Consider an "on_state_changed" callback
-pub struct Text {
+pub struct Text<T> {
     id: u32,
     rect: Rect,
     primary_color: Color,
     text: String,
     // How far text must be from its boundary
     internal_padding: u32,
+
+    update: Option<Box<Fn(&T) -> String>>,
+
+    auto_resize: bool,
 }
 
-impl Text {
+impl<T> Text<T> {
     pub fn new(id: &str, text: &str) -> Self {
         Text {
             id: 100,
@@ -174,12 +182,30 @@ impl Text {
             primary_color: Color::RGB(0, 0, 0),
             text: String::from(text),
             internal_padding: 10,
+
+            update: None,
+
+            auto_resize: true,
         }
+    }
+
+    pub fn text(&mut self, new_text: String) {
+        self.text = new_text;
+    }
+
+    pub fn with_text_update(mut self, update_fn: Box<Fn(&T) -> String>) -> Self {
+        self.update = Some(update_fn);
+        self
     }
 
     // TODO: id should be hashed from new(str), delete this later
     pub fn with_id(mut self, id: u32) -> Self {
         self.id = id;
+        self
+    }
+
+    pub fn without_resize(mut self) -> Self {
+        self.auto_resize = false;
         self
     }
 
@@ -227,7 +253,7 @@ impl Text {
 }
 
 // TODO: The Widget trait is only for characteristics shared by ALL widgets
-impl<T> Widget<T> for Text {
+impl<T> Widget<T> for Text<T> {
     fn rect(&self) -> Rect {
         self.rect
     }
@@ -252,6 +278,12 @@ impl<T> Widget<T> for Text {
 
     }
 
+    fn update(&mut self, state: &T) {
+        if let Some(ref update_callback) = self.update {
+            self.text = (update_callback)(state);
+        }
+    }
+
     fn render(&self, window: &mut Window<T>, widget_state: WidgetState) {
         // FIXME: Allocating texture_creator here is probably bad if we use it each render
         let texture_creator = window.canvas.texture_creator();
@@ -269,9 +301,18 @@ impl<T> Widget<T> for Text {
         let texture = texture_creator.create_texture_from_surface(&surface).expect("Failed to create texture");
         let TextureQuery { width, height, .. } = texture.query();
 
-        let target = self.fit_and_center_within_container(width, height, &self.rect);
-
-        //let target = Rect::new(self.rect.x, self.rect.y, width, height);
+        let target = if self.auto_resize {
+            // Center text within container & downscale if too large
+            self.fit_and_center_within_container(width, height, &self.rect)
+        } else {
+            // Center the text's y position and allow it to overflow any containers
+            Rect::new(
+                self.rect.x(),
+                self.rect.y() + ((self.rect.height() as i32 - height as i32) / 2),
+                width,
+                height
+            )
+        };
 
         window.canvas.copy(&texture, None, Some(target)).unwrap();
     }
@@ -292,6 +333,9 @@ pub trait Widget<T> {
 
     /// Render the widget to the window
     fn render(&self, window: &mut Window<T>, widget_state: WidgetState);
+
+    /// Update the widget according to state
+    fn update(&mut self, state: &T);
 
     /// Instatiate the widget with the given id.
     /// All widget fields are filled with defaults. Builder methods may be used to adjust these fields.

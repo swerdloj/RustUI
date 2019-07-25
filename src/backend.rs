@@ -37,7 +37,7 @@ pub mod system {
         pub struct ApplicationState<'a, T> {
             pub hovering: Option<u32>, // Widget being hovered over
             pub clicking: Option<u32>, // Widget being clicked (left mouse down)
-            state: &'a mut T,
+            pub state: &'a mut T,
         }
 
         // TODO: Consider bringing back the State trait if needed
@@ -83,7 +83,7 @@ pub mod system {
             event_pump: sdl2::EventPump,
 
             //TODO: Is this the best way to handle state? Shouldn't it be shared across multiple windows, etc?
-            window_state: ApplicationState<'a, T>,
+            pub window_state: ApplicationState<'a, T>,
         }
 
         // TODO: Create a builder similar to widget declaration
@@ -115,12 +115,11 @@ pub mod system {
 
             // TODO: Allow multiple windows to run at once on multiple threads
             // TODO: How to handle window size changing?
-            pub fn start(mut self, view: View<T>) {
-                self.canvas.set_draw_color(Color::RGB(50, 50, 100));
-                self.canvas.clear();
-                self.canvas.present();
-
+            pub fn start(mut self, mut view: View<T>) {
                 'window_loop: loop {
+                    self.canvas.set_draw_color(Color::RGB(50, 50, 100));
+                    self.canvas.clear();
+                    
                     'pump: for event in self.event_pump.poll_iter() {
                         match event {
                             Event::Quit {..} |
@@ -189,22 +188,24 @@ pub mod system {
                     // Render window below
 
                     // Render each widget
-                    for widget in &view {
+                    for widget in &mut view {
+                        widget.update(self.window_state.state);
+
+                        let mut widget_state = WidgetState::Base;
+
                         if let Some(active_id) = self.window_state.clicking {
                             if active_id == widget.id() {
-                                widget.render(&mut self, WidgetState::Active);
-                                continue;
+                                widget_state = WidgetState::Active;
                             }
                         }
 
                         if let Some(hover_id) = self.window_state.hovering {
                             if hover_id == widget.id() {
-                                widget.render(&mut self, WidgetState::Hovering);
-                                continue;
+                                widget_state = WidgetState::Hovering;
                             }
                         }
 
-                        widget.render(&mut self, WidgetState::Base);
+                        widget.render(&mut self, widget_state);
                     }
 
                     self.canvas.present();
