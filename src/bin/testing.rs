@@ -62,7 +62,9 @@ fn main() {
                 example_callback(state);
             }))
             .with_text("Button")
-    ).with_fixed_size(800, 600);
+    )
+    .with_fixed_size(450, 450)
+    .centered();
 
     // TODO: This must allow some mechanism for dynamic views
     //       Consider requiring a function which takes the state and returns a view

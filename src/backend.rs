@@ -120,9 +120,8 @@ pub mod system {
             // TODO: Allow multiple windows to run at once on multiple threads
             // TODO: How to handle window size changing?
             pub fn start(mut self, mut view: View<T>) {
-                if !view.fixed_size {
-                    self.resize_window(view.view_width, view.view_height);
-                }
+                // Set initial window size (will override the default of 800x600)
+                self.resize_window(view.view_width, view.view_height);
 
                 'window_loop: loop {
                     self.canvas.set_draw_color(Color::RGB(50, 50, 100));

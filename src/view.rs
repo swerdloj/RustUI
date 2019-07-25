@@ -12,12 +12,37 @@ pub struct View<T> {
     pub view_width: u32,
     pub view_height: u32,
     pub fixed_size: bool,
+    pub default_padding: u32,
 }
 
 impl<T> View<T> {
     /// Lock the window's size (stops dynamic size adjustments)
     pub fn with_fixed_size(mut self, width: u32, height: u32) -> Self {
+        self.view_width = width;
+        self.view_height = height;
         self.fixed_size = true;
+        self
+    }
+
+    /// Center a view within a fixed-size window
+    pub fn centered(mut self) -> Self {
+        if !self.fixed_size {
+            println!("Warning: Centering does not affect dynamically sized windows");
+            return self;
+        }
+
+        let center = self.view_width / 2;
+
+        for widget in &mut self.subview {
+            // Left-most draw position
+            let widget_x = widget.rect().x() as u32 - self.default_padding;
+            let new_x = center - (widget.rect().width() / 2) as u32 + widget_x;
+
+            println!("Moving widget at x={} to x={}", widget.rect().x(), new_x);
+
+            widget.translate(new_x as i32 - widget.rect().x(), 0);
+        }
+
         self
     }
 }
@@ -55,6 +80,7 @@ macro_rules! example_view {
                 view_width: 800,
                 view_height: 600,
                 fixed_size: true,
+                default_padding: 10,
             }
         }
     };
@@ -78,15 +104,15 @@ macro_rules! VStack {
 
             // TODO: How to account for user-defined sizes, positions, etc?
             $(
-                view.push(Box::new(
-                    $x
-                    // TODO: Consider replacing .with_rect with ".at". This will not override rect dimensions.
-                    .with_id(current_id)    
-                    .place(default_padding, current_y + default_padding)
-                ));
-                // TODO: Fix the below line
-                // current_y += $x.rect().height() as i32 + default_padding;
-                current_y += 40 as i32 + default_padding;
+                let widget = $x
+                    .with_id(current_id)
+                    .place(default_padding, current_y + default_padding);
+
+                current_y += widget.rect().height() as i32 + default_padding;
+
+                // Note that widget gets moved here (can no longer be accessed within this scope)
+                view.push(Box::new(widget));
+
                 current_id += 1;
             )+
 
@@ -102,6 +128,7 @@ macro_rules! VStack {
                 view_width: max_x + default_padding as u32,
                 view_height: current_y as u32 + default_padding as u32,
                 fixed_size: false,
+                default_padding: default_padding as u32,
             }
         }
     };

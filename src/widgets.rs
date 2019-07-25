@@ -126,6 +126,19 @@ impl<T> Widget<T> for Button<T> {
         }
     }
 
+    fn translate(&mut self, dx: i32, dy: i32) {
+        self.rect = Rect::new(
+            self.rect().x() + dx,
+            self.rect().y() + dy,
+            self.rect().width(),
+            self.rect().height()
+        );
+
+        if let Some(button_text) = &mut self.text {
+            button_text.translate(dx, dy);
+        }
+    }
+
     fn rect(&self) -> Rect {
         self.rect
     }
@@ -254,6 +267,15 @@ impl<T> Text<T> {
 
 // TODO: The Widget trait is only for characteristics shared by ALL widgets
 impl<T> Widget<T> for Text<T> {
+    fn translate(&mut self, dx: i32, dy: i32) {
+        self.rect = Rect::new(
+            self.rect().x() + dx,
+            self.rect().y() + dy,
+            self.rect().width(),
+            self.rect().height()
+        );
+    }
+
     fn rect(&self) -> Rect {
         self.rect
     }
@@ -336,6 +358,9 @@ pub trait Widget<T> {
 
     /// Update the widget according to state
     fn update(&mut self, state: &T);
+
+    /// Translate the widget by the given x & y differences
+    fn translate(&mut self, dx: i32, dy: i32);
 
     /// Instatiate the widget with the given id.
     /// All widget fields are filled with defaults. Builder methods may be used to adjust these fields.
