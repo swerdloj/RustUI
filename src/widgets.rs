@@ -5,6 +5,8 @@ Widget functionality
 Jonathan Swerdlow
 7-2-19
 
+TODO: As the project grows, consider splitting individual widgets into their own files
+ and instead use this as a 'widget backend' of sorts.
 */
 
 extern crate sdl2;
@@ -25,6 +27,20 @@ pub enum WidgetState {
     Hovering,
     Base,
     // can include structs, algebraic types, etc.
+}
+
+/// Default color implementations
+pub mod Colors {
+    use super::Color;
+
+    /// `0x000000` black
+    pub const BLACK: Color = Color {r: 0, g: 0, b: 0, a: 0xff};
+    /// Default background color
+    pub const DARK_PURPLE: Color = Color {r: 50, g: 50, b: 50, a: 0xff};
+    /// Default button color
+    pub const MANILLA: Color = Color {r: 240, g: 240, b: 240, a: 0xff};
+    /// `0xFFFFFF` white
+    pub const WHITE: Color = Color {r: 255, g: 255, b: 255, a: 0xff};
 }
 
 /// This is the base widget struct from which all other widgets are derived
@@ -217,8 +233,18 @@ impl<T> Text<T> {
         self
     }
 
-    pub fn with_color(mut self, r: u8, g: u8, b: u8) -> Self {
+    pub fn with_color(mut self, color: Color) -> Self {
+        self.primary_color = color;
+        self
+    }
+
+    pub fn with_rgb(mut self, r: u8, g: u8, b: u8) -> Self {
         self.primary_color = Color::RGB(r, g, b);
+        self
+    }
+
+    pub fn with_rgba(mut self, r: u8, g: u8, b: u8, a: u8) -> Self {
+        self.primary_color = Color::RGBA(r, g, b, a);
         self
     }
 

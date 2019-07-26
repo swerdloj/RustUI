@@ -27,7 +27,7 @@ The following items are required to run RustUI projects:
 ### TODOs:
 - Implement an `on_state_changed` callback for updating things like `Text`
 - Replace `Widget.with_on_click(Box::new(|state: &mut State| {...}))` with something more concise. Maybe instatiate widgets with a convenient macro
-- Implement widgets
+- Implement basic widgets
 - Accept widget ids as strings, then store their hashes
 - Store a view's widget ids in a hash table
 - Stabilize FPS (without fixed loop dealys) -- implement delta time

@@ -38,7 +38,7 @@ fn main() {
             .with_text_update(Box::new(|state: &State| {
                 format!("Counter: {}", state.button_clicks)
             }))
-            .with_color(255, 255, 255),
+            .with_color(Colors::WHITE),
 
         Button::new("Test")
             .with_on_click(Box::new(|state: &mut State| {
@@ -55,7 +55,7 @@ fn main() {
             .with_text("Reset"),
 
         Text::new("Test", "Text Widget")
-            .with_color(255, 255, 255),
+            .with_rgb(255, 255, 255),
 
         Button::new("Test")
             .with_on_click(Box::new(|state: &mut State| {
