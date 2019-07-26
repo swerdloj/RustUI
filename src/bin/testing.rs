@@ -12,8 +12,6 @@ extern crate sdl2;
 use RustUI::backend::system::window::Window;
 use RustUI::widgets::*;
 use RustUI::view::{View, SubView};
-use sdl2::rect::Rect;
-// use sdl2::pixels::Color;
 
 struct State {
     button_clicks: u16,
@@ -39,7 +37,8 @@ fn main() {
             .without_resize()
             .with_text_update(Box::new(|state: &State| {
                 format!("Counter: {}", state.button_clicks)
-            })),
+            }))
+            .with_color(255, 255, 255),
 
         Button::new("Test")
             .with_on_click(Box::new(|state: &mut State| {
@@ -55,7 +54,8 @@ fn main() {
             }))
             .with_text("Reset"),
 
-        Text::new("Test", "Text Widget"),
+        Text::new("Test", "Text Widget")
+            .with_color(255, 255, 255),
 
         Button::new("Test")
             .with_on_click(Box::new(|state: &mut State| {
@@ -63,7 +63,7 @@ fn main() {
             }))
             .with_text("Button")
     )
-    .with_fixed_size(450, 450)
+    .with_fixed_size(300, 400)
     .centered();
 
     // TODO: This must allow some mechanism for dynamic views

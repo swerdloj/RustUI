@@ -217,6 +217,11 @@ impl<T> Text<T> {
         self
     }
 
+    pub fn with_color(mut self, r: u8, g: u8, b: u8) -> Self {
+        self.primary_color = Color::RGB(r, g, b);
+        self
+    }
+
     pub fn without_resize(mut self) -> Self {
         self.auto_resize = false;
         self
