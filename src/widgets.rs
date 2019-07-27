@@ -58,11 +58,6 @@ struct WidgetData {
 // TODO: When instiating a widget, this is potential syntax via a builder:
 // Button::new().primary_color(...).padding(...).hover_color(...)
 // Consider replacing Button::new() with just 'Button!' to keep the syntax design philosophy in tact
-// Doing the above will allow for me to implement default values without worrying about complexity/viability
-
-// TODO: Consider accepting the sdl2 canvas into a render function as well as relevant state information
-// This will avoid requiring things like "secondary_color" for widgets like text where this doesn't make sense
-// This will also allow for custom logic when dealing with unique widgets (rather than treating them all the same)
 
 // TODO: Replace 'T' with 'S' for the sake of clarity?
 // NOTE: In this module, the generic type 'T' refers EXCLUSIVELY to user-defined state
@@ -83,7 +78,6 @@ pub struct Button<T> {
 }
 
 impl<T> Button<T> {
-    // TODO: How to adjust these?? Keeping them default like this can't be good unless the view adjusts it
     pub fn new(id: &str) -> Self {
         Button {
             id: 0,
@@ -299,7 +293,6 @@ impl<T> Text<T> {
     }
 }
 
-// TODO: The Widget trait is only for characteristics shared by ALL widgets
 impl<T> Widget<T> for Text<T> {
     fn translate(&mut self, dx: i32, dy: i32) {
         self.rect = Rect::new(

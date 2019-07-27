@@ -1,11 +1,3 @@
-// #[cfg(test)]
-// mod tests {
-//     #[test]
-//     fn it_works() {
-//         assert_eq!(2 + 2, 4);
-//     }
-// }
-
 /*
 Rust GUI library
 Proposed syntax:
@@ -41,7 +33,7 @@ fn main() {
         Button { on_click: some_function, 
                  on_hover: animation_function,
                  width: 14
-                 .. }  // Take advantage of Rust's pattern matching & struct defaults via ".."
+                 .. }  // Take advantage of Rust's pattern matching
         .padding_top(40),
         ...
     );
@@ -70,9 +62,6 @@ See /bin/nested_structure_example.rs for dynamic, nested declarations
 */
 
 // TODO: Create a build file & include SDL libraries
-
-// TODO: Consider how to divide up this program (file structure)
-// e.g.: where to put the render module?
 
 // TODO: IMPORTANT - Document the code according to the following:
 // https://doc.rust-lang.org/rust-by-example/meta/doc.html

@@ -4,43 +4,26 @@ Graphical functionality such as:
 -Windows
 -Texture Drawing
 
-TODO: How will this be implemented so the user never needs to access SDL?
-Idea: Handle low-level, sdl2-related stuff here, then implement the rest elsewhere to avoid clutter
-This module should therefore handle: windows, drawing to canvas
+TODO: Should events be handled by widgets? This would allow for specific callbacks:
+For example, the user could utilize text input when the enter key is pressed.
 
-Handle events elsewhere
-
-TODO: Should be able to support multiple windows at once
+TODO: Should be able to support multiple windows at once.
+This will likely require user state to be guarded by a mutex/semaphore.
+Each window will run on its own thread.
 */
 
 extern crate sdl2;
 
-// use sdl2::rect::Rect;
-
-// TODO: Event loop and state management
-
-// State Management:
-// - Widget/View locations & properties
-// - Widget/View layering/ordering (relative layouts?)
-// - Basically just a list of items and their locations/properties
-
-// Event Loop:
-// - Select the active widget (or none or default widget)
-// - Listen for relative events (e.g. clicking a button will make it active & trigger its events)
-// - Perform callbacks on separate threads (or async?)
-// Do this after the state management/render system is in place
 
 // TODO: Call this 'context' instead of 'system'?
 pub mod system {
-    // TODO: Is this right? Then the user can implement custom state structs for their application
     pub mod state {
+        // TODO: Flesh this out and utilize appropriately
         pub struct ApplicationState<'a, T> {
             pub hovering: Option<u32>, // Widget being hovered over
             pub clicking: Option<u32>, // Widget being clicked (left mouse down)
-            pub state: &'a mut T,
+            pub state: &'a mut T,      // User state to be passed to widgets
         }
-
-        // TODO: Consider bringing back the State trait if needed
 
         impl<'a, T> ApplicationState<'a, T> {
             pub fn new(state: &'a mut T) -> Self {
@@ -98,10 +81,6 @@ pub mod system {
                 let default_window_canvas = default_window.into_canvas().accelerated().build().unwrap();
                 let default_window_event_pump = sdl_context.event_pump().unwrap();
 
-                // let default_font = ttf_context.load_font(
-                //     std::path::Path::new("./res/font/OpenSans-Semibold.ttf"), 10
-                // ).expect("Failed to load font");
-
                 Window {
                     sdl_context: sdl_context,
                     ttf_context: ttf_context,
@@ -118,7 +97,7 @@ pub mod system {
             }
 
             // TODO: Allow multiple windows to run at once on multiple threads
-            // TODO: How to handle window size changing?
+            // TODO: How to handle window size changes from the user?
             pub fn start(mut self, mut view: View<T>) {
                 // Set initial window size (will override the default of 800x600)
                 self.resize_window(view.view_width, view.view_height);
@@ -178,7 +157,6 @@ pub mod system {
                                             if active_id == widget.id() { // Trigger the callback if that widget was active
                                                 widget.on_click(self.window_state.get_state());
                                             }
-                                            // TODO: This logic won't work for anything other than buttons
                                             self.window_state.hovering = Some(widget.id()); // If the mouse is on a widget, it is now hovering
                                         }
                                         self.window_state.clicking = None; // Mouse was released, so nothing should be active

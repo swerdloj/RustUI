@@ -33,7 +33,6 @@ fn main() {
 
     let main_window = Window::init("RustUI Testing", &mut app_state);
 
-    // TODO: the view macro must handle default layout/padding according to the view type
     let test_vstack = VStack!(
         Text::new("CounterText", "Counter: 0")
             .with_text_update(Box::new(|state: &State| {

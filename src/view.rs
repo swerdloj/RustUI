@@ -128,9 +128,7 @@ macro_rules! example_view {
             let mut view = SubView::new();
 
             // Begin repetition
-            $(
-                // TODO: Widget positioning, padding, etc. will be determined here
-                
+            $(               
                 // This will happen to each element
                 view.push(Box::new($x));
             )+
