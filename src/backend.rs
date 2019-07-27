@@ -12,6 +12,8 @@ This will likely require user state to be guarded by a mutex/semaphore.
 Each window will run on its own thread.
 */
 
+// TODO: Consider moving event handling to Widget functionality
+
 extern crate sdl2;
 
 
@@ -112,6 +114,8 @@ pub mod system {
                             Event::KeyDown { keycode: Some(Keycode::Escape), .. } => {
                                 break 'window_loop;
                             }
+
+                            // TODO: Making event handling widget-specific might simplify the entire idea of backend state
 
                             Event::MouseMotion { x, y, .. } => {
                                 let event_location = Point::new(x, y);

@@ -38,7 +38,7 @@ fn main() {
             .with_text_update(Box::new(|state: &State| {
                 format!("Counter: {}", state.button_clicks)
             }))
-            .with_color(Colors::WHITE),
+            .with_color(colors::WHITE),
 
         Button::new("IncrementCounter")
             .with_on_click(Box::new(|state: &mut State| {
@@ -53,8 +53,12 @@ fn main() {
 
         Button::new("ResetCounter")
             .with_on_click(Box::new(|state: &mut State| {
-                state.button_clicks = 0;
-                println!("Resetting counter");
+                if !state.is_locked {
+                    state.button_clicks = 0;
+                    println!("Resetting counter");
+                } else {
+                    println!("The counter is locked");
+                }
             }))
             .with_text("Reset"),
 
@@ -69,7 +73,7 @@ fn main() {
             .center(),
 
         Text::new("Test", "Default align left")
-            .with_color(Colors::WHITE),
+            .with_color(colors::WHITE),
 
         Button::new("ExampleButton")
             .with_on_click(Box::new(|state: &mut State| {

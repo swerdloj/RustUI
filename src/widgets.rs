@@ -7,6 +7,9 @@ Jonathan Swerdlow
 
 TODO: As the project grows, consider splitting individual widgets into their own files
  and instead use this as a 'widget backend' of sorts.
+
+TODO: Consider moving event handling (backend) to be part of Widget functionality
+
 */
 
 extern crate sdl2;
@@ -30,16 +33,16 @@ pub enum WidgetState {
 }
 
 /// Default color implementations
-pub mod Colors {
+pub mod colors {
     use super::Color;
 
-    /// `0x000000` black
+    /// `Color::RGB(0, 0, 0)` - Black
     pub const BLACK: Color = Color {r: 0, g: 0, b: 0, a: 0xff};
-    /// Default background color
-    pub const DARK_PURPLE: Color = Color {r: 50, g: 50, b: 50, a: 0xff};
-    /// Default button color
-    pub const MANILLA: Color = Color {r: 240, g: 240, b: 240, a: 0xff};
-    /// `0xFFFFFF` white
+    /// `Color::RGB(50, 50, 100)` - Default background color
+    pub const DARK_PURPLE: Color = Color {r: 50, g: 50, b: 100, a: 0xff};
+    /// `Color::RGB(240, 240, 240)` - Default button color
+    pub const MANILLA: Color = Color {r: 240, g: 240, b: 200, a: 0xff};
+    /// `Color::RGB(255, 255, 255)` - White
     pub const WHITE: Color = Color {r: 255, g: 255, b: 255, a: 0xff};
 }
 
@@ -402,7 +405,7 @@ impl<T> CheckBox<T> {
         CheckBox {
             id: 200,
             rect: Rect::new(0, 0, 100, 40),
-            default_color: Colors::MANILLA,
+            default_color: colors::MANILLA,
             click_color: Color::RGB(140, 140, 140),
             hover_color: Color::RGB(200, 200, 200),
             check_color: Color::RGB(80, 80, 80),
@@ -429,7 +432,7 @@ impl<T> CheckBox<T> {
                 .place(self.rect.x() + (self.checkbox_width + self.checkbox_padding_right) as i32, 
                        self.rect.y()
                 )
-                .with_color(Colors::WHITE)
+                .with_color(colors::WHITE)
         );
         self
     }

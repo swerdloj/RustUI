@@ -1,5 +1,5 @@
 # RustUI
-Rust GUI library inspired by SwiftUI
+Rust GUI library inspired by SwiftUI.
 
 ## Testing Binaries
 Different executables can be tested by including them in /src/bin.  
@@ -25,7 +25,6 @@ The following items are required to run RustUI projects:
 3. In widgets.rs, update the Text widget's render function with the new font file
 
 ### TODOs:
-- Implement an `on_state_changed` callback for updating things like `Text`
 - Replace `Widget.with_on_click(Box::new(|state: &mut State| {...}))` with something more concise. Maybe instatiate widgets with a convenient macro
 - Implement basic widgets
 - Accept widget ids as strings, then store their hashes

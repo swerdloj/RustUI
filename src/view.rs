@@ -1,7 +1,22 @@
 use super::widgets::*;
 
-// extern crate proc_macro;
-// use proc_macro::TokenStream;
+/* TODO: Nested View + Widget trees
+
+Consider some implementation such as the example enum below.
+
+The following resources may enable type checking while nesting:
+https://stackoverflow.com/questions/34214136/how-do-i-match-the-type-of-an-expression-in-a-rust-macro
+https://doc.rust-lang.org/std/any/index.html
+
+Furthermore, consider creating a shared trait for both views and widgets.
+This trait could include a method for obtaining the object type, eliminating the need for
+the awkward enum below.
+
+*/
+
+enum NestedViewOrWidget<T> {
+    nested_item(Option<SubView<T>>, Option<Box<Widget<T>>>),
+}
 
 pub type SubView<T> = Vec<Box<Widget<T>>>;
 
