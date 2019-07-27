@@ -68,7 +68,7 @@ fn main() {
                 state.is_locked = is_checked;
             })),
 
-        Text::new("Test", "Text Widget With Long Text")
+        Text::new("Test", "Text widget aligned center")
             .with_rgb(255, 255, 255)
             .center(),
 

@@ -10,6 +10,10 @@ TODO: As the project grows, consider splitting individual widgets into their own
 
 TODO: Consider moving event handling (backend) to be part of Widget functionality
 
+TODO: To properly fit view components, there must be some way of getting text rect dimensions
+ from a string given font size.
+ Consider a ViewComponent trait with methods such as `get_width` and `get_height`
+ and implement this for all widgets and views
 */
 
 extern crate sdl2;
@@ -443,8 +447,8 @@ impl<T> CheckBox<T> {
         if let Some(text) = &mut self.text {
             text.rect = Rect::new(
                 x + (self.checkbox_width + self.checkbox_padding_right) as i32,
-                // TODO: How to calculate the y coord automatically?
-                self.rect.y() - 2,
+                // TODO: Is this y position correct?
+                self.rect.y(),
                 self.rect.width(),
                 self.rect.height()
             );

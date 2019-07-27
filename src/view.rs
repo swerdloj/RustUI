@@ -14,8 +14,16 @@ the awkward enum below.
 
 */
 
-enum NestedViewOrWidget<T> {
-    nested_item(Option<SubView<T>>, Option<Box<Widget<T>>>),
+// TODO: Nesting option 1
+enum ViewComponentEnum<T> {
+    Component(Option<SubView<T>>, Option<Box<Widget<T>>>),
+}
+
+// TODO: Nesting option 2 (might be best considering text)
+trait ViewComponentTrait<T> {
+    fn get_width(&self) -> u32;
+    fn get_height(&self) -> u32;
+    fn get_center(&self) -> (u32, u32);
 }
 
 pub type SubView<T> = Vec<Box<Widget<T>>>;
@@ -118,6 +126,53 @@ macro_rules! VStack {
                 subview: view,
                 view_width: max_x + default_padding as u32,
                 view_height: current_y as u32 + default_padding as u32,
+                fixed_size: false,
+                default_padding: default_padding as u32,
+            }
+        }
+    };
+}
+
+#[macro_export]
+macro_rules! HStack {
+    ( $($x:expr), + ) => {
+        {
+            let mut view = SubView::new();
+
+            let default_padding = 10;
+            // Current draw location
+            let mut current_x = 0;
+
+            let mut max_y: u32 = 0;
+
+            // FIXME: This should be handled by Button::new(str) and derive from the string
+            let mut current_id = 0;
+
+            // TODO: How to account for user-defined sizes, positions, etc?
+            $(
+                let widget = $x
+                    .with_id(current_id)
+                    .place( current_x + default_padding, default_padding);
+
+                current_x += widget.rect().width() as i32 + default_padding;
+
+                // Note that widget gets moved here (can no longer be accessed within this scope)
+                view.push(Box::new(widget));
+
+                current_id += 1;
+            )+
+
+            for widget in &view {
+                let required_y = widget.rect().y() as u32 + widget.rect().height() as u32;
+                if required_y > max_y {
+                    max_y = required_y;
+                }
+            }
+
+            View {
+                subview: view,
+                view_width: current_x as u32 + default_padding as u32,
+                view_height: max_y + default_padding as u32,
                 fixed_size: false,
                 default_padding: default_padding as u32,
             }
