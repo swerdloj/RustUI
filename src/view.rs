@@ -5,6 +5,17 @@ use super::widgets::*;
 
 pub type SubView<T> = Vec<Box<Widget<T>>>;
 
+/// View alignments
+/// ## Alignments
+/// * `Left` - Align each widget to the left within its view (default)
+/// * `Center` - Center each widget within its view
+pub enum Alignment {
+    Center,
+    Left,
+    // TODO: Will this be used?
+    // Right,
+}
+
 // TODO: subview should be able to iterate through all widgets and nested view widgets
 //       This capability must be reflected in the backend as well
 pub struct View<T> {
@@ -24,23 +35,23 @@ impl<T> View<T> {
         self
     }
 
-    /// Center a view within a fixed-size window
-    pub fn centered(mut self) -> Self {
-        if !self.fixed_size {
-            println!("Warning: Centering does not affect dynamically sized windows");
-            return self;
-        }
+    pub fn with_fixed_width(mut self, width: u32) -> Self {
+        self.view_width = width;
+        self
+    }
 
-        let center = self.view_width / 2;
-
-        for widget in &mut self.subview {
-            // Left-most draw position
-            let widget_x = widget.rect().x() as u32 - self.default_padding;
-            let new_x = center - (widget.rect().width() / 2) as u32 + widget_x;
-
-            println!("Moving widget at x={} to x={}", widget.rect().x(), new_x);
-
-            widget.translate(new_x as i32 - widget.rect().x(), 0);
+    /// Align a view's widgets
+    // TODO: Need some 'get_center' function for widgets with text (e.g. checkbox)
+    pub fn align_content(mut self, alignment: Alignment) -> Self {
+        match alignment {
+            Alignment::Center => {
+                for widget in &mut self.subview {
+                    let new_x = (self.view_width / 2) - (widget.rect().width() / 2);
+                    widget.translate(new_x as i32 - widget.rect().x(), 0);
+                }
+            }
+            // TODO: implement the rest
+            _ => {}
         }
 
         self
@@ -50,41 +61,6 @@ impl<T> View<T> {
 
 // Macro assistance: https://danielkeep.github.io/tlborm/book/mbe-macro-rules.html
 
-#[macro_export]
-macro_rules! example_view {
-    (
-        // Repetition
-        $(
-            // Where each element is an item
-            $x:expr
-        )
-        // seperated by commas
-        , 
-        // one or more times
-        +
-    ) => {
-        {
-            let mut view = SubView::new();
-
-            // Begin repetition
-            $(
-                // TODO: Widget positioning, padding, etc. will be determined here
-                
-                // This will happen to each element
-                view.push(Box::new($x));
-            )+
-            
-            // and this is the output
-            View {
-                subview: view,
-                view_width: 800,
-                view_height: 600,
-                fixed_size: true,
-                default_padding: 10,
-            }
-        }
-    };
-}
 
 #[macro_export]
 /// Vertical layout (space widgets vertically)
@@ -134,14 +110,39 @@ macro_rules! VStack {
     };
 }
 
-    // Note that traits can be both overwritten and extended (by calling super?)
 
-pub mod views {
-    // TODO: Worry about this after widgets are implemented (Also move this to another file)
-    trait View {
-        // TODO: How to work this idea into the program?
-        fn generate() {
-            // Build the view (would the user implement this function? e.g.: don't provide a default?)
+#[macro_export]
+macro_rules! example_view {
+    (
+        // Repetition
+        $(
+            // Where each element is an item
+            $x:expr
+        )
+        // seperated by commas
+        , 
+        // one or more times
+        +
+    ) => {
+        {
+            let mut view = SubView::new();
+
+            // Begin repetition
+            $(
+                // TODO: Widget positioning, padding, etc. will be determined here
+                
+                // This will happen to each element
+                view.push(Box::new($x));
+            )+
+            
+            // and this is the output
+            View {
+                subview: view,
+                view_width: 800,
+                view_height: 600,
+                fixed_size: true,
+                default_padding: 10,
+            }
         }
-    }
+    };
 }

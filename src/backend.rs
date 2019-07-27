@@ -127,7 +127,7 @@ pub mod system {
                     self.canvas.set_draw_color(Color::RGB(50, 50, 100));
                     self.canvas.clear();
 
-                    'pump: for event in self.event_pump.poll_iter() {
+                    'event_pump: for event in self.event_pump.poll_iter() {
                         match event {
                             Event::Quit {..} |
                             Event::KeyDown { keycode: Some(Keycode::Escape), .. } => {
@@ -173,7 +173,7 @@ pub mod system {
                                 let event_location = Point::new(x, y);
                                 if let Some(active_id) = self.window_state.clicking { // If there is an active widget
                                     // TODO: Replace the for loop with hash table lookup (should be part of the view)
-                                    for widget in &view.subview { // Look at each widget
+                                    for widget in &mut view.subview { // Look at each widget
                                         if widget.rect().contains_point(event_location) { // If the mouse was released on any widget
                                             if active_id == widget.id() { // Trigger the callback if that widget was active
                                                 widget.on_click(self.window_state.get_state());

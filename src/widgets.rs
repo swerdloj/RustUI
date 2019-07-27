@@ -67,6 +67,9 @@ struct WidgetData {
 // TODO: Replace 'T' with 'S' for the sake of clarity?
 // NOTE: In this module, the generic type 'T' refers EXCLUSIVELY to user-defined state
 
+// TODO: Modify `with_text` builder methods to accept full text widgets
+// This will enable the user to customize widget text without redundant methods
+
 // ========================== BUTTON WIDGET ========================== //
 
 pub struct Button<T> {
@@ -79,8 +82,6 @@ pub struct Button<T> {
     pub on_click: Option<Box<Fn(&mut T)>>,
 }
 
-
-// FIXME: .with_rect() & .with_id() are only for testing purposes. The user should never access these
 impl<T> Button<T> {
     // TODO: How to adjust these?? Keeping them default like this can't be good unless the view adjusts it
     pub fn new(id: &str) -> Self {
@@ -98,7 +99,10 @@ impl<T> Button<T> {
     pub fn with_text(mut self, text: &str) -> Self {
         // TODO: How to hanle the sub-widget's id?
         //       Note that the sub-widget is not actually part of the view
-        self.text = Some(Text::new("", text));
+        self.text = Some(
+            Text::new("", text)
+            .center()
+        );
         self
     }
 
@@ -120,7 +124,7 @@ impl<T> Button<T> {
 
         // Place the button text respective of this new position
         if let Some(button_text) = &mut self.text {
-            *button_text.rect = *self.rect;
+            button_text.rect = self.rect;
         }
 
         self
@@ -179,7 +183,7 @@ impl<T> Widget<T> for Button<T> {
 
     }
 
-    fn on_click(&self, state: &mut T) {
+    fn on_click(&mut self, state: &mut T) {
         if let Some(ref on_click_function) = self.on_click {
             (on_click_function)(state);
         }
@@ -188,8 +192,6 @@ impl<T> Widget<T> for Button<T> {
 
 // ========================== TEXT WIDGET ========================== //
 
-// TODO: Implement a text callback which takes in the state and updates the text accordingly
-//       Consider an "on_state_changed" callback
 pub struct Text<T> {
     id: u32,
     rect: Rect,
@@ -201,6 +203,7 @@ pub struct Text<T> {
     update: Option<Box<Fn(&T) -> String>>,
 
     auto_resize: bool,
+    center_text: bool,
 }
 
 impl<T> Text<T> {
@@ -211,15 +214,15 @@ impl<T> Text<T> {
             primary_color: Color::RGB(0, 0, 0),
             text: String::from(text),
             internal_padding: 10,
-
             update: None,
-
-            auto_resize: true,
+            auto_resize: false,
+            center_text: false,
         }
     }
 
-    pub fn text(&mut self, new_text: String) {
-        self.text = new_text;
+    pub fn center(mut self) -> Self {
+        self.center_text = true;
+        self
     }
 
     pub fn with_text_update(mut self, update_fn: Box<Fn(&T) -> String>) -> Self {
@@ -248,8 +251,8 @@ impl<T> Text<T> {
         self
     }
 
-    pub fn without_resize(mut self) -> Self {
-        self.auto_resize = false;
+    pub fn auto_resize(mut self) -> Self {
+        self.auto_resize = true;
         self
     }
 
@@ -327,7 +330,7 @@ impl<T> Widget<T> for Text<T> {
         Color::RGB(0, 0, 0)
     }
 
-    fn on_click(&self, state: &mut T) {
+    fn on_click(&mut self, state: &mut T) {
 
     }
 
@@ -357,8 +360,18 @@ impl<T> Widget<T> for Text<T> {
         let target = if self.auto_resize {
             // Center text within container & downscale if too large
             self.fit_and_center_within_container(width, height, &self.rect)
+        } else if self.center_text {
+            // Center the text, disregarding containers
+            let center_x = self.rect.x() + self.rect.width() as i32 / 2;
+            let target_x = center_x - width as i32 / 2;
+            Rect::new(
+                target_x,
+                self.rect.y() + ((self.rect.height() as i32 - height as i32) / 2),
+                width,
+                height
+            )
         } else {
-            // Center the text's y position and allow it to overflow any containers
+            // Center the text's y position and align left
             Rect::new(
                 self.rect.x(),
                 self.rect.y() + ((self.rect.height() as i32 - height as i32) / 2),
@@ -371,6 +384,175 @@ impl<T> Widget<T> for Text<T> {
     }
 }
 
+// ========================== CHECKBOX WIDGET ========================== //
+
+pub struct CheckBox<T> {
+    id: u32,
+    rect: Rect,
+    default_color: Color,
+    click_color: Color,
+    hover_color: Color,
+    check_color: Color,
+    text: Option<Text<T>>,
+    is_checked: bool,
+    
+    checkbox_padding_right: u32,
+    // Callback accepting application state & check state
+    on_check: Option<Box<Fn(&mut T, bool)>>,
+
+    checkbox_width: u32,
+    checkbox_height: u32,
+}
+
+impl<T> CheckBox<T> {
+    pub fn new(id: &str) -> Self {
+        CheckBox {
+            id: 200,
+            rect: Rect::new(0, 0, 100, 40),
+            default_color: Colors::MANILLA,
+            click_color: Color::RGB(140, 140, 140),
+            hover_color: Color::RGB(200, 200, 200),
+            check_color: Color::RGB(80, 80, 80),
+            text: None,
+            is_checked: false,
+            checkbox_padding_right: 10,
+            on_check: None,
+
+            checkbox_width: 20,
+            checkbox_height: 20,
+        }
+    }
+
+    pub fn with_id(mut self, id: u32) -> Self {
+        self.id = id;
+        self
+    }
+
+    pub fn with_text(mut self, text: &str) -> Self {
+        // TODO: How to hanle the sub-widget's id?
+        //       Note that the sub-widget is not actually part of the view
+        self.text = Some(
+            Text::new("", text)
+                .place(self.rect.x() + (self.checkbox_width + self.checkbox_padding_right) as i32, 
+                       self.rect.y()
+                )
+                .with_color(Colors::WHITE)
+        );
+        self
+    }
+
+    pub fn place(mut self, x: i32, y: i32) -> Self {
+        self.rect = Rect::new(x, y, self.rect.width(), self.rect.height());
+
+        if let Some(text) = &mut self.text {
+            text.rect = Rect::new(
+                x + (self.checkbox_width + self.checkbox_padding_right) as i32,
+                // TODO: How to calculate the y coord automatically?
+                self.rect.y() - 2,
+                self.rect.width(),
+                self.rect.height()
+            );
+        }
+
+        self
+    }
+
+    pub fn with_on_check(mut self, check_fn: Box<Fn(&mut T, bool)>) -> Self {
+        self.on_check = Some(check_fn);
+        self
+    }
+
+    pub fn check(mut self) -> Self {
+        self.is_checked = true;
+        self
+    }
+
+    pub fn on_check(&mut self, state: &mut T) {
+        self.is_checked = !self.is_checked;
+
+        if let Some(on_check_fn) = &self.on_check {
+            (on_check_fn)(state, self.is_checked);
+        }
+    }
+
+}
+
+impl<T> Widget<T> for CheckBox<T> {
+    fn rect(&self) -> Rect {
+        self.rect
+    }
+
+    fn id(&self) -> u32 {
+        self.id
+    }
+
+    fn primary_color(&self) -> Color {
+        self.default_color
+    }
+
+    fn secondary_color(&self) -> Color {
+        self.click_color
+    }
+
+    fn hover_color(&self) -> Color {
+        self.hover_color
+    }
+
+    // TODO: Allow user to decide whether this should trigger when the widget is clicked
+    //       or *only* when the checkbox itself is clicked (would need x/y coords)
+    fn on_click(&mut self, state: &mut T) {
+        self.on_check(state);
+    }
+
+    // TODO: Should the text also change color on hover? such as making it slightly gray?
+    fn render(&self, window: &mut Window<T>, widget_state: WidgetState) {
+        // First, draw the checkbox itself
+        match widget_state {
+            WidgetState::Hovering => window.canvas.set_draw_color(self.hover_color),
+            WidgetState::Active => window.canvas.set_draw_color(self.click_color),
+            WidgetState::Base => window.canvas.set_draw_color(self.default_color),
+        }
+        let checkbox_x = self.rect.x();// + self.internal_padding as i32;
+        let checkbox_y = self.rect.y() + (self.rect.height() as i32 - self.checkbox_height as i32) / 2;
+
+        window.canvas.fill_rect(Rect::new(checkbox_x, checkbox_y, self.checkbox_width, self.checkbox_height)).unwrap();
+    
+        // Second, draw the check if checked
+        if self.is_checked {
+            window.canvas.set_draw_color(self.check_color);
+            window.canvas.fill_rect(Rect::new(
+                checkbox_x + 4, 
+                checkbox_y + 4, 
+                self.checkbox_width - 8, 
+                self.checkbox_height - 8)
+            ).unwrap();
+        }
+
+        // Finally, draw the text if present
+        if let Some(text) = &self.text {
+            text.render(window, widget_state);
+        }
+    }
+
+    fn update(&mut self, state: &T) {
+
+    }
+
+    fn translate(&mut self, dx: i32, dy: i32) {
+        self.rect = Rect::new(
+            self.rect.x() + dx,
+            self.rect.y() + dy,
+            self.rect.width(),
+            self.rect.height()
+        );
+
+        if let Some(text) = &mut self.text {
+            text.translate(dx, dy);
+        }
+    }
+}
+
+
 // ========================== WIDGET TRAIT ========================== //
 
 pub trait Widget<T> {
@@ -382,7 +564,7 @@ pub trait Widget<T> {
 
     // fn place(&mut self, x: i32, y: i32);
 
-    fn on_click(&self, state: &mut T);
+    fn on_click(&mut self, state: &mut T);
 
     /// Render the widget to the window
     fn render(&self, window: &mut Window<T>, widget_state: WidgetState);

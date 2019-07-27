@@ -11,16 +11,18 @@ extern crate sdl2;
 
 use RustUI::backend::system::window::Window;
 use RustUI::widgets::*;
-use RustUI::view::{View, SubView};
+use RustUI::view::{View, SubView, Alignment};
 
 struct State {
     button_clicks: u16,
+    is_locked: bool,
 }
 
 impl State {
     fn new() -> Self {
         State {
             button_clicks: 0,
+            is_locked: false,
         }
     }
 }
@@ -29,42 +31,55 @@ impl State {
 fn main() {
     let mut app_state = State::new();
 
-    let main_window = Window::init("Test", &mut app_state);
+    let main_window = Window::init("RustUI Testing", &mut app_state);
 
     // TODO: the view macro must handle default layout/padding according to the view type
     let test_vstack = VStack!(
-        Text::new("Clicks", "Counter: 0")
-            .without_resize()
+        Text::new("CounterText", "Counter: 0")
             .with_text_update(Box::new(|state: &State| {
                 format!("Counter: {}", state.button_clicks)
             }))
             .with_color(Colors::WHITE),
 
-        Button::new("Test")
+        Button::new("IncrementCounter")
             .with_on_click(Box::new(|state: &mut State| {
-                state.button_clicks += 1;
-                println!("Clicked the button {} times", state.button_clicks);
+                if !state.is_locked {
+                    state.button_clicks += 1;
+                    println!("Clicked the button {} times", state.button_clicks);
+                } else {
+                    println!("The counter is locked");
+                }
             }))
             .with_text("Increment"),
 
-        Button::new("Test")
+        Button::new("ResetCounter")
             .with_on_click(Box::new(|state: &mut State| {
                 state.button_clicks = 0;
                 println!("Resetting counter");
             }))
             .with_text("Reset"),
 
-        Text::new("Test", "Text Widget")
-            .with_rgb(255, 255, 255),
+        CheckBox::new("LockCounter")
+            .with_text("Lock")
+            .with_on_check(Box::new(|state: &mut State, is_checked| {
+                state.is_locked = is_checked;
+            })),
 
-        Button::new("Test")
+        Text::new("Test", "Text Widget With Long Text")
+            .with_rgb(255, 255, 255)
+            .center(),
+
+        Text::new("Test", "Default align left")
+            .with_color(Colors::WHITE),
+
+        Button::new("ExampleButton")
             .with_on_click(Box::new(|state: &mut State| {
                 example_callback(state);
             }))
-            .with_text("Button")
+            .with_text("Button")        
     )
-    .with_fixed_size(300, 400)
-    .centered();
+    .with_fixed_width(300)
+    .align_content(Alignment::Center);
 
     // TODO: This must allow some mechanism for dynamic views
     //       Consider requiring a function which takes the state and returns a view
