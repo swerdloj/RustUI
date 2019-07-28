@@ -107,9 +107,10 @@ impl<T> Button<T> {
         self
     }
 
-    pub fn with_on_click(mut self, callback: Box<Fn(&mut T)>) -> Self
+    pub fn with_on_click<F: 'static + Fn(&mut T)>
+    (mut self, callback: F) -> Self
     {
-        self.on_click = Some(callback);
+        self.on_click = Some(Box::new(callback));
         self
     }
 
@@ -193,6 +194,9 @@ impl<T> Widget<T> for Button<T> {
 
 // ========================== TEXT WIDGET ========================== //
 
+// See https://github.com/Rust-SDL2/rust-sdl2/blob/master/src/sdl2/ttf/font.rs for help
+// TTF is undocumented on sdl2 crate docs.
+
 pub struct Text<T> {
     id: u32,
     rect: Rect,
@@ -205,6 +209,11 @@ pub struct Text<T> {
 
     auto_resize: bool,
     center_text: bool,
+
+    // TODO: Need some way to assign font, but don't store it here for each widget (redundant)
+
+    text_width: u32,
+    text_height: u32,
 }
 
 impl<T> Text<T> {
@@ -212,12 +221,15 @@ impl<T> Text<T> {
         Text {
             id: 100,
             rect: Rect::new(0, 0, 100, 40),
-            primary_color: Color::RGB(0, 0, 0),
+            primary_color: colors::BLACK,
             text: String::from(text),
             internal_padding: 10,
             update: None,
             auto_resize: false,
             center_text: false,
+
+            text_width: 0,
+            text_height: 0,
         }
     }
 
@@ -226,8 +238,10 @@ impl<T> Text<T> {
         self
     }
 
-    pub fn with_text_update(mut self, update_fn: Box<Fn(&T) -> String>) -> Self {
-        self.update = Some(update_fn);
+    pub fn with_text_update<F: 'static + Fn(&T) -> String>
+    (mut self, update_fn: F) -> Self  
+    {
+        self.update = Some(Box::new(update_fn));
         self
     }
 
@@ -260,6 +274,12 @@ impl<T> Text<T> {
     pub fn place(mut self, x: i32, y: i32) -> Self {
         self.rect = Rect::new(x, y, self.rect.width(), self.rect.height());
         self
+    }
+
+    /// Returns (width, height) of a surface rendering the given text with the given font
+    /// Note that no rendering actually takes place
+    pub fn surface_size(font: sdl2::ttf::Font, text: &str) -> (u32, u32) {
+        font.size_of(text).expect("Failed to query text size")
     }
 
     // TODO: This only rescales the text in one dimension. It should rescale both dimensions by the same factor
@@ -457,8 +477,9 @@ impl<T> CheckBox<T> {
         self
     }
 
-    pub fn with_on_check(mut self, check_fn: Box<Fn(&mut T, bool)>) -> Self {
-        self.on_check = Some(check_fn);
+    pub fn with_on_check<F: 'static + Fn(&mut T, bool)>
+    (mut self, check_fn: F) -> Self {
+        self.on_check = Some(Box::new(check_fn));
         self
     }
 

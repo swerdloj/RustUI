@@ -35,38 +35,38 @@ fn main() {
 
     let test_vstack = VStack!(
         Text::new("CounterText", "Counter: 0")
-            .with_text_update(Box::new(|state: &State| {
+            .with_text_update(|state: &State| {
                 format!("Counter: {}", state.button_clicks)
-            }))
+            })
             .with_color(colors::WHITE),
 
         Button::new("IncrementCounter")
-            .with_on_click(Box::new(|state: &mut State| {
+            .with_on_click(|state: &mut State| {
                 if !state.is_locked {
                     state.button_clicks += 1;
                     println!("Clicked the button {} times", state.button_clicks);
                 } else {
                     println!("The counter is locked");
                 }
-            }))
+            })
             .with_text("Increment"),
 
         Button::new("ResetCounter")
-            .with_on_click(Box::new(|state: &mut State| {
+            .with_on_click(|state: &mut State| {
                 if !state.is_locked {
                     state.button_clicks = 0;
                     println!("Resetting counter");
                 } else {
                     println!("The counter is locked");
                 }
-            }))
+            })
             .with_text("Reset"),
 
         CheckBox::new("LockCounter")
             .with_text("Lock")
-            .with_on_check(Box::new(|state: &mut State, is_checked| {
+            .with_on_check(|state: &mut State, is_checked| {
                 state.is_locked = is_checked;
-            })),
+            }),
 
         Text::new("Test", "Text widget aligned center")
             .with_rgb(255, 255, 255)
@@ -76,9 +76,9 @@ fn main() {
             .with_color(colors::WHITE),
 
         Button::new("ExampleButton")
-            .with_on_click(Box::new(|state: &mut State| {
+            .with_on_click(|state: &mut State| {
                 example_callback(state);
-            }))
+            })
             .with_text("Button")        
     )
     .with_fixed_width(300)

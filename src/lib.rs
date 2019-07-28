@@ -66,6 +66,9 @@ See /bin/nested_structure_example.rs for dynamic, nested declarations
 // TODO: IMPORTANT - Document the code according to the following:
 // https://doc.rust-lang.org/rust-by-example/meta/doc.html
 
+// For design help, see:
+// https://github.com/gyscos/cursive
+
 pub mod backend;
 pub mod widgets;
 pub mod view;

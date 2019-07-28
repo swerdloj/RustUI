@@ -25,7 +25,6 @@ The following items are required to run RustUI projects:
 3. In widgets.rs, update the Text widget's render function with the new font file
 
 ### TODOs:
-- Replace `Widget.with_on_click(Box::new(|state: &mut State| {...}))` with something more concise. Maybe instatiate widgets with a convenient macro
 - Implement basic widgets
 - Accept widget ids as strings, then store their hashes
 - Store a view's widget ids in a hash table
