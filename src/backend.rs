@@ -1,8 +1,7 @@
 /*
 
-Graphical functionality such as:
--Windows
--Texture Drawing
+Application backend -- techinacal aspects the user should never need to see
+
 
 TODO: Should events be handled by widgets? This would allow for specific callbacks:
 For example, the user could utilize text input when the enter key is pressed.
@@ -10,6 +9,7 @@ For example, the user could utilize text input when the enter key is pressed.
 TODO: Should be able to support multiple windows at once.
 This will likely require user state to be guarded by a mutex/semaphore.
 Each window will run on its own thread.
+
 */
 
 // TODO: Consider moving event handling to Widget functionality
@@ -20,7 +20,7 @@ extern crate sdl2;
 // TODO: Call this 'context' instead of 'system'?
 pub mod system {
     pub mod state {
-        // TODO: Flesh this out and utilize appropriately
+        // TODO: Flesh this out and utilize appropriately. Or move event handling to Widget
         pub struct ApplicationState<'a, T> {
             pub hovering: Option<u32>, // Widget being hovered over
             pub clicking: Option<u32>, // Widget being clicked (left mouse down)
@@ -79,9 +79,21 @@ pub mod system {
                 let video_subsystem = sdl_context.video().map_err(|e| e.to_string()).unwrap();
                 let ttf_context = sdl2::ttf::init().map_err(|e| e.to_string()).unwrap();
 
-                let default_window = video_subsystem.window(window_title, 800, 600).position_centered().build().unwrap();
-                let default_window_canvas = default_window.into_canvas().accelerated().build().unwrap();
-                let default_window_event_pump = sdl_context.event_pump().unwrap();
+                let default_window = video_subsystem
+                                     .window(window_title, 800, 600)
+                                     .position_centered()
+                                     .build()
+                                     .expect("Failed to create window");
+
+                let default_window_canvas = default_window
+                                            .into_canvas()
+                                            .accelerated()
+                                            .build()
+                                            .expect("Failed to create window canvas");
+
+                let default_window_event_pump = sdl_context
+                                                .event_pump()
+                                                .expect("Failed to obtain event pump");
 
                 Window {
                     sdl_context: sdl_context,
@@ -94,6 +106,7 @@ pub mod system {
                 }
             }
 
+            /// Resizes the application window to the specified pixel values
             fn resize_window(&mut self, width: u32, height: u32) {
                 self.canvas.window_mut().set_size(width, height).expect("Failed to resize");
             }
@@ -117,6 +130,7 @@ pub mod system {
 
                             // TODO: Making event handling widget-specific might simplify the entire idea of backend state
 
+                            // Determine hover state
                             Event::MouseMotion { x, y, .. } => {
                                 let event_location = Point::new(x, y);
 

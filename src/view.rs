@@ -50,15 +50,22 @@ pub struct View<T> {
 }
 
 impl<T> View<T> {
+    pub fn init(&mut self, /* fonts: font.rs stuff */) {
+        // TODO: Build the view here rather than within the macro.
+        //       It will be necessary to pass a reference to the fonts for the purpose
+        //       of sizing text widgets and spacing nested views, but the user should
+        //       never be responsible for mainting fonts (call this from backend)
+    }
+
     /// Lock the window's size (stops dynamic size adjustments)
-    pub fn with_fixed_size(mut self, width: u32, height: u32) -> Self {
+    pub fn fixed_size(mut self, width: u32, height: u32) -> Self {
         self.view_width = width;
         self.view_height = height;
         self.fixed_size = true;
         self
     }
 
-    pub fn with_fixed_width(mut self, width: u32) -> Self {
+    pub fn fixed_width(mut self, width: u32) -> Self {
         self.view_width = width;
         self
     }

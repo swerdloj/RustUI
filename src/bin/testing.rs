@@ -76,12 +76,10 @@ fn main() {
             .with_color(colors::WHITE),
 
         Button::new("ExampleButton")
-            .with_on_click(|state: &mut State| {
-                example_callback(state);
-            })
+            .with_on_click(example_callback) // Can now simply pass in regular functions
             .with_text("Button")        
     )
-    .with_fixed_width(300)
+    .fixed_width(300)
     .align_content(Alignment::Center);
 
     // TODO: This must allow some mechanism for dynamic views
