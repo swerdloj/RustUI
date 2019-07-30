@@ -21,6 +21,7 @@ use sdl2::rect::Rect;
 use sdl2::render::TextureQuery;
 use sdl2::pixels::Color;
 use crate::backend::system::window::Window;
+use crate::font;
 
 /// Possible widget states
 /// ## States
@@ -202,6 +203,7 @@ pub struct Text<T> {
     rect: Rect,
     primary_color: Color,
     text: String,
+    // font: font::Font,
     // How far text must be from its boundary
     internal_padding: u32,
 

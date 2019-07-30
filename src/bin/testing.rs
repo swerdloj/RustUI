@@ -12,6 +12,7 @@ extern crate sdl2;
 use RustUI::backend::system::window::Window;
 use RustUI::widgets::*;
 use RustUI::view::{View, SubView, Alignment};
+use RustUI::font;
 
 struct State {
     button_clicks: u16,
