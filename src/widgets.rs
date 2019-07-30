@@ -203,19 +203,20 @@ pub struct Text<T> {
     rect: Rect,
     primary_color: Color,
     text: String,
-    // font: font::Font,
+    font: font::FontParams,
     // How far text must be from its boundary
     internal_padding: u32,
 
-    update: Option<Box<Fn(&T) -> String>>,
+    update_fn: Option<Box<Fn(&T) -> String>>,
 
     auto_resize: bool,
     center_text: bool,
 
     // TODO: Need some way to assign font, but don't store it here for each widget (redundant)
 
-    text_width: u32,
-    text_height: u32,
+    // Render-to rect params
+    surface_width: u32,
+    surface_height: u32,
 }
 
 impl<T> Text<T> {
@@ -225,13 +226,14 @@ impl<T> Text<T> {
             rect: Rect::new(0, 0, 100, 40),
             primary_color: colors::BLACK,
             text: String::from(text),
+            font: font::FontParams::default_font(),
             internal_padding: 10,
-            update: None,
+            update_fn: None,
             auto_resize: false,
             center_text: false,
 
-            text_width: 0,
-            text_height: 0,
+            surface_width: 0,
+            surface_height: 0,
         }
     }
 
@@ -243,7 +245,7 @@ impl<T> Text<T> {
     pub fn with_text_update<F: 'static + Fn(&T) -> String>
     (mut self, update_fn: F) -> Self  
     {
-        self.update = Some(Box::new(update_fn));
+        self.update_fn = Some(Box::new(update_fn));
         self
     }
 
@@ -280,7 +282,7 @@ impl<T> Text<T> {
 
     /// Returns (width, height) of a surface rendering the given text with the given font
     /// Note that no rendering actually takes place
-    pub fn surface_size(font: sdl2::ttf::Font, text: &str) -> (u32, u32) {
+    pub fn size_surface(font: sdl2::ttf::Font, text: &str) -> (u32, u32) {
         font.size_of(text).expect("Failed to query text size")
     }
 
@@ -357,7 +359,7 @@ impl<T> Widget<T> for Text<T> {
     }
 
     fn update(&mut self, state: &T) {
-        if let Some(ref update_callback) = self.update {
+        if let Some(ref update_callback) = self.update_fn {
             self.text = (update_callback)(state);
         }
     }

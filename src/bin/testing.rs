@@ -28,6 +28,21 @@ impl State {
     }
 }
 
+/* TODO: Consider implementing macros such that the following syntax is adopted
+
+VStack! {
+    Button! {
+        on_click(...),
+
+        Text! {
+            color(...)
+        }
+    },
+    Text! {
+        ...
+    }
+} 
+*/
 
 fn main() {
     let mut app_state = State::new();

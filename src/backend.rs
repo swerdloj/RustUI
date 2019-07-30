@@ -24,20 +24,20 @@ pub mod system {
         pub struct ApplicationState<'a, T> {
             pub hovering: Option<u32>, // Widget being hovered over
             pub clicking: Option<u32>, // Widget being clicked (left mouse down)
-            pub state: &'a mut T,      // User state to be passed to widgets
+            user_state: &'a mut T, // User state to be passed to widgets
         }
 
         impl<'a, T> ApplicationState<'a, T> {
-            pub fn new(state: &'a mut T) -> Self {
+            pub fn new(user_state: &'a mut T) -> Self {
                 ApplicationState {
                     hovering: None,
                     clicking: None,
-                    state: state,
+                    user_state: user_state,
                 }
             }
 
-            pub fn get_state(&mut self) -> &mut T {
-                self.state
+            pub fn get_user_state(&mut self) -> &mut T {
+                self.user_state
             }
         }
     } // end mod state
@@ -173,7 +173,7 @@ pub mod system {
                                     for widget in &mut view.subview { // Look at each widget
                                         if widget.rect().contains_point(event_location) { // If the mouse was released on any widget
                                             if active_id == widget.id() { // Trigger the callback if that widget was active
-                                                widget.on_click(self.window_state.get_state());
+                                                widget.on_click(self.window_state.get_user_state());
                                             }
                                             self.window_state.hovering = Some(widget.id()); // If the mouse is on a widget, it is now hovering
                                         }
@@ -187,12 +187,13 @@ pub mod system {
                                 println!("Unhandled Event: {:?}", event);
                             }
                         }
-                    }
-                    // Render window below
+                    } // end event loop
+
+                    /* Render window below this line */
 
                     // Render each widget
                     for widget in &mut view.subview {
-                        widget.update(self.window_state.state);
+                        widget.update(self.window_state.get_user_state());
 
                         let mut widget_state = WidgetState::Base;
 

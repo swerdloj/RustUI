@@ -19,12 +19,13 @@ The following items are required to run RustUI projects:
   - libfreetype-6.dll
   - zlib1.dll
 
-## Usage (not final)
+## Usage (unstable)
 1. Download the above dependencies, and place into project root directory
 2. When using text, place the .ttf font in /res/font/
 3. In widgets.rs, update the Text widget's render function with the new font file
 
 ### TODOs:
+- Implement `font.rs` (separate widgets, backend, and font).
 - Implement basic widgets
 - Accept widget ids as strings, then store their hashes
 - Store a view's widget ids in a hash table
