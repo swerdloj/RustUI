@@ -67,8 +67,9 @@ impl<'ttf> Fonts<'ttf> {
 
     /// Load and store a font for future use
     pub fn load_font(&mut self, ttf_context: &'ttf Sdl2TtfContext, font_params: &FontParams) {
+        // TODO: assert that the font is not already loaded (saves some execution time)
         let font = ttf_context.load_font(font_params.path, font_params.point_size).expect("Failed to load font");
-        self.font_map.insert(font_params.clone(), font);
+        self.font_map.insert(*font_params, font);
     }
 
     pub fn render_surface(&mut self, font: &FontParams, text: &str, color: sdl2::pixels::Color) -> Box<sdl2::surface::Surface> {

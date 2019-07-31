@@ -128,7 +128,7 @@ pub mod system {
 
                 // Initialize the window/widget layout
                 // TODO: This (do something about the font here)
-                view.init();
+                view.init(&self.ttf_context);
                 // Set initial window size (will override the default of 800x600)
                 self.resize_window(view.view_width, view.view_height);
 

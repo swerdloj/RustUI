@@ -127,7 +127,7 @@ impl<T> Button<T> {
 
         // Place the button text respective of this new position
         if let Some(button_text) = &mut self.text {
-            button_text.rect = self.rect;
+            button_text.container_rect = self.rect;
         }
 
         self
@@ -135,6 +135,17 @@ impl<T> Button<T> {
 }
 
 impl<T> Widget<T> for Button<T> {
+    fn text_component(&mut self) -> Option<&mut Text<T>> {
+        if let Some(text) = &mut self.text {
+            return Some(text);
+        }
+        None
+    }
+
+    fn assign_text_dimensions(&mut self, dims: (u32, u32)) {
+        self.text_component().expect("Attempted to size nonexistant text component").assign_text_dimensions(dims);
+    }
+
     fn render(&self, window: &mut Window<T>, widget_state: WidgetState) {
         match widget_state {
             WidgetState::Hovering => window.canvas.set_draw_color(self.hover_color),
@@ -200,10 +211,10 @@ impl<T> Widget<T> for Button<T> {
 
 pub struct Text<T> {
     id: u32,
-    rect: Rect,
+    container_rect: Rect,
     primary_color: Color,
-    text: String,
-    font: font::FontParams,
+    pub text: String,
+    pub font: font::FontParams,
     // How far text must be from its boundary
     internal_padding: u32,
 
@@ -211,19 +222,17 @@ pub struct Text<T> {
 
     auto_resize: bool,
     center_text: bool,
-
-    // TODO: Need some way to assign font, but don't store it here for each widget (redundant)
-
-    // Render-to rect params
-    surface_width: u32,
-    surface_height: u32,
+   
+    // Text surface parameters    
+    text_width: u32,
+    text_height: u32,
 }
 
 impl<T> Text<T> {
     pub fn new(id: &str, text: &str) -> Self {
         Text {
             id: 100,
-            rect: Rect::new(0, 0, 100, 40),
+            container_rect: Rect::new(0, 0, 0, 0),
             primary_color: colors::BLACK,
             text: String::from(text),
             font: font::FontParams::default_font(),
@@ -231,9 +240,8 @@ impl<T> Text<T> {
             update_fn: None,
             auto_resize: false,
             center_text: false,
-
-            surface_width: 0,
-            surface_height: 0,
+            text_width: 0,
+            text_height: 0,
         }
     }
 
@@ -276,25 +284,19 @@ impl<T> Text<T> {
     }
 
     pub fn place(mut self, x: i32, y: i32) -> Self {
-        self.rect = Rect::new(x, y, self.rect.width(), self.rect.height());
+        self.container_rect = Rect::new(x, y, self.container_rect.width(), self.container_rect.height());
         self
-    }
-
-    /// Returns (width, height) of a surface rendering the given text with the given font
-    /// Note that no rendering actually takes place
-    pub fn size_surface(font: sdl2::ttf::Font, text: &str) -> (u32, u32) {
-        font.size_of(text).expect("Failed to query text size")
     }
 
     // TODO: This only rescales the text in one dimension. It should rescale both dimensions by the same factor
     // TODO: Update this with padding_left, padding_right, padding_top, padding_bottom when implemented
-    fn fit_and_center_within_container(&self, text_width: u32, text_height: u32, container_rect: &Rect) -> Rect {
+    fn fit_and_center_within_container(&self, container_rect: &Rect) -> Rect {
         let width_constraint = (container_rect.width() as i32 - self.internal_padding as i32) as u32;
         let height_constraint = (container_rect.height() as i32 - self.internal_padding as i32) as u32;
         
         // Determine whether the text is too tall and/or too wide
-        let width_ratio = text_width as f32 / width_constraint as f32;
-        let height_ratio = text_height as f32 / height_constraint as f32;
+        let width_ratio = self.text_width as f32 / width_constraint as f32;
+        let height_ratio = self.text_height as f32 / height_constraint as f32;
 
         // Downscale the text according to the largest out-of-bounds dimension
         // see https://github.com/Rust-SDL2/rust-sdl2/blob/master/examples/ttf-demo.rs
@@ -308,7 +310,7 @@ impl<T> Text<T> {
                 (new_width, height_constraint)
             }
         } else { // The text is already a good size
-            (text_width, text_height)
+            (self.text_width, self.text_height)
         };
         
         // Center the text within its boundary (such as a button's rect)
@@ -325,8 +327,19 @@ impl<T> Text<T> {
 }
 
 impl<T> Widget<T> for Text<T> {
+    fn text_component(&mut self) -> Option<&mut Text<T>> {
+        Some(self)
+    }
+
+    fn assign_text_dimensions(&mut self, dims: (u32, u32)) {
+        // self.container_rect.set_width(dims.0);
+        // self.container_rect.set_height(dims.1);
+        self.text_width = dims.0;
+        self.text_height = dims.1;
+    }
+
     fn translate(&mut self, dx: i32, dy: i32) {
-        self.rect = Rect::new(
+        self.container_rect = Rect::new(
             self.rect().x() + dx,
             self.rect().y() + dy,
             self.rect().width(),
@@ -335,7 +348,7 @@ impl<T> Widget<T> for Text<T> {
     }
 
     fn rect(&self) -> Rect {
-        self.rect
+        self.container_rect
     }
 
     fn id(&self) -> u32 {
@@ -381,28 +394,30 @@ impl<T> Widget<T> for Text<T> {
             .blended(self.primary_color).unwrap();
 
         let texture = texture_creator.create_texture_from_surface(surface).expect("Failed to create texture");
-        let TextureQuery { width, height, .. } = texture.query();
+        // let TextureQuery { width, height, .. } = texture.query();
+
+        // println!("Rendering {} with containter {}x{} and text size {}x{}", self.text, self.container_rect.width(), self.container_rect.height(), self.text_width, self.text_height);
 
         let target = if self.auto_resize {
             // Center text within container & downscale if too large
-            self.fit_and_center_within_container(width, height, &self.rect)
+            self.fit_and_center_within_container(&self.container_rect)
         } else if self.center_text {
             // Center the text, disregarding containers
-            let center_x = self.rect.x() + self.rect.width() as i32 / 2;
-            let target_x = center_x - width as i32 / 2;
+            let center_x = self.container_rect.x() + self.container_rect.width() as i32 / 2;
+            let target_x = center_x - self.text_width as i32 / 2;
             Rect::new(
                 target_x,
-                self.rect.y() + ((self.rect.height() as i32 - height as i32) / 2),
-                width,
-                height
+                self.container_rect.y() + ((self.container_rect.height() as i32 - self.text_height as i32) / 2),
+                self.text_width,
+                self.text_height
             )
         } else {
             // Center the text's y position and align left
             Rect::new(
-                self.rect.x(),
-                self.rect.y() + ((self.rect.height() as i32 - height as i32) / 2),
-                width,
-                height
+                self.container_rect.x(),
+                self.container_rect.y() + ((self.container_rect.height() as i32 - self.text_height as i32) / 2),
+                self.text_width,
+                self.text_height
             )
         };
 
@@ -471,7 +486,7 @@ impl<T> CheckBox<T> {
         self.rect = Rect::new(x, y, self.rect.width(), self.rect.height());
 
         if let Some(text) = &mut self.text {
-            text.rect = Rect::new(
+            text.container_rect = Rect::new(
                 x + (self.checkbox_width + self.checkbox_padding_right) as i32,
                 // TODO: Is this y position correct?
                 self.rect.y(),
@@ -505,6 +520,18 @@ impl<T> CheckBox<T> {
 }
 
 impl<T> Widget<T> for CheckBox<T> {
+    fn text_component(&mut self) -> Option<&mut Text<T>> {
+        if let Some(text) = &mut self.text {
+            return Some(text);
+        }
+        None
+    }
+
+    fn assign_text_dimensions(&mut self, dims: (u32, u32)) {
+        self.rect.set_width(self.checkbox_width + self.checkbox_padding_right + dims.0);
+        self.text_component().expect("Attempted to size nonexistant text component").assign_text_dimensions(dims);
+    }
+
     fn rect(&self) -> Rect {
         self.rect
     }
@@ -588,6 +615,15 @@ pub trait Widget<T> {
     fn primary_color(&self) -> Color;
     fn secondary_color(&self) -> Color;
     fn hover_color(&self) -> Color;
+
+    fn text_component(&mut self) -> Option<&mut Text<T>>;
+
+    /// Update the widget with known text dimensions  
+    /// - Note that this function is called **only when text exists**  
+    /// - Improper usage will therefore `panic` at `.expect()` on a `None` object
+    fn assign_text_dimensions(&mut self, dims: (u32, u32)) {
+
+    }
 
     // fn place(&mut self, x: i32, y: i32);
 

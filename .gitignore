@@ -5,3 +5,4 @@ Cargo.lock
 *.lib
 /res/font/*.ttf
 *.bat
+/.vscode

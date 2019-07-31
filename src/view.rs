@@ -12,23 +12,29 @@ the awkward enum below.
 
 */
 
-use super::widgets::*;
 
+use sdl2::ttf;
+use sdl2::rect::Rect;
 use std::collections::HashMap;
+use super::widgets::*;
+use super::font::{FontParams, Fonts};
 
-// TODO: Nesting option 1
-enum ViewComponentEnum<T> {
-    Component(Option<SubView<T>>, Option<Box<Widget<T>>>),
-}
 
-// TODO: Nesting option 2 (might be best considering text)
-trait ViewComponentTrait<T> {
+// TODO: This
+pub trait ViewComponent<T> {
+    fn get_text(&self) -> Option<Text<T>> {
+        None
+    }
     fn get_width(&self) -> u32;
     fn get_height(&self) -> u32;
     fn get_center(&self) -> (u32, u32);
 }
 
 pub type SubView<T> = Vec<Box<Widget<T>>>;
+
+// impl Iterator for SubView<T> {
+
+// }
 
 /// View alignments
 /// ## Alignments
@@ -55,11 +61,23 @@ pub struct View<T> {
 }
 
 impl<T> View<T> {
-    pub fn init(&mut self, /* fonts: font.rs stuff */) {
+    pub fn init(&mut self, ttf_context: &ttf::Sdl2TtfContext) {
         // TODO: Build the view here rather than within the macro.
         //       It will be necessary to pass a reference to the fonts for the purpose
         //       of sizing text widgets and spacing nested views, but the user should
         //       never be responsible for mainting fonts (call this from backend)
+
+        let mut font_manager = Fonts::new();
+
+        for view in &mut self.subview {
+            // If the view has a text component, obtain its surface size
+            if let Some(text_component) = view.text_component() {
+                font_manager.load_font(ttf_context, &text_component.font);
+                let text_surface_size = font_manager.size_surface(&text_component.font, &text_component.text);
+                view.assign_text_dimensions(text_surface_size);
+            }
+        }
+
     }
 
     /// Lock the window's size (stops dynamic size adjustments)
@@ -82,6 +100,7 @@ impl<T> View<T> {
         match alignment {
             Alignment::Center => {
                 for widget in &mut self.subview {
+
                     let new_x = (self.view_width / 2) - (widget.rect().width() / 2);
                     widget.translate(new_x as i32 - widget.rect().x(), 0);
                 }
