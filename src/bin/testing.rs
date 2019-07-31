@@ -49,7 +49,7 @@ fn main() {
 
     let main_window = Window::init("RustUI Testing", &mut app_state);
 
-    let test_vstack = VStack!(
+    let test_view = VStack!(
         Text::new("CounterText", "Counter: 0")
             .with_text_update(|state: &State| {
                 format!("Counter: {}", state.button_clicks)
@@ -100,7 +100,7 @@ fn main() {
 
     // TODO: This must allow some mechanism for dynamic views
     //       Consider requiring a function which takes the state and returns a view
-    main_window.start(test_vstack);
+    main_window.start(test_view);
 }
 
 fn example_callback(_state: &mut State) {

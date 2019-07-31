@@ -25,6 +25,7 @@ The following items are required to run RustUI projects:
 3. In widgets.rs, update the Text widget's render function with the new font file
 
 ### TODOs:
+- Add a GridView macro with respective methods (like tkinter)
 - Implement `font.rs` (separate widgets, backend, and font).
 - Implement basic widgets
 - Accept widget ids as strings, then store their hashes

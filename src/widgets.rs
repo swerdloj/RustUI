@@ -45,7 +45,7 @@ pub mod colors {
     pub const BLACK: Color = Color {r: 0, g: 0, b: 0, a: 0xff};
     /// `Color::RGB(50, 50, 100)` - Default background color
     pub const DARK_PURPLE: Color = Color {r: 50, g: 50, b: 100, a: 0xff};
-    /// `Color::RGB(240, 240, 240)` - Default button color
+    /// `Color::RGB(240, 240, 200)` - Default button color
     pub const MANILLA: Color = Color {r: 240, g: 240, b: 200, a: 0xff};
     /// `Color::RGB(255, 255, 255)` - White
     pub const WHITE: Color = Color {r: 255, g: 255, b: 255, a: 0xff};
@@ -90,7 +90,7 @@ impl<T> Button<T> {
         Button {
             id: 0,
             rect: Rect::new(0, 0, 100, 40),
-            primary_color: Color::RGB(240, 240, 200),
+            primary_color: colors::MANILLA,
             secondary_color: Color::RGB(100, 100, 100),
             hover_color: Color::RGB(200, 200, 200),
             text: None,
@@ -375,10 +375,12 @@ impl<T> Widget<T> for Text<T> {
             20
         ).expect("Failed to load font");
 
+        // let font2 = window.fonts.load_font(&window.ttf_context, &self.font);
+
         let surface = font.render(&self.text)
             .blended(self.primary_color).unwrap();
 
-        let texture = texture_creator.create_texture_from_surface(&surface).expect("Failed to create texture");
+        let texture = texture_creator.create_texture_from_surface(surface).expect("Failed to create texture");
         let TextureQuery { width, height, .. } = texture.query();
 
         let target = if self.auto_resize {

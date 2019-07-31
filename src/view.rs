@@ -1,5 +1,3 @@
-use super::widgets::*;
-
 /* TODO: Nested View + Widget trees
 
 Consider some implementation such as the example enum below.
@@ -13,6 +11,10 @@ This trait could include a method for obtaining the object type, eliminating the
 the awkward enum below.
 
 */
+
+use super::widgets::*;
+
+use std::collections::HashMap;
 
 // TODO: Nesting option 1
 enum ViewComponentEnum<T> {
@@ -42,6 +44,9 @@ pub enum Alignment {
 // TODO: subview should be able to iterate through all widgets and nested view widgets
 //       This capability must be reflected in the backend as well
 pub struct View<T> {
+    // Map of user-assigned widget names -> widget
+    // component_map: HashMap<&'static str, SubView<T>>,
+
     pub subview: SubView<T>,
     pub view_width: u32,
     pub view_height: u32,
@@ -65,6 +70,7 @@ impl<T> View<T> {
         self
     }
 
+    /// Lock the window's width
     pub fn fixed_width(mut self, width: u32) -> Self {
         self.view_width = width;
         self

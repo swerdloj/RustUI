@@ -7,32 +7,34 @@ TODO: Major refactoring to include this in widgets.rs & backend.rs
 */
 
 use sdl2::ttf;
+use sdl2::ttf::Sdl2TtfContext;
 
+use std::rc::Rc;
 use std::collections::HashMap;
 use std::path::Path;
 
 // ========================== Font Parameters ========================== //
 
 // Eq -> iff self.fields == other.fields
-#[derive(PartialEq, Eq, Hash)]
+#[derive(PartialEq, Eq, Hash, Copy, Clone)]
 pub struct FontParams {
     /// Path to the font
-    path: &'static Path,
+    pub path: &'static str,
     /// Point size of the font
-    point_size: u16,
+    pub point_size: u16,
 }
 
 impl FontParams {
     pub fn new(path: &'static str, point_size: u16) -> Self {
         FontParams {
-            path: Path::new(path),
+            path: path,
             point_size: point_size,
         }
     }
 
     pub fn default_font() -> Self {
         FontParams {
-            path: Path::new("./res/font/OpenSans-Regular.ttf"),
+            path: "./res/font/OpenSans-Regular.ttf",
             point_size: 20,
         }
     }
@@ -41,41 +43,46 @@ impl FontParams {
 // ========================== Font Backend ========================== //
 
 /// Backend for font handling
-pub struct Fonts<'window> {
+pub struct Fonts<'ttf> {
     /// The TTF context utilized by the application for text
-    ttf_context: &'window ttf::Sdl2TtfContext,
-
-    /// Default font, guarenteed to be loaded and ready for use
-    default: ttf::Font<'window, 'static>,
+    // ttf_context: &'ttf Sdl2TtfContext,
 
     /// Map of (FontParams -> Loaded Font)
-    font_map: HashMap<FontParams, ttf::Font<'window, 'static>>,
+    font_map: HashMap<FontParams, ttf::Font<'ttf, 'static>>,
 }
 
-impl<'window> Fonts<'window> {
-    pub fn new(ttf_context: &'window ttf::Sdl2TtfContext, default_font_path: &str, point_size: u16) -> Self {
+impl<'ttf> Fonts<'ttf> {
+    pub fn new(/*ttf_context: &'ttf Sdl2TtfContext */) -> Self {
         Fonts {
-            ttf_context: ttf_context,
-            default: ttf_context.load_font(Path::new(default_font_path), point_size).expect("Failed to load default font"),
-            // fonts: Vec::new(),
+            // ttf_context: ttf_context,
             font_map: HashMap::new(),
         }
     }
 
     /// Obtain a reference to the desired font
     // TODO: How to handle missing font? Return default? Load and store that font?
-    pub fn get_font(&self, font: FontParams) -> &ttf::Font {
+    pub fn get_font(&self, font: &FontParams) -> &ttf::Font {
         self.font_map.get(&font).expect("No such font exists")
     }
 
     /// Load and store a font for future use
-    pub fn load_font(&mut self, path: &'static str, point_size: u16) {
-        let font = self.ttf_context.load_font(path, point_size).expect("Failed to load font");
-        self.font_map.insert(FontParams::new(path, point_size), font);
+    pub fn load_font(&mut self, ttf_context: &'ttf Sdl2TtfContext, font_params: &FontParams) {
+        let font = ttf_context.load_font(font_params.path, font_params.point_size).expect("Failed to load font");
+        self.font_map.insert(font_params.clone(), font);
+    }
+
+    pub fn render_surface(&mut self, font: &FontParams, text: &str, color: sdl2::pixels::Color) -> Box<sdl2::surface::Surface> {
+        let surface = self.font_map.get(font)
+            .expect("No such font exists")
+            .render(text)
+            .blended(color)
+            .expect("Failed to render surface");
+
+        Box::new(surface)
     }
 
     /// Obtain a string's surface parameters (width, height) for a font without rendering
-    pub fn size_surface(&self, font: FontParams, text: &str) -> (u32, u32) {
+    pub fn size_surface(&self, font: &FontParams, text: &str) -> (u32, u32) {
         self.get_font(font).size_of(text).expect("Failed to query text size")
     }
 }
