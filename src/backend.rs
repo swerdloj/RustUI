@@ -118,16 +118,7 @@ pub mod system {
             pub fn start(mut self, mut view: View<T>) {
                 /* Initialize here */
 
-                // The below proves the ability to size text surfaces before rendering widgets
-                // TODO: Load fonts for sizing text surfaces, then drop anything &self -> move to view.init()
-                let mut font_manager = Fonts::new();
-                font_manager.load_font(&self.ttf_context, &FontParams::default_font());
-                let test_surface_size = font_manager.size_surface(&FontParams::default_font(), "testing");
-                println!("Test surface: {} by {}", test_surface_size.0, test_surface_size.1);
-                font_manager; // This will take place in view.init()??? Seems to work
-
                 // Initialize the window/widget layout
-                // TODO: This (do something about the font here)
                 view.init(&self.ttf_context);
                 // Set initial window size (will override the default of 800x600)
                 self.resize_window(view.view_width, view.view_height);

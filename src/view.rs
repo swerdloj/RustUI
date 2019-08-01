@@ -62,12 +62,10 @@ pub struct View<T> {
 }
 
 impl<T> View<T> {
+    // TODO: Build the view here rather than within the macro.
     pub fn init(&mut self, ttf_context: &ttf::Sdl2TtfContext) {
-        // TODO: Build the view here rather than within the macro.
-        //       It will be necessary to pass a reference to the fonts for the purpose
-        //       of sizing text widgets and spacing nested views, but the user should
-        //       never be responsible for mainting fonts (call this from backend)
 
+        // TODO: How to extend this lifetime and implement for text rendering?
         let mut font_manager = Fonts::new();
 
         // Step 1 -> Size text surfaces
