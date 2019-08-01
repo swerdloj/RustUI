@@ -202,6 +202,10 @@ impl<T> Widget<T> for Button<T> {
             (on_click_function)(state);
         }
     }
+
+    fn draw_width(&self) -> u32 {
+        self.rect.width()
+    }
 }
 
 // ========================== TEXT WIDGET ========================== //
@@ -232,7 +236,7 @@ impl<T> Text<T> {
     pub fn new(id: &str, text: &str) -> Self {
         Text {
             id: 100,
-            container_rect: Rect::new(0, 0, 0, 0),
+            container_rect: Rect::new(0, 0, 0, 28), // FIXME: 28 is only true for default font
             primary_color: colors::BLACK,
             text: String::from(text),
             font: font::FontParams::default_font(),
@@ -332,8 +336,6 @@ impl<T> Widget<T> for Text<T> {
     }
 
     fn assign_text_dimensions(&mut self, dims: (u32, u32)) {
-        // self.container_rect.set_width(dims.0);
-        // self.container_rect.set_height(dims.1);
         self.text_width = dims.0;
         self.text_height = dims.1;
     }
@@ -371,6 +373,7 @@ impl<T> Widget<T> for Text<T> {
 
     }
 
+    // TODO: Resize the text surface on update
     fn update(&mut self, state: &T) {
         if let Some(ref update_callback) = self.update_fn {
             self.text = (update_callback)(state);
@@ -388,15 +391,13 @@ impl<T> Widget<T> for Text<T> {
             20
         ).expect("Failed to load font");
 
-        // let font2 = window.fonts.load_font(&window.ttf_context, &self.font);
-
         let surface = font.render(&self.text)
             .blended(self.primary_color).unwrap();
 
         let texture = texture_creator.create_texture_from_surface(surface).expect("Failed to create texture");
         // let TextureQuery { width, height, .. } = texture.query();
 
-        // println!("Rendering {} with containter {}x{} and text size {}x{}", self.text, self.container_rect.width(), self.container_rect.height(), self.text_width, self.text_height);
+        // println!("Rendering '{}' with containter {}x{} at ({}, {}) and text size {}x{}", self.text, self.container_rect.width(), self.container_rect.height(), self.container_rect.x(), self.container_rect.y(), self.text_width, self.text_height);
 
         let target = if self.auto_resize {
             // Center text within container & downscale if too large
@@ -422,6 +423,10 @@ impl<T> Widget<T> for Text<T> {
         };
 
         window.canvas.copy(&texture, None, Some(target)).unwrap();
+    }
+
+    fn draw_width(&self) -> u32 {
+        self.text_width
     }
 }
 
@@ -604,6 +609,10 @@ impl<T> Widget<T> for CheckBox<T> {
             text.translate(dx, dy);
         }
     }
+
+    fn draw_width(&self) -> u32 {
+        self.rect().width()
+    }
 }
 
 
@@ -637,6 +646,9 @@ pub trait Widget<T> {
 
     /// Translate the widget by the given x & y differences
     fn translate(&mut self, dx: i32, dy: i32);
+    
+    /// The widget's rendered width including any containers and sub-objects
+    fn draw_width(&self) -> u32;
 
     /// Instatiate the widget with the given id.
     /// All widget fields are filled with defaults. Builder methods may be used to adjust these fields.
@@ -645,6 +657,7 @@ pub trait Widget<T> {
     // where Self: Sized;
 
     // TODO: Inputs & return types (pass mouse locations, keys pressed, etc.)
+
 
     fn on_hover() 
     where Self: Sized

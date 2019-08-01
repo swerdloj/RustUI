@@ -51,6 +51,7 @@ fn main() {
 
     let test_view = VStack!(
         Text::new("CounterText", "Counter: 0")
+            // TODO: When updating text, the text component must be resized
             .with_text_update(|state: &State| {
                 format!("Counter: {}", state.button_clicks)
             })
@@ -84,11 +85,11 @@ fn main() {
                 state.is_locked = is_checked;
             }),
 
-        Text::new("Test", "Text widget aligned center")
-            .with_rgb(255, 255, 255)
-            .center(),
+        // Text::new("Test", "Text widget aligned center")
+        //     .with_rgb(255, 255, 255)
+        //     .center(),
 
-        Text::new("Test", "Default align left")
+        Text::new("Test", "Text Widget")
             .with_color(colors::WHITE),
 
         Button::new("ExampleButton")

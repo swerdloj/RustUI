@@ -58,6 +58,7 @@ pub struct View<T> {
     pub view_height: u32,
     pub fixed_size: bool,
     pub default_padding: u32,
+    pub alignment: Alignment,
 }
 
 impl<T> View<T> {
@@ -69,6 +70,7 @@ impl<T> View<T> {
 
         let mut font_manager = Fonts::new();
 
+        // Step 1 -> Size text surfaces
         for view in &mut self.subview {
             // If the view has a text component, obtain its surface size
             if let Some(text_component) = view.text_component() {
@@ -76,6 +78,19 @@ impl<T> View<T> {
                 let text_surface_size = font_manager.size_surface(&text_component.font, &text_component.text);
                 view.assign_text_dimensions(text_surface_size);
             }
+        }
+
+        // Step 2 -> Align contents
+        match self.alignment {
+            Alignment::Center => { // Translate each widget to be centered
+                for widget in &mut self.subview {
+                    let new_x = (self.view_width / 2) as i32 - (widget.draw_width() / 2) as i32;
+                    // println!("Translating from {} to {}", widget.rect().x(), new_x as i32 - widget.rect().x());
+                    widget.translate(new_x - widget.rect().x(), 0);
+                }
+            }
+            // TODO: implement the rest
+            _ => {}
         }
 
     }
@@ -97,18 +112,7 @@ impl<T> View<T> {
     /// Align a view's widgets
     // TODO: Need some 'get_center' function for widgets with text (e.g. checkbox)
     pub fn align_content(mut self, alignment: Alignment) -> Self {
-        match alignment {
-            Alignment::Center => {
-                for widget in &mut self.subview {
-
-                    let new_x = (self.view_width / 2) - (widget.rect().width() / 2);
-                    widget.translate(new_x as i32 - widget.rect().x(), 0);
-                }
-            }
-            // TODO: implement the rest
-            _ => {}
-        }
-
+        self.alignment = alignment;
         self
     }
 }
@@ -160,6 +164,7 @@ macro_rules! VStack {
                 view_height: current_y as u32 + default_padding as u32,
                 fixed_size: false,
                 default_padding: default_padding as u32,
+                alignment: Alignment::Left,
             }
         }
     };
@@ -207,6 +212,7 @@ macro_rules! HStack {
                 view_height: max_y + default_padding as u32,
                 fixed_size: false,
                 default_padding: default_padding as u32,
+                alignment: Alignment::Left,
             }
         }
     };
@@ -242,6 +248,7 @@ macro_rules! example_view {
                 view_height: 600,
                 fixed_size: true,
                 default_padding: 10,
+                alignment: Alignment::Left,
             }
         }
     };
