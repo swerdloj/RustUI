@@ -142,7 +142,7 @@ pub mod system {
 
                                 self.window_state.hovering = None;
 
-                                for widget in &view.subview {
+                                for widget in view.widgets() {
                                     if widget.rect().contains_point(event_location) {
                                         if let Some(active_id) = self.window_state.clicking {
                                             if active_id == widget.id() {
@@ -159,7 +159,7 @@ pub mod system {
                                 let event_location = Point::new(x, y);
 
                                 self.window_state.clicking = None;
-                                for widget in &view.subview {
+                                for widget in view.widgets() {
                                     if widget.rect().contains_point(event_location) {
                                         if let Some(hover_id) = self.window_state.hovering {
                                             if hover_id == widget.id() {
@@ -176,7 +176,7 @@ pub mod system {
                                 let event_location = Point::new(x, y);
                                 if let Some(active_id) = self.window_state.clicking { // If there is an active widget
                                     // TODO: Replace the for loop with hash table lookup (should be part of the view)
-                                    for widget in &mut view.subview { // Look at each widget
+                                    for widget in view.widgets_mut() { // Look at each widget
                                         if widget.rect().contains_point(event_location) { // If the mouse was released on any widget
                                             if active_id == widget.id() { // Trigger the callback if that widget was active
                                                 widget.on_click(self.window_state.get_user_state());
@@ -198,7 +198,7 @@ pub mod system {
                     /* Render window below this line */
 
                     // Render each widget
-                    for widget in &mut view.subview {
+                    for widget in view.widgets_mut() {
                         widget.update(self.window_state.get_user_state());
 
                         let mut widget_state = WidgetState::Base;
