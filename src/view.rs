@@ -19,11 +19,15 @@ use std::any::{Any, TypeId};
 use super::widgets::*;
 use super::font::{FontParams, Fonts};
 
+// ========================== WidgetOrView enum ========================== //
+
 // TODO: Consider using this to distinguish subview components
 pub enum WidgetOrView<T> {
     Widget(Box<Widget<T>>),
     View(SubView<T>),
 }
+
+// ========================== ViewComponent trait ========================== //
 
 // TODO: This
 pub trait ViewComponent<T> {
@@ -34,6 +38,8 @@ pub trait ViewComponent<T> {
     fn get_height(&self) -> u32;
     fn get_center(&self) -> (u32, u32);
 }
+
+// ========================== SubView psuedo-type ========================== //
 
 pub struct SubView<T> {
     pub components: Vec<WidgetOrView<T>>
@@ -71,6 +77,8 @@ impl<T> SubView<T> {
     }
 }
 
+// ========================== Alignment enum ========================== //
+
 /// View alignments
 /// ## Alignments
 /// * `Left` - Align each widget to the left within its view (default)
@@ -81,6 +89,8 @@ pub enum Alignment {
     // TODO: Will this be used?
     // Right,
 }
+
+// ========================== View struct ========================== //
 
 // TODO: subview should be able to iterate through all widgets and nested view widgets
 //       This capability must be reflected in the backend as well
@@ -98,6 +108,7 @@ pub struct View<T> {
 
 impl<T> View<T> {
     /// Returns a vec of mutable references to all widgets within a view
+    // TODO: This should use the hashmap
     pub fn widgets_mut(&mut self) -> Vec<&mut Box<Widget<T>>> {
         let mut widgets = Vec::new();
 
@@ -106,7 +117,7 @@ impl<T> View<T> {
                 WidgetOrView::Widget(widget) => {
                     widgets.push(widget);
                 }
-                _ => {}
+                WidgetOrView::View(view) => {}
             }
         }
 
@@ -114,6 +125,7 @@ impl<T> View<T> {
     }
 
     /// Returns a vec of references to all widgets within a view
+    // TODO: This should use the hashmap
     pub fn widgets(&self) -> Vec<&Box<Widget<T>>> {
         let mut widgets = Vec::new();
 
@@ -122,7 +134,7 @@ impl<T> View<T> {
                 WidgetOrView::Widget(widget) => {
                     widgets.push(widget);
                 }
-                _ => {}
+                WidgetOrView::View(view) => {}
             }
         }
 
@@ -199,8 +211,15 @@ impl<T> View<T> {
 }
 
 
+
 // Macro assistance: https://danielkeep.github.io/tlborm/book/mbe-macro-rules.html
 
+// TODO: Move view building out of the macro and into View's init() function
+//       This will help considerably with future refactoring & view nesting
+
+
+
+// ========================== VStack macro ========================== //
 
 #[macro_export]
 /// Vertical layout (space widgets vertically)
@@ -240,7 +259,7 @@ macro_rules! VStack {
                             max_x = required_x;
                         }
                     }
-                    _ => {}
+                    RustUI::view::WidgetOrView::View(view) => {}
                 }
             }
 
@@ -254,20 +273,22 @@ macro_rules! VStack {
                 alignment: Alignment::Left,
             };
 
-            for item in &mut compiled_view.subview.components {
-                match item {
-                    RustUI::view::WidgetOrView::Widget(widget) => {
-                        // TODO: Hash widgets
-                        // compiled_view.component_map.insert(widget.id(), widget);
-                    }
-                    _ => {}
-                }
-            }
+            // for item in &mut compiled_view.subview.components {
+            //     match item {
+            //         RustUI::view::WidgetOrView::Widget(widget) => {
+            //             // TODO: Hash widgets
+            //             // compiled_view.component_map.insert(widget.id(), widget);
+            //         }
+            //         RustUI::view::WidgetOrView::View(view) => {}
+            //     }
+            // }
 
             compiled_view
         }
     };
 }
+
+// ========================== HStack macro ========================== //
 
 #[macro_export]
 macro_rules! HStack {
@@ -318,6 +339,7 @@ macro_rules! HStack {
     };
 }
 
+// ========================== Example macro ========================== //
 
 #[macro_export]
 macro_rules! example_view {
