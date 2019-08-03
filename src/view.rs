@@ -30,17 +30,12 @@ pub enum WidgetOrView<T> {
 
 // ========================== ViewComponent trait ========================== //
 
-pub enum ViewComponentType {
-    Widget,
-    View,
-}
-
 // TODO: This
-pub trait ViewComponent {
+pub trait ViewComponent<T> {
     // fn get_width(&self) -> u32;
     // fn get_height(&self) -> u32;
     // fn get_center(&self) -> (u32, u32);
-    fn get_component_type(&self) -> ViewComponentType;
+    fn as_component(self) -> WidgetOrView<T>;
 }
 
 // ========================== Alignment enum ========================== //
@@ -72,9 +67,9 @@ pub struct View<T> {
     pub alignment: Alignment,
 }
 
-impl<T> ViewComponent for View<T> {
-    fn get_component_type(&self) -> ViewComponentType {
-        ViewComponentType::View
+impl<T> ViewComponent<T> for View<T> {
+    fn as_component(self) -> WidgetOrView<T> {
+        WidgetOrView::View(self)
     }
 }
 
@@ -209,6 +204,18 @@ impl<T> View<T> {
         self.alignment = alignment;
         self
     }
+
+    // pub fn push_component(component: &mut impl ViewComponent, view: &mut Vec<WidgetOrView<T>>) {
+    //     match component.get_component_type() {
+    //         ViewComponentType::Widget => {
+    //             view.push(WidgetOrView::Widget(Box::new(component)));
+    //         }
+    //         ViewComponentType::View => {
+    //             //FIXME: Why can't I do this?
+    //             view.push(WidgetOrView::View(component));
+    //         }
+    //     }
+    // }
 }
 
 
@@ -240,24 +247,29 @@ macro_rules! VStack {
 
             // TODO: How to account for user-defined sizes, positions, etc?
             $(
-                let component = $x
-                    .with_id(current_id)
-                    .place(default_padding, current_y + default_padding);
+                let mut component = $x.as_component();
+                    // .with_id(current_id)
+                    // .place(default_padding, current_y + default_padding);
 
-                current_y += component.rect().height() as i32 + default_padding;
+                // current_y += component.rect().height() as i32 + default_padding;
 
                 // Note that widget gets moved here (can no longer be accessed within this scope)
-                view.push(WidgetOrView::Widget(Box::new(component)));
+                // view.push(WidgetOrView::Widget(Box::new(component)));
 
-                // match $x.get_component_type() {
-                //     ViewComponentType::Widget => {
-                //         view.push_widget(Box::new($x));
-                //     }
-                //     ViewComponentType::View => {
-                //         //FIXME: Why can't I do this?
-                //         // view.push_view($x);
-                //     }
-                // }
+                match &component {
+                    WidgetOrView::Widget(widget) => {
+                        // let mut updated_widget = widget
+                        //     .with_id(current_id)
+                        //     .place(default_padding, current_y + default_padding);
+
+                        // widget = Box::new(updated_widget);
+                    }
+                    WidgetOrView::View(subview) => {
+                        // view.push(subview);
+                    }
+                }
+
+                view.push(component);
 
                 current_id += 1;
             )+
@@ -318,14 +330,14 @@ macro_rules! HStack {
 
             // TODO: How to account for user-defined sizes, positions, etc?
             $(
-                let widget = $x
-                    .with_id(current_id)
-                    .place( current_x + default_padding, default_padding);
+                let widget = $x;
+                //     .with_id(current_id)
+                //     .place( current_x + default_padding, default_padding);
 
-                current_x += widget.rect().width() as i32 + default_padding;
+                // current_x += widget.rect().width() as i32 + default_padding;
 
                 // Note that widget gets moved here (can no longer be accessed within this scope)
-                view.push(Box::new(widget));
+                view.push(widget.as_component());
 
                 current_id += 1;
             )+

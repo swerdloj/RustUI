@@ -28,6 +28,7 @@ impl State {
 }
 
 /* TODO: Consider implementing macros such that the following syntax is adopted
+This will probably require a procedural macro
 
 VStack! {
     Button! {
@@ -57,7 +58,7 @@ fn main() {
             })
             .with_color(colors::WHITE),
 
-        // VStack!(Button::new("Nesting Test")),
+        VStack!(Button::new("Nesting Test")),
 
         Button::new("IncrementCounter")
             .with_on_click(|state: &mut State| {

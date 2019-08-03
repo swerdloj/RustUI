@@ -21,7 +21,7 @@ use sdl2::rect::Rect;
 use sdl2::render::TextureQuery;
 use sdl2::pixels::Color;
 use crate::backend::system::window::Window;
-use crate::view::{ViewComponent, ViewComponentType};
+use crate::view::{ViewComponent, WidgetOrView};
 use crate::font;
 
 /// Possible widget states
@@ -693,20 +693,20 @@ pub trait Widget<T> {
 
 // ========================== Macro Helper Trait Implementations ========================== //
 
-impl<T> ViewComponent for Button<T> {
-    fn get_component_type(&self) -> ViewComponentType {
-        ViewComponentType::Widget
+impl<T> ViewComponent<T> for Button<T> where T: 'static {
+    fn as_component(self) -> WidgetOrView<T> {
+        WidgetOrView::Widget(Box::new(self))
     }
 }
 
-impl<T> ViewComponent for Text<T> {
-    fn get_component_type(&self) -> ViewComponentType {
-        ViewComponentType::Widget
+impl<T> ViewComponent<T> for Text<T> where T: 'static {
+    fn as_component(self) -> WidgetOrView<T> {
+        WidgetOrView::Widget(Box::new(self))
     }
 }
 
-impl<T> ViewComponent for CheckBox<T> {
-    fn get_component_type(&self) -> ViewComponentType {
-        ViewComponentType::Widget
+impl<T> ViewComponent<T> for CheckBox<T> where T: 'static {
+    fn as_component(self) -> WidgetOrView<T> {
+        WidgetOrView::Widget(Box::new(self))
     }
 }
