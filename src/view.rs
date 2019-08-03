@@ -24,57 +24,23 @@ use super::font::{FontParams, Fonts};
 // TODO: Consider using this to distinguish subview components
 pub enum WidgetOrView<T> {
     Widget(Box<Widget<T>>),
-    View(SubView<T>),
+    // TODO: Should this be just a View?
+    View(View<T>),
 }
 
 // ========================== ViewComponent trait ========================== //
 
+pub enum ViewComponentType {
+    Widget,
+    View,
+}
+
 // TODO: This
-pub trait ViewComponent<T> {
-    fn get_text(&self) -> Option<Text<T>> {
-        None
-    }
-    fn get_width(&self) -> u32;
-    fn get_height(&self) -> u32;
-    fn get_center(&self) -> (u32, u32);
-}
-
-// ========================== SubView psuedo-type ========================== //
-
-pub struct SubView<T> {
-    pub components: Vec<WidgetOrView<T>>
-}
-
-// impl<T> IntoIterator for SubView<T> {
-//     type Item = WidgetOrView<T>;
-//     type IntoIter = ::std::vec::IntoIter<Self::Item>;
-
-//     fn into_iter(self) -> Self::IntoIter {
-//         self.components.into_iter()
-//     }
-// }
-
-impl<T> SubView<T> {
-    pub fn new() -> Self {
-        SubView {
-            components: Vec::new(),
-        }
-    }
-
-    pub fn push(&mut self, item: Box<Any>) {
-        // TODO: Evaluate type and push accordingly
-        // self.components.push();
-    }
-
-    pub fn push_widget(&mut self, widget: Box<Widget<T>>) {
-        // TODO: Hash widget id here?
-        self.components.push(WidgetOrView::Widget(widget));
-    }
-
-    pub fn push_view(&mut self, subview: SubView<T>) {
-        // TODO: see push_widget
-        self.components.push(WidgetOrView::View(subview));
-    }
+pub trait ViewComponent {
+    // fn get_width(&self) -> u32;
+    // fn get_height(&self) -> u32;
+    // fn get_center(&self) -> (u32, u32);
+    fn get_component_type(&self) -> ViewComponentType;
 }
 
 // ========================== Alignment enum ========================== //
@@ -86,8 +52,7 @@ impl<T> SubView<T> {
 pub enum Alignment {
     Center,
     Left,
-    // TODO: Will this be used?
-    // Right,
+    Right,
 }
 
 // ========================== View struct ========================== //
@@ -98,12 +63,19 @@ pub struct View<T> {
     // Map of user-assigned widget names -> widget
     pub component_map: HashMap<u32, Box<Widget<T>>>,
 
-    pub subview: SubView<T>,
+    pub components: Vec<WidgetOrView<T>>,
+
     pub view_width: u32,
     pub view_height: u32,
     pub fixed_size: bool,
     pub default_padding: u32,
     pub alignment: Alignment,
+}
+
+impl<T> ViewComponent for View<T> {
+    fn get_component_type(&self) -> ViewComponentType {
+        ViewComponentType::View
+    }
 }
 
 impl<T> View<T> {
@@ -112,16 +84,41 @@ impl<T> View<T> {
     pub fn widgets_mut(&mut self) -> Vec<&mut Box<Widget<T>>> {
         let mut widgets = Vec::new();
 
-        for item in &mut self.subview.components {
+        for item in &mut self.components {
             match item {
                 WidgetOrView::Widget(widget) => {
                     widgets.push(widget);
                 }
-                WidgetOrView::View(view) => {}
+                WidgetOrView::View(nested_view) => {
+                    // Recursively iterate through all nested views
+                    widgets.append(&mut nested_view.widgets_mut());
+                }
             }
         }
 
         widgets
+    }
+
+    pub fn add_component(&mut self, component: WidgetOrView<T>) {
+        match component {
+            WidgetOrView::Widget(widget) => {
+                self.add_widget(widget);
+            }
+            
+            WidgetOrView::View(view) => {
+                self.add_view(view);
+            }
+        }
+    }
+
+    pub fn add_widget(&mut self, widget: Box<Widget<T>>) {
+        // TODO: Hash widget id here?
+        self.components.push(WidgetOrView::Widget(widget));
+    }
+
+    pub fn add_view(&mut self, nested_view: View<T>) {
+        // TODO: see push_widget
+        self.components.push(WidgetOrView::View(nested_view));
     }
 
     /// Returns a vec of references to all widgets within a view
@@ -129,12 +126,16 @@ impl<T> View<T> {
     pub fn widgets(&self) -> Vec<&Box<Widget<T>>> {
         let mut widgets = Vec::new();
 
-        for item in &self.subview.components {
+        for item in &self.components {
             match item {
                 WidgetOrView::Widget(widget) => {
                     widgets.push(widget);
                 }
-                WidgetOrView::View(view) => {}
+
+                WidgetOrView::View(nested_view) => {
+                    // Recursively iterate through all nested views
+                    widgets.append(&mut nested_view.widgets());
+                }
             }
         }
 
@@ -147,7 +148,7 @@ impl<T> View<T> {
         // TODO: How to extend this lifetime and implement for text rendering?
         let mut font_manager = Fonts::new();
 
-        for item in &mut self.subview.components {
+        for item in &mut self.components {
             match item {
                 // 
                 WidgetOrView::Widget(widget) => {
@@ -159,7 +160,7 @@ impl<T> View<T> {
                     }
                 }
 
-                WidgetOrView::View(subview) => {
+                WidgetOrView::View(nested_view) => {
                     // TODO: ??
                 }
             }
@@ -168,7 +169,7 @@ impl<T> View<T> {
         // Step 2 -> Align contents
         match self.alignment {
             Alignment::Center => { // Translate each widget to be centered
-                for item in &mut self.subview.components {
+                for item in &mut self.components {
                     match item {
                         WidgetOrView::Widget(widget) => {
                             let new_x = (self.view_width / 2) as i32 - (widget.draw_width() / 2) as i32;
@@ -226,7 +227,7 @@ impl<T> View<T> {
 macro_rules! VStack {
     ( $($x:expr), + ) => {
         {
-            let mut view = SubView::new();
+            let mut view = Vec::new();
 
             let default_padding = 10;
             // Current draw location
@@ -239,19 +240,29 @@ macro_rules! VStack {
 
             // TODO: How to account for user-defined sizes, positions, etc?
             $(
-                let widget = $x
+                let component = $x
                     .with_id(current_id)
                     .place(default_padding, current_y + default_padding);
 
-                current_y += widget.rect().height() as i32 + default_padding;
+                current_y += component.rect().height() as i32 + default_padding;
 
                 // Note that widget gets moved here (can no longer be accessed within this scope)
-                view.push_widget(Box::new(widget));
+                view.push(WidgetOrView::Widget(Box::new(component)));
+
+                // match $x.get_component_type() {
+                //     ViewComponentType::Widget => {
+                //         view.push_widget(Box::new($x));
+                //     }
+                //     ViewComponentType::View => {
+                //         //FIXME: Why can't I do this?
+                //         // view.push_view($x);
+                //     }
+                // }
 
                 current_id += 1;
             )+
 
-            for item in &view.components {
+            for item in &view {
                 match item {
                     RustUI::view::WidgetOrView::Widget(widget) => {
                         let required_x = widget.rect().x() as u32 + widget.rect().width() as u32;
@@ -264,7 +275,7 @@ macro_rules! VStack {
             }
 
             let mut compiled_view = View {
-                subview: view,
+                components: view,
                 component_map: std::collections::HashMap::new(),
                 view_width: max_x + default_padding as u32,
                 view_height: current_y as u32 + default_padding as u32,
@@ -353,8 +364,8 @@ macro_rules! example_view {
         , 
         // one or more times
         +
-    ) => {
-        {
+    ) => { // Contain the macro
+        { // What the macro expands to
             let mut view = SubView::new();
 
             // Begin repetition

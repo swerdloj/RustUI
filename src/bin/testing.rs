@@ -11,7 +11,7 @@ extern crate sdl2;
 
 use RustUI::backend::system::window::Window;
 use RustUI::widgets::*;
-use RustUI::view::{View, SubView, Alignment};
+use RustUI::view::*;
 
 struct State {
     button_clicks: u16,
@@ -48,6 +48,7 @@ fn main() {
 
     let main_window = Window::init("RustUI Testing", &mut app_state);
 
+    // TODO: Change/create macros to wrap items in ViewOrWidget(..)
     let test_view = VStack!(
         Text::new("CounterText", "Counter: 0")
             // TODO: When updating text, the text component must be resized
@@ -55,6 +56,8 @@ fn main() {
                 format!("Counter: {}", state.button_clicks)
             })
             .with_color(colors::WHITE),
+
+        // VStack!(Button::new("Nesting Test")),
 
         Button::new("IncrementCounter")
             .with_on_click(|state: &mut State| {

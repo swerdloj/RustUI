@@ -21,6 +21,7 @@ use sdl2::rect::Rect;
 use sdl2::render::TextureQuery;
 use sdl2::pixels::Color;
 use crate::backend::system::window::Window;
+use crate::view::{ViewComponent, ViewComponentType};
 use crate::font;
 
 /// Possible widget states
@@ -687,5 +688,25 @@ pub trait Widget<T> {
     where Self: Sized
     {
         // The user releases a pressed key (see on_key_down)
+    }
+}
+
+// ========================== Macro Helper Trait Implementations ========================== //
+
+impl<T> ViewComponent for Button<T> {
+    fn get_component_type(&self) -> ViewComponentType {
+        ViewComponentType::Widget
+    }
+}
+
+impl<T> ViewComponent for Text<T> {
+    fn get_component_type(&self) -> ViewComponentType {
+        ViewComponentType::Widget
+    }
+}
+
+impl<T> ViewComponent for CheckBox<T> {
+    fn get_component_type(&self) -> ViewComponentType {
+        ViewComponentType::Widget
     }
 }
