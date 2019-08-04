@@ -25,9 +25,20 @@ The following items are required to run RustUI projects:
 3. In widgets.rs, update the Text widget's render function with the new font file
 
 ### TODOs:
+- Basic Widgets:
+  - Slider (horizontal + vertical)
+  - Text Input (static + dynamic)
+  - Drop Menu
+  - Radio Buttons
+- Basic Views:
+  - HStack
+  - Menubar
+  - Header/Footer
+- Basic Components:
+  - Dividers
+  - Nested fixed-size views scrollable via scrollbars
 - Add a GridView macro with respective methods (like tkinter)
 - Implement `font.rs` (separate widgets, backend, and font).
-- Implement basic widgets
 - Accept widget ids as strings, then store their hashes
 - Store a view's widget ids in a hash table
 - Stabilize FPS (without fixed loop dealys) -- implement delta time

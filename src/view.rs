@@ -145,7 +145,6 @@ impl<T> View<T> {
 
         for item in &mut self.components {
             match item {
-                // 
                 WidgetOrView::Widget(widget) => {
                     // If the widget has a text component, obtain its surface size
                     if let Some(text_component) = widget.text_component() {
@@ -156,7 +155,7 @@ impl<T> View<T> {
                 }
 
                 WidgetOrView::View(nested_view) => {
-                    // TODO: ??
+                    nested_view.init(ttf_context);
                 }
             }
         }
@@ -256,11 +255,12 @@ macro_rules! VStack {
                 // Note that widget gets moved here (can no longer be accessed within this scope)
                 // view.push(WidgetOrView::Widget(Box::new(component)));
 
-                match &component {
+                match &mut component {
                     WidgetOrView::Widget(widget) => {
-                        // let mut updated_widget = widget
-                        //     .with_id(current_id)
-                        //     .place(default_padding, current_y + default_padding);
+                        widget.assign_id(current_id);
+                        widget.place(default_padding, current_y + default_padding);
+
+                        current_y += widget.rect().height() as i32 + default_padding;
 
                         // widget = Box::new(updated_widget);
                     }

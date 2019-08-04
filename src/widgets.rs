@@ -117,12 +117,20 @@ impl<T> Button<T> {
     }
 
     // TODO: id should be hashed from new(str), delete this later
-    pub fn with_id(mut self, id: u32) -> Self {
+    // pub fn with_id(mut self, id: u32) -> Self {
+    //     self.id = id;
+    //     self
+    // }
+
+
+}
+
+impl<T> Widget<T> for Button<T> {
+    fn assign_id(&mut self, id: u32) {
         self.id = id;
-        self
     }
 
-    pub fn place(mut self, x: i32, y: i32) -> Self {
+    fn place(&mut self, x: i32, y: i32)  {
         // Place the button at (x, y)
         self.rect = Rect::new(x, y, self.rect.width(), self.rect.height());
 
@@ -130,12 +138,8 @@ impl<T> Button<T> {
         if let Some(button_text) = &mut self.text {
             button_text.container_rect = self.rect;
         }
-
-        self
     }
-}
 
-impl<T> Widget<T> for Button<T> {
     fn text_component(&mut self) -> Option<&mut Text<T>> {
         if let Some(text) = &mut self.text {
             return Some(text);
@@ -262,12 +266,6 @@ impl<T> Text<T> {
         self
     }
 
-    // TODO: id should be hashed from new(str), delete this later
-    pub fn with_id(mut self, id: u32) -> Self {
-        self.id = id;
-        self
-    }
-
     pub fn with_color(mut self, color: Color) -> Self {
         self.primary_color = color;
         self
@@ -285,11 +283,6 @@ impl<T> Text<T> {
 
     pub fn auto_resize(mut self) -> Self {
         self.auto_resize = true;
-        self
-    }
-
-    pub fn place(mut self, x: i32, y: i32) -> Self {
-        self.container_rect = Rect::new(x, y, self.container_rect.width(), self.container_rect.height());
         self
     }
 
@@ -332,6 +325,14 @@ impl<T> Text<T> {
 }
 
 impl<T> Widget<T> for Text<T> {
+    fn assign_id(&mut self, id: u32) {
+        self.id = id;
+    }
+
+    fn place(&mut self, x: i32, y: i32) {
+        self.container_rect = Rect::new(x, y, self.container_rect.width(), self.container_rect.height());
+    }
+
     fn text_component(&mut self) -> Option<&mut Text<T>> {
         Some(self)
     }
@@ -470,37 +471,15 @@ impl<T> CheckBox<T> {
         }
     }
 
-    pub fn with_id(mut self, id: u32) -> Self {
-        self.id = id;
-        self
-    }
-
     pub fn with_text(mut self, text: &str) -> Self {
         // TODO: How to hanle the sub-widget's id?
         //       Note that the sub-widget is not actually part of the view
-        self.text = Some(
-            Text::new("", text)
-                .place(self.rect.x() + (self.checkbox_width + self.checkbox_padding_right) as i32, 
-                       self.rect.y()
-                )
-                .with_color(colors::WHITE)
-        );
-        self
-    }
 
-    pub fn place(mut self, x: i32, y: i32) -> Self {
-        self.rect = Rect::new(x, y, self.rect.width(), self.rect.height());
+        let mut attached_text = Text::new("", text).with_color(colors::WHITE);
+        attached_text.place(self.rect.x() + (self.checkbox_width + self.checkbox_padding_right) as i32, 
+                       self.rect.y());
 
-        if let Some(text) = &mut self.text {
-            text.container_rect = Rect::new(
-                x + (self.checkbox_width + self.checkbox_padding_right) as i32,
-                // TODO: Is this y position correct?
-                self.rect.y(),
-                self.rect.width(),
-                self.rect.height()
-            );
-        }
-
+        self.text = Some(attached_text);
         self
     }
 
@@ -526,6 +505,24 @@ impl<T> CheckBox<T> {
 }
 
 impl<T> Widget<T> for CheckBox<T> {
+    fn assign_id(&mut self, id: u32) {
+        self.id = id;
+    }
+
+    fn place(&mut self, x: i32, y: i32) {
+        self.rect = Rect::new(x, y, self.rect.width(), self.rect.height());
+
+        if let Some(text) = &mut self.text {
+            text.container_rect = Rect::new(
+                x + (self.checkbox_width + self.checkbox_padding_right) as i32,
+                // TODO: Is this y position correct?
+                self.rect.y(),
+                self.rect.width(),
+                self.rect.height()
+            );
+        }
+    }
+
     fn text_component(&mut self) -> Option<&mut Text<T>> {
         if let Some(text) = &mut self.text {
             return Some(text);
@@ -635,7 +632,9 @@ pub trait Widget<T> {
 
     }
 
-    // fn place(&mut self, x: i32, y: i32);
+    fn assign_id(&mut self, id: u32);
+
+    fn place(&mut self, x: i32, y: i32);
 
     fn on_click(&mut self, state: &mut T);
 

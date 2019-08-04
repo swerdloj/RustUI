@@ -58,7 +58,19 @@ fn main() {
             })
             .with_color(colors::WHITE),
 
-        VStack!(Button::new("Nesting Test")),
+        VStack!(
+            Button::new("Nesting Test")
+                .with_text("Nested1")
+                .with_on_click(|_| {
+                    println!("Nested view widget")
+                }),
+
+            Text::new("Nesting Test2", "Nested2")
+                .with_color(colors::WHITE),
+
+            CheckBox::new("asdf")
+                .with_text("Nested3")
+        ),
 
         Button::new("IncrementCounter")
             .with_on_click(|state: &mut State| {
@@ -99,7 +111,7 @@ fn main() {
             .with_on_click(example_callback) // Can now simply pass in regular functions
             .with_text("Button")        
     )
-    .fixed_width(300)
+    .fixed_width(400)
     .align_content(Alignment::Center);
 
     // TODO: This must allow some mechanism for dynamic views
