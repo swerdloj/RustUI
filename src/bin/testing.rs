@@ -58,17 +58,17 @@ fn main() {
             })
             .with_color(colors::WHITE),
 
-        VStack!(
+        HStack!(
             Button::new("Nesting Test")
                 .with_text("Nested1")
                 .with_on_click(|_| {
-                    println!("Nested view widget")
+                    println!("Nested view widget");
                 }),
 
             Text::new("Nesting Test2", "Nested2")
                 .with_color(colors::WHITE),
 
-            CheckBox::new("asdf")
+            CheckBox::new("Nesting Test3")
                 .with_text("Nested3")
         ),
 

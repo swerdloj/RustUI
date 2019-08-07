@@ -94,6 +94,27 @@ impl<T> View<T> {
         widgets
     }
 
+    /// Returns a vec of references to all widgets within a view
+    // TODO: This should use the hashmap
+    pub fn widgets(&self) -> Vec<&Box<Widget<T>>> {
+        let mut widgets = Vec::new();
+
+        for item in &self.components {
+            match item {
+                WidgetOrView::Widget(widget) => {
+                    widgets.push(widget);
+                }
+
+                WidgetOrView::View(nested_view) => {
+                    // Recursively iterate through all nested views
+                    widgets.append(&mut nested_view.widgets());
+                }
+            }
+        }
+
+        widgets
+    }
+
     pub fn add_component(&mut self, component: WidgetOrView<T>) {
         match component {
             WidgetOrView::Widget(widget) => {
@@ -116,26 +137,6 @@ impl<T> View<T> {
         self.components.push(WidgetOrView::View(nested_view));
     }
 
-    /// Returns a vec of references to all widgets within a view
-    // TODO: This should use the hashmap
-    pub fn widgets(&self) -> Vec<&Box<Widget<T>>> {
-        let mut widgets = Vec::new();
-
-        for item in &self.components {
-            match item {
-                WidgetOrView::Widget(widget) => {
-                    widgets.push(widget);
-                }
-
-                WidgetOrView::View(nested_view) => {
-                    // Recursively iterate through all nested views
-                    widgets.append(&mut nested_view.widgets());
-                }
-            }
-        }
-
-        widgets
-    }
 
     // TODO: Build the view here rather than within the macro.
     pub fn init(&mut self, ttf_context: &ttf::Sdl2TtfContext) {
@@ -241,23 +242,17 @@ macro_rules! VStack {
 
             let mut max_x: u32 = 0;
 
-            // FIXME: This should be handled by Button::new(str) and derive from the string
+            // FIXME: This should be handled by Widget::new(str) and derive from the string
             let mut current_id = 0;
 
             // TODO: How to account for user-defined sizes, positions, etc?
             $(
                 let mut component = $x.as_component();
-                    // .with_id(current_id)
-                    // .place(default_padding, current_y + default_padding);
-
-                // current_y += component.rect().height() as i32 + default_padding;
-
-                // Note that widget gets moved here (can no longer be accessed within this scope)
-                // view.push(WidgetOrView::Widget(Box::new(component)));
 
                 match &mut component {
                     WidgetOrView::Widget(widget) => {
                         widget.assign_id(current_id);
+                        // TODO: In order to place text, we must first know its width
                         widget.place(default_padding, current_y + default_padding);
 
                         current_y += widget.rect().height() as i32 + default_padding;
@@ -317,7 +312,7 @@ macro_rules! VStack {
 macro_rules! HStack {
     ( $($x:expr), + ) => {
         {
-            let mut view = SubView::new();
+            let mut view = Vec::new();
 
             let default_padding = 10;
             // Current draw location
@@ -325,39 +320,61 @@ macro_rules! HStack {
 
             let mut max_y: u32 = 0;
 
-            // FIXME: This should be handled by Button::new(str) and derive from the string
-            let mut current_id = 0;
+            // FIXME: This should be handled by Widget::new(str) and derive from the string
+            let mut current_id = 10;
 
             // TODO: How to account for user-defined sizes, positions, etc?
             $(
-                let widget = $x;
-                //     .with_id(current_id)
-                //     .place( current_x + default_padding, default_padding);
+                let mut component = $x.as_component();
 
-                // current_x += widget.rect().width() as i32 + default_padding;
+                match &mut component {
+                    WidgetOrView::Widget(widget) => {
+                        widget.assign_id(current_id);
+                        widget.place(current_x + default_padding, default_padding);
 
-                // Note that widget gets moved here (can no longer be accessed within this scope)
-                view.push(widget.as_component());
+                        current_x += widget.rect().width() as i32 + default_padding;
+                    }
+                    WidgetOrView::View(subview) => {}
+                }
+
+                view.push(component);
 
                 current_id += 1;
             )+
 
-            for widget in &view {
-                let required_y = widget.rect().y() as u32 + widget.rect().height() as u32;
-                if required_y > max_y {
-                    max_y = required_y;
+            for item in &view {
+                match item {
+                    RustUI::view::WidgetOrView::Widget(widget) => {
+                        let required_y = widget.rect().y() as u32 + widget.rect().height() as u32;
+                        if required_y > max_y {
+                            max_y = required_y;
+                        }
+                    }
+                    RustUI::view::WidgetOrView::View(view) => {}
                 }
             }
 
-            View {
-                subview: view,
-                component_map: HashMap::new(),
+            let mut compiled_view = View {
+                components: view,
+                component_map: std::collections::HashMap::new(),
                 view_width: current_x as u32 + default_padding as u32,
                 view_height: max_y + default_padding as u32,
                 fixed_size: false,
                 default_padding: default_padding as u32,
                 alignment: Alignment::Left,
-            }
+            };
+
+            // for item in &mut compiled_view.subview.components {
+            //     match item {
+            //         RustUI::view::WidgetOrView::Widget(widget) => {
+            //             // TODO: Hash widgets
+            //             // compiled_view.component_map.insert(widget.id(), widget);
+            //         }
+            //         RustUI::view::WidgetOrView::View(view) => {}
+            //     }
+            // }
+
+            compiled_view
         }
     };
 }

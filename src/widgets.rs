@@ -115,14 +115,6 @@ impl<T> Button<T> {
         self.on_click = Some(Box::new(callback));
         self
     }
-
-    // TODO: id should be hashed from new(str), delete this later
-    // pub fn with_id(mut self, id: u32) -> Self {
-    //     self.id = id;
-    //     self
-    // }
-
-
 }
 
 impl<T> Widget<T> for Button<T> {
@@ -632,6 +624,7 @@ pub trait Widget<T> {
 
     }
 
+    // TODO: store id hash
     fn assign_id(&mut self, id: u32);
 
     fn place(&mut self, x: i32, y: i32);
