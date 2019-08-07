@@ -108,6 +108,30 @@ pub mod system {
                 }
             }
 
+            /// Set the window icon to the specified image
+            pub fn set_icon(&mut self, resource_path: &str) {
+
+                //FIXME: This is temporary. See TODO below
+                let path = std::path::Path::new(resource_path);
+                let surface = sdl2::surface::Surface::load_bmp(path).expect("Failed to load resource");
+
+                let mut window = self.canvas.window_mut();
+
+                window.set_icon(surface);
+
+                /*  TODO:
+                    1. Convert str to Path
+                    2. Match on path ending (.jpg, .bmp, .png, etc.)
+                    3. Load surface
+                    4. Consider creating a generic 'load surface' function that takes str and returns surface
+                    
+                    For now, use the sdl2::surface::Surface::load_bmp(path) method
+                */
+
+                // It looks like a `SurfaceRef` is simply a `&Surface`
+                // window.set_icon(SurfaceRef)
+            }
+
             /// Resizes the application window to the specified pixel values
             fn resize_window(&mut self, width: u32, height: u32) {
                 self.canvas.window_mut().set_size(width, height).expect("Failed to resize");

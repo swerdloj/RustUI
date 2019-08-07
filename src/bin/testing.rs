@@ -27,29 +27,12 @@ impl State {
     }
 }
 
-/* TODO: Consider implementing macros such that the following syntax is adopted
-This will probably require a procedural macro
-
-VStack! {
-    Button! {
-        on_click(...),
-
-        Text! {
-            color(...)
-        }
-    },
-    Text! {
-        ...
-    }
-} 
-*/
-
 fn main() {
     let mut app_state = State::new();
 
-    let main_window = Window::init("RustUI Testing", &mut app_state);
+    let mut main_window = Window::init("RustUI Testing", &mut app_state);
+    main_window.set_icon("./res/logo/temp_logo_low_quality.bmp");
 
-    // TODO: Change/create macros to wrap items in ViewOrWidget(..)
     let test_view = VStack!(
         Text::new("CounterText", "Counter: 0")
             // TODO: When updating text, the text component must be resized
@@ -58,7 +41,7 @@ fn main() {
             })
             .with_color(colors::WHITE),
 
-        HStack!(
+        VStack!(
             Button::new("Nesting Test")
                 .with_text("Nested1")
                 .with_on_click(|_| {
