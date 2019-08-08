@@ -1,30 +1,14 @@
-/* TODO: Nested View + Widget trees
-
-Consider some implementation such as the example enum below.
-
-The following resources may enable type checking while nesting:
-https://stackoverflow.com/questions/34214136/how-do-i-match-the-type-of-an-expression-in-a-rust-macro
-https://doc.rust-lang.org/std/any/index.html
-
-Furthermore, consider creating a shared trait for both views and widgets.
-This trait could include a method for obtaining the object type, eliminating the need for
-the awkward enum below.
-
-*/
-
 use sdl2::ttf;
 use sdl2::rect::Rect;
 use std::collections::HashMap;
-use std::any::{Any, TypeId};
 use super::widgets::*;
 use super::font::{FontParams, Fonts};
 
 // ========================== WidgetOrView enum ========================== //
 
-// TODO: Consider using this to distinguish subview components
+/// Contains either a Widget or a View. Handle via `match`.
 pub enum WidgetOrView<T> {
     Widget(Box<Widget<T>>),
-    // TODO: Should this be just a View?
     View(View<T>),
 }
 
@@ -44,6 +28,7 @@ pub trait ViewComponent<T> {
 /// ## Alignments
 /// * `Left` - Align each widget to the left within its view (default)
 /// * `Center` - Center each widget within its view
+/// * `Right` - TODO: This
 pub enum Alignment {
     Center,
     Left,
@@ -74,7 +59,7 @@ impl<T> ViewComponent<T> for View<T> {
 }
 
 impl<T> View<T> {
-    /// Returns a vec of mutable references to all widgets within a view
+    /// Returns a `vec` of mutable references to all widgets within a view
     // TODO: This should use the hashmap
     pub fn widgets_mut(&mut self) -> Vec<&mut Box<Widget<T>>> {
         let mut widgets = Vec::new();
@@ -94,7 +79,7 @@ impl<T> View<T> {
         widgets
     }
 
-    /// Returns a vec of references to all widgets within a view
+    /// Returns a `vec` of references to all widgets within a view
     // TODO: This should use the hashmap
     pub fn widgets(&self) -> Vec<&Box<Widget<T>>> {
         let mut widgets = Vec::new();
@@ -114,29 +99,6 @@ impl<T> View<T> {
 
         widgets
     }
-
-    pub fn add_component(&mut self, component: WidgetOrView<T>) {
-        match component {
-            WidgetOrView::Widget(widget) => {
-                self.add_widget(widget);
-            }
-            
-            WidgetOrView::View(view) => {
-                self.add_view(view);
-            }
-        }
-    }
-
-    pub fn add_widget(&mut self, widget: Box<Widget<T>>) {
-        // TODO: Hash widget id here?
-        self.components.push(WidgetOrView::Widget(widget));
-    }
-
-    pub fn add_view(&mut self, nested_view: View<T>) {
-        // TODO: see push_widget
-        self.components.push(WidgetOrView::View(nested_view));
-    }
-
 
     // TODO: Build the view here rather than within the macro.
     pub fn init(&mut self, ttf_context: &ttf::Sdl2TtfContext) {
@@ -204,18 +166,6 @@ impl<T> View<T> {
         self.alignment = alignment;
         self
     }
-
-    // pub fn push_component(component: &mut impl ViewComponent, view: &mut Vec<WidgetOrView<T>>) {
-    //     match component.get_component_type() {
-    //         ViewComponentType::Widget => {
-    //             view.push(WidgetOrView::Widget(Box::new(component)));
-    //         }
-    //         ViewComponentType::View => {
-    //             //FIXME: Why can't I do this?
-    //             view.push(WidgetOrView::View(component));
-    //         }
-    //     }
-    // }
 }
 
 
@@ -257,10 +207,8 @@ macro_rules! VStack {
 
                         current_y += widget.rect().height() as i32 + default_padding;
 
-                        // widget = Box::new(updated_widget);
                     }
                     WidgetOrView::View(subview) => {
-                        // view.push(subview);
                     }
                 }
 

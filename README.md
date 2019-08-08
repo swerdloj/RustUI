@@ -22,7 +22,7 @@ The following items are required to run RustUI projects:
 ## Usage (unstable)
 1. Download the above dependencies, and place into project root directory
 2. When using text, place the .ttf font in /res/font/
-3. In widgets.rs, update the Text widget's render function with the new font file
+3. In font.rs, update `default_font` for the `FontParams` struct
 
 ### TODOs:
 - Basic Widgets:

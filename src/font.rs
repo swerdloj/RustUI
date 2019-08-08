@@ -44,7 +44,7 @@ impl FontParams {
 
 /// Backend for font handling
 pub struct Fonts<'ttf> {
-    /// The TTF context utilized by the application for text
+    // The TTF context utilized by the application for text
     // ttf_context: &'ttf Sdl2TtfContext,
 
     /// Map of (FontParams -> Loaded Font)

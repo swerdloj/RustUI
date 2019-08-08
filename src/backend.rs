@@ -81,11 +81,15 @@ pub mod system {
                 let video_subsystem = sdl_context.video().map_err(|e| e.to_string()).unwrap();
                 let ttf_context = sdl2::ttf::init().map_err(|e| e.to_string()).unwrap();
 
-                let default_window = video_subsystem
+                let mut default_window = video_subsystem
                                      .window(window_title, 800, 600)
                                      .position_centered()
                                      .build()
                                      .expect("Failed to create window");
+
+                // Raise and focus the window
+                // FIXME: Move this somewhere else and remove above `mut`
+                default_window.raise();
 
                 let default_window_canvas = default_window
                                             .into_canvas()
@@ -111,7 +115,7 @@ pub mod system {
             /// Set the window icon to the specified image
             pub fn set_icon(&mut self, resource_path: &str) {
 
-                //FIXME: This is temporary. See TODO below
+                // FIXME: This is temporary. See TODO below
                 let path = std::path::Path::new(resource_path);
                 let surface = sdl2::surface::Surface::load_bmp(path).expect("Failed to load resource");
 

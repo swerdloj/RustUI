@@ -35,7 +35,6 @@ pub enum WidgetState {
     Active,
     Hovering,
     Base,
-    // can include structs, algebraic types, etc.
 }
 
 /// Default color implementations
@@ -63,10 +62,6 @@ struct WidgetData {
 }
 
 // TODO: Consider callback types: https://oribenshir.github.io/afternoon_rusting/blog/closures
-
-// TODO: When instiating a widget, this is potential syntax via a builder:
-// Button::new().primary_color(...).padding(...).hover_color(...)
-// Consider replacing Button::new() with just 'Button!' to keep the syntax design philosophy in tact
 
 // TODO: Replace 'T' with 'S' for the sake of clarity?
 // NOTE: In this module, the generic type 'T' refers EXCLUSIVELY to user-defined state
@@ -378,8 +373,8 @@ impl<T> Widget<T> for Text<T> {
         // FIXME: Allocating texture_creator here is probably bad if we use it each render
         let texture_creator = window.canvas.texture_creator();
 
-        // FIXME: Same here. Consider storing loaded fonts into some data structure
-        // TODO: How to handle different text sizes?
+        // FIXME: Same here.
+        // TODO: Implement font.rs
         let font = window.ttf_context.load_font(
             std::path::Path::new("./res/font/OpenSans-Regular.ttf"), 
             20
@@ -620,9 +615,7 @@ pub trait Widget<T> {
     /// Update the widget with known text dimensions  
     /// - Note that this function is called **only when text exists**  
     /// - Improper usage will therefore `panic` at `.expect()` on a `None` object
-    fn assign_text_dimensions(&mut self, dims: (u32, u32)) {
-
-    }
+    fn assign_text_dimensions(&mut self, dims: (u32, u32)) {}
 
     // TODO: store id hash
     fn assign_id(&mut self, id: u32);
@@ -653,32 +646,27 @@ pub trait Widget<T> {
 
 
     fn on_hover() 
-    where Self: Sized
-    {
+    where Self: Sized {
         // Mouse hovers over widget
     }
 
     fn on_mouse_down() 
-    where Self: Sized
-    {
+    where Self: Sized {
         // User clicks (consider this for widgets such as sliders)
     }
 
     fn on_mouse_up() 
-    where Self: Sized
-    {
+    where Self: Sized {
         // User releasese mouse (consider this for widgets such as sliders)
     }
 
     fn on_key_down() 
-    where Self: Sized
-    {
+    where Self: Sized {
         // The user presses down a key with the current widget selected
     }
 
     fn on_key_up() 
-    where Self: Sized
-    {
+    where Self: Sized {
         // The user releases a pressed key (see on_key_down)
     }
 }

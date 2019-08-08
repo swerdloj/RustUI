@@ -4,7 +4,7 @@ Cargo.lock
 *.dll
 *.lib
 /res/font/*.ttf
-/res/logo/*.bmp
+/res/logo/*
 *.bat
 /.vscode
 /other
