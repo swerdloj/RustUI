@@ -52,7 +52,7 @@ pub mod system {
         use sdl2::mouse::MouseButton;
         use sdl2::rect::Point;
         use crate::view::{View};
-        use crate::widgets::WidgetState;
+        use crate::widgets::widget::WidgetState;
         use crate::font::{FontParams, Fonts};
         use super::state::{ApplicationState};
 

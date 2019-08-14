@@ -1,7 +1,7 @@
 use sdl2::ttf;
 use sdl2::rect::Rect;
 use std::collections::HashMap;
-use super::widgets::*;
+use super::widgets::widget::*;
 use super::font::{FontParams, Fonts};
 
 // ========================== WidgetOrView enum ========================== //

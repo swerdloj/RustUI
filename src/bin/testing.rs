@@ -10,6 +10,7 @@ extern crate RustUI;
 extern crate sdl2;
 
 use RustUI::backend::system::window::Window;
+use RustUI::widgets::widget::colors;
 use RustUI::widgets::*;
 use RustUI::view::*;
 
