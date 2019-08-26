@@ -20,14 +20,14 @@ The following items are required to run RustUI projects:
 
 ## Usage (unstable)
 ### Windows
-Download the above dependencies, and place into project root directory
+Download the above dependencies and place into project root directory
 ### Linux
-Check for distribution-specific packages/repos
+Check for distribution-specific development packages/repos for the required libraries
 ### General
 1. When using text, place the .ttf font in /res/font/
 2. In font.rs, update `default_font` for the `FontParams` struct
 
-### TODOs:
+## TODOs:
 - Scaling for high resolution/dpi displays
 - Basic Widgets:
   - Slider (horizontal + vertical)
