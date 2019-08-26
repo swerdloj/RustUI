@@ -3,7 +3,8 @@ Rust GUI library inspired by SwiftUI.
 
 ## Testing Binaries
 Different executables can be tested by including them in /src/bin.  
-Run them via `cargo run --bin file_name`
+Run them via `cargo run --bin file_name`  
+For simplification, a script can be created to enter this command and any parameters.
 
 ## Current Standing
 Very early development
@@ -11,20 +12,23 @@ Very early development
 ## Dependencies
 The following items are required to run RustUI projects:
 - [SDL2](https://www.libsdl.org/download-2.0.php)
-  - SDL2.dll
-  - SDL2.lib
-- [SDL2_tff](https://www.libsdl.org/projects/SDL_ttf/)
-  - SDL2_tff.dll
-  - SDL2_tff.lib
-  - libfreetype-6.dll
-  - zlib1.dll
+  - SDL2
+- [SDL2_ttf](https://www.libsdl.org/projects/SDL_ttf/)
+  - SDL2_ttf
+  - libfreetype-6
+  - zlib1
 
 ## Usage (unstable)
-1. Download the above dependencies, and place into project root directory
-2. When using text, place the .ttf font in /res/font/
-3. In font.rs, update `default_font` for the `FontParams` struct
+### Windows
+Download the above dependencies, and place into project root directory
+### Linux
+Check for distribution-specific packages/repos
+### General
+1. When using text, place the .ttf font in /res/font/
+2. In font.rs, update `default_font` for the `FontParams` struct
 
 ### TODOs:
+- Scaling for high resolution/dpi displays
 - Basic Widgets:
   - Slider (horizontal + vertical)
   - Text Input (static + dynamic)

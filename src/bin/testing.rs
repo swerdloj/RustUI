@@ -33,6 +33,7 @@ fn main() {
 
     let mut main_window = Window::init("RustUI Testing", &mut app_state);
     main_window.set_icon("./res/logo/temp_logo_low_quality.bmp");
+    // main_window.set_logical_size(800, 600);
 
     let test_view = VStack!(
         Text::new("CounterText", "Counter: 0")
