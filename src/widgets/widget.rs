@@ -9,6 +9,7 @@ TODO: Consider moving event handling (backend) to be part of Widget functionalit
 
 TODO: To properly fit view components, there must be some way of getting text rect dimensions
  from a string given font size.
+ 
  Consider a ViewComponent trait with methods such as `get_width` and `get_height`
  and implement this for all widgets and views
 */

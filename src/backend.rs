@@ -139,7 +139,7 @@ pub mod system {
             /// Used for scaling
             // TODO: See this: https://gamedev.stackexchange.com/questions/119414/resolution-scaling
             pub fn set_logical_size(&mut self, width: u32, height: u32) {
-                self.canvas.set_logical_size(width, height);
+                self.canvas.set_logical_size(width, height).unwrap();
             }
 
             /// Resizes the application window to the specified pixel values

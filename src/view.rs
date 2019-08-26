@@ -8,7 +8,7 @@ use super::font::{FontParams, Fonts};
 
 /// Contains either a Widget or a View. Handle via `match`.
 pub enum WidgetOrView<T> {
-    Widget(Box<Widget<T>>),
+    Widget(Box<dyn Widget<T>>),
     View(View<T>),
 }
 
@@ -41,12 +41,15 @@ pub enum Alignment {
 //       This capability must be reflected in the backend as well
 pub struct View<T> {
     // Map of user-assigned widget names -> widget
-    pub component_map: HashMap<u32, Box<Widget<T>>>,
+    pub component_map: HashMap<u32, Box<dyn Widget<T>>>,
 
     pub components: Vec<WidgetOrView<T>>,
 
+    // TODO: Replace usage of these with the corresponding functions. These fields will be dynamic.
     pub view_width: u32,
     pub view_height: u32,
+
+
     pub fixed_size: bool,
     pub default_padding: u32,
     pub alignment: Alignment,
@@ -61,7 +64,7 @@ impl<T> ViewComponent<T> for View<T> {
 impl<T> View<T> {
     /// Returns a `vec` of mutable references to all widgets within a view
     // TODO: This should use the hashmap
-    pub fn widgets_mut(&mut self) -> Vec<&mut Box<Widget<T>>> {
+    pub fn widgets_mut(&mut self) -> Vec<&mut Box<dyn Widget<T>>> {
         let mut widgets = Vec::new();
 
         for item in &mut self.components {
@@ -81,7 +84,7 @@ impl<T> View<T> {
 
     /// Returns a `vec` of references to all widgets within a view
     // TODO: This should use the hashmap
-    pub fn widgets(&self) -> Vec<&Box<Widget<T>>> {
+    pub fn widgets(&self) -> Vec<&Box<dyn Widget<T>>> {
         let mut widgets = Vec::new();
 
         for item in &self.components {
@@ -134,8 +137,14 @@ impl<T> View<T> {
                             widget.translate(new_x - widget.rect().x(), 0);
                         }
 
+                        // FIXME: This only allows for two-layer nesting
+                        // TODO: Fix the shift math here
                         WidgetOrView::View(subview) => {
-
+                            //subview.center(current_position)
+                            let shift_x = (self.view_width / 2) as i32 - (subview.width() / 2) as i32;
+                            for widget in subview.widgets_mut() {
+                                widget.translate(shift_x - widget.rect().x(), 0);
+                            }
                         }
                     }
                 }
@@ -143,7 +152,36 @@ impl<T> View<T> {
             // TODO: implement the rest
             _ => {}
         }
+    }
 
+    /// Returns the width of a view
+    // TODO: Use this instead of view_width field
+    fn width(&self) -> u32 {
+        let mut view_width = 0;
+        for widget in self.widgets() {
+            let current_width = widget.rect().x() + widget.rect().width() as i32;
+
+            if current_width  > view_width {
+                view_width = current_width;
+            }
+        }
+
+        view_width as u32
+    }
+
+    /// Returns the height of a view
+    // TODO: Use this instead of view_height field
+    fn height(&self) -> u32 {
+        let mut view_height = 0;
+        for widget in self.widgets() {
+            let current_height = widget.rect().y() + widget.rect().height() as i32;
+
+            if current_height > view_height {
+                view_height = current_height;
+            }
+        }
+
+        view_height as u32
     }
 
     /// Lock the window's size (stops dynamic size adjustments)
