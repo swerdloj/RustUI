@@ -61,12 +61,11 @@ struct WidgetData {
 
 // TODO: Consider callback types: https://oribenshir.github.io/afternoon_rusting/blog/closures
 
-// TODO: Replace 'T' with 'S' for the sake of clarity?
-// NOTE: In this module, the generic type 'T' refers EXCLUSIVELY to user-defined state
-
 // TODO: Modify `with_text` builder methods to accept full text widgets
 // This will enable the user to customize widget text without redundant methods
 
+
+// Note: In this module, the generic type 'T' refers EXCLUSIVELY to user-defined state
 
 pub trait Widget<T> {
     fn rect(&self) -> Rect;
@@ -100,38 +99,4 @@ pub trait Widget<T> {
     
     /// The widget's rendered width including any containers and sub-objects
     fn draw_width(&self) -> u32;
-
-    /// Instatiate the widget with the given id.
-    /// All widget fields are filled with defaults. Builder methods may be used to adjust these fields.
-    // TODO: Can I not require Self::new as part of the trait because of 'Self'?
-    // fn new(id: &str) -> Self
-    // where Self: Sized;
-
-    // TODO: Inputs & return types (pass mouse locations, keys pressed, etc.)
-
-
-    fn on_hover() 
-    where Self: Sized {
-        // Mouse hovers over widget
-    }
-
-    fn on_mouse_down() 
-    where Self: Sized {
-        // User clicks (consider this for widgets such as sliders)
-    }
-
-    fn on_mouse_up() 
-    where Self: Sized {
-        // User releasese mouse (consider this for widgets such as sliders)
-    }
-
-    fn on_key_down() 
-    where Self: Sized {
-        // The user presses down a key with the current widget selected
-    }
-
-    fn on_key_up() 
-    where Self: Sized {
-        // The user releases a pressed key (see on_key_down)
-    }
 }

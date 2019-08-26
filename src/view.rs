@@ -109,6 +109,7 @@ impl<T> View<T> {
         // TODO: How to extend this lifetime and implement for text rendering?
         let mut font_manager = Fonts::new();
 
+        // Step 1 -> Initially size text components
         for item in &mut self.components {
             match item {
                 WidgetOrView::Widget(widget) => {
@@ -128,6 +129,8 @@ impl<T> View<T> {
 
         // Step 2 -> Align contents
         match self.alignment {
+            // FIXME: This alignment needs to be relative such that each widget is shifted by the *same* amount
+            //        The best way to handle this will likely be to follow a design pattern like for widgets (unique view types)
             Alignment::Center => { // Translate each widget to be centered
                 for item in &mut self.components {
                     match item {
@@ -156,10 +159,11 @@ impl<T> View<T> {
 
     /// Returns the width of a view
     // TODO: Use this instead of view_width field
+    // TODO: Should this account for subviews?
     fn width(&self) -> u32 {
         let mut view_width = 0;
         for widget in self.widgets() {
-            let current_width = widget.rect().x() + widget.rect().width() as i32;
+            let current_width = widget.rect().x() + widget.draw_width() as i32;
 
             if current_width  > view_width {
                 view_width = current_width;
@@ -171,6 +175,7 @@ impl<T> View<T> {
 
     /// Returns the height of a view
     // TODO: Use this instead of view_height field
+    // TODO: Should this account for subviews?
     fn height(&self) -> u32 {
         let mut view_height = 0;
         for widget in self.widgets() {
@@ -184,7 +189,7 @@ impl<T> View<T> {
         view_height as u32
     }
 
-    /// Lock the window's size (stops dynamic size adjustments)
+    /// Lock the window's size (prevents dynamic size adjustments)
     pub fn fixed_size(mut self, width: u32, height: u32) -> Self {
         self.view_width = width;
         self.view_height = height;
@@ -207,12 +212,10 @@ impl<T> View<T> {
 }
 
 
-
 // Macro assistance: https://danielkeep.github.io/tlborm/book/mbe-macro-rules.html
 
 // TODO: Move view building out of the macro and into View's init() function
 //       This will help considerably with future refactoring & view nesting
-
 
 
 // ========================== VStack macro ========================== //
