@@ -186,6 +186,10 @@ impl<T> Widget<T> for CheckBox<T> {
     fn draw_width(&self) -> u32 {
         self.rect().width()
     }
+
+    fn draw_height(&self) -> u32 {
+        self.rect().height()
+    }
 }
 
 impl<T> ViewComponent<T> for CheckBox<T> where T: 'static {

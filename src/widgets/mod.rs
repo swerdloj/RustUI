@@ -9,6 +9,3 @@ pub mod text;
 pub type Button<T> = button::Button<T>;
 pub type CheckBox<T> = checkbox::CheckBox<T>;
 pub type Text<T> = text::Text<T>;
-
-// TODO:
-// Move widgets.rs here and rename

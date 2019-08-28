@@ -144,9 +144,14 @@ impl<T> View<T> {
                         // TODO: Fix the shift math here
                         WidgetOrView::View(subview) => {
                             //subview.center(current_position)
-                            let shift_x = (self.view_width / 2) as i32 - (subview.width() / 2) as i32;
+
+                            // Move the subview's center to the new center, then translate widgets appropriately
+                            let center = (self.view_width / 2) as i32;
+                            let subview_center = (subview.width() / 2) as i32;
+                            let shift_x = center - subview_center;
+
                             for widget in subview.widgets_mut() {
-                                widget.translate(shift_x - widget.rect().x(), 0);
+                                widget.translate(shift_x, 0);
                             }
                         }
                     }
@@ -160,7 +165,7 @@ impl<T> View<T> {
     /// Returns the width of a view
     // TODO: Use this instead of view_width field
     // TODO: Should this account for subviews?
-    fn width(&self) -> u32 {
+    pub fn width(&self) -> u32 {
         let mut view_width = 0;
         for widget in self.widgets() {
             let current_width = widget.rect().x() + widget.draw_width() as i32;
@@ -175,8 +180,8 @@ impl<T> View<T> {
 
     /// Returns the height of a view
     // TODO: Use this instead of view_height field
-    // TODO: Should this account for subviews?
-    fn height(&self) -> u32 {
+    // TODO: Should this account for subviews? 
+    pub fn height(&self) -> u32 {
         let mut view_height = 0;
         for widget in self.widgets() {
             let current_height = widget.rect().y() + widget.rect().height() as i32;
@@ -247,9 +252,16 @@ macro_rules! VStack {
                         widget.place(default_padding, current_y + default_padding);
 
                         current_y += widget.rect().height() as i32 + default_padding;
-
                     }
+                    
                     WidgetOrView::View(subview) => {
+                        // TODO: Translate the view to the newly made position
+                        for widget in subview.widgets_mut() {
+                            widget.translate(0, current_y);
+                            // FIXME: The below should be handled by a View Trait (i.e.: subview.translate(..) or subview.place_at(..))
+                            // current_y += widget.draw_height() as i32 + default_padding;
+                        }
+                        current_y += subview.height() as i32;
                     }
                 }
 
@@ -266,7 +278,13 @@ macro_rules! VStack {
                             max_x = required_x;
                         }
                     }
-                    RustUI::view::WidgetOrView::View(view) => {}
+                    RustUI::view::WidgetOrView::View(subview) => {
+                        // FIXME: Needs to also account for x-position
+
+                        // if subview.width() > max_x {
+                        //     max = subview.width();
+                        // }
+                    }
                 }
             }
 

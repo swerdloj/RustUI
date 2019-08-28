@@ -12,6 +12,9 @@ TODO: To properly fit view components, there must be some way of getting text re
  
  Consider a ViewComponent trait with methods such as `get_width` and `get_height`
  and implement this for all widgets and views
+
+TODO: Implement an ECS for widgets (reduce redundancy & increase consistency)
+
 */
 
 extern crate sdl2;
@@ -64,9 +67,10 @@ struct WidgetData {
 // TODO: Modify `with_text` builder methods to accept full text widgets
 // This will enable the user to customize widget text without redundant methods
 
-
 // Note: In this module, the generic type 'T' refers EXCLUSIVELY to user-defined state
 
+
+/// The base Widget trait containing methods required for drawing & utilizing widgets
 pub trait Widget<T> {
     fn rect(&self) -> Rect;
     fn id(&self) -> u32;
@@ -74,18 +78,21 @@ pub trait Widget<T> {
     fn secondary_color(&self) -> Color;
     fn hover_color(&self) -> Color;
 
+    /// Obtain a reference to a widget's text component for sizing/modifying
     fn text_component(&mut self) -> Option<&mut Text<T>>;
 
     /// Update the widget with known text dimensions  
     /// - Note that this function is called **only when text exists**  
-    /// - Improper usage will therefore `panic` at `.expect()` on a `None` object
+    /// - Improper usage will therefore `panic` at `.expect()` on `None`
     fn assign_text_dimensions(&mut self, dims: (u32, u32)) {}
 
     // TODO: store id hash
     fn assign_id(&mut self, id: u32);
 
+    /// Modify a widget's draw origin
     fn place(&mut self, x: i32, y: i32);
 
+    /// Trigger a callback when clicked
     fn on_click(&mut self, state: &mut T);
 
     /// Render the widget to the window
@@ -99,4 +106,7 @@ pub trait Widget<T> {
     
     /// The widget's rendered width including any containers and sub-objects
     fn draw_width(&self) -> u32;
+
+    /// The widget's rendered height including any containers and sub-objects
+    fn draw_height(&self) -> u32;
 }

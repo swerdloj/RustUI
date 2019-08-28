@@ -15,7 +15,7 @@ use RustUI::widgets::*;
 use RustUI::view::*;
 
 struct State {
-    button_clicks: u16,
+    button_clicks: i16,
     is_locked: bool,
 }
 
@@ -43,30 +43,40 @@ fn main() {
             })
             .with_color(colors::WHITE),
 
-        VStack!(
-            Button::new("Nesting Test")
-                .with_text("Nested1")
-                .with_on_click(|_| {
-                    println!("Nested view widget");
+        HStack!(
+            Button::new("Increment")
+                .with_text("++")
+                .with_on_click(|state: &mut State| {
+                    if !state.is_locked {
+                        state.button_clicks += 1;
+                    }
                 }),
 
-            Text::new("Nesting Test2", "Nested2")
-                .with_color(colors::WHITE),
+            // Text::new("Nesting Test2", "Nested2")
+            //     .with_color(colors::WHITE),
 
-            CheckBox::new("Nesting Test3")
-                .with_text("Nested3")
+            // CheckBox::new("Nesting Test3")
+            //     .with_text("Nested3")
+
+            Button::new("Decrement")
+                .with_text("--")
+                .with_on_click(|state: &mut State| {
+                    if !state.is_locked {
+                        state.button_clicks -= 1;
+                    }
+                })
         ),
 
-        Button::new("IncrementCounter")
-            .with_on_click(|state: &mut State| {
-                if !state.is_locked {
-                    state.button_clicks += 1;
-                    println!("Clicked the button {} times", state.button_clicks);
-                } else {
-                    println!("The counter is locked");
-                }
-            })
-            .with_text("Increment"),
+        // Button::new("IncrementCounter")
+        //     .with_on_click(|state: &mut State| {
+        //         if !state.is_locked {
+        //             state.button_clicks += 1;
+        //             println!("Clicked the button {} times", state.button_clicks);
+        //         } else {
+        //             println!("The counter is locked");
+        //         }
+        //     })
+        //     .with_text("Increment"),
 
         Button::new("ResetCounter")
             .with_on_click(|state: &mut State| {

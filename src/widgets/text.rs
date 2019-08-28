@@ -224,6 +224,10 @@ impl<T> Widget<T> for Text<T> {
     fn draw_width(&self) -> u32 {
         self.text_width
     }
+
+    fn draw_height(&self) -> u32 {
+        self.text_height
+    }
 }
 
 impl<T> ViewComponent<T> for Text<T> where T: 'static {
