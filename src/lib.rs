@@ -14,6 +14,7 @@ Rust GUI library
 
 pub mod backend;
 pub mod widgets;
+pub mod views;
 pub mod view;
 pub mod font;
 

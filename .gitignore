@@ -8,4 +8,5 @@ Cargo.lock
 *.bat
 /.vscode
 /other
-run
+libtest
+docgen

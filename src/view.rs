@@ -14,7 +14,7 @@ pub enum WidgetOrView<T> {
 
 // ========================== ViewComponent trait ========================== //
 
-// TODO: This
+/// Trait utilized for storing `Widget` and `View` types together
 pub trait ViewComponent<T> {
     // fn get_width(&self) -> u32;
     // fn get_height(&self) -> u32;
@@ -105,7 +105,6 @@ impl<T> View<T> {
 
     // TODO: Build the view here rather than within the macro.
     pub fn init(&mut self, ttf_context: &ttf::Sdl2TtfContext) {
-
         // TODO: How to extend this lifetime and implement for text rendering?
         let mut font_manager = Fonts::new();
 
@@ -141,9 +140,10 @@ impl<T> View<T> {
                         }
 
                         // FIXME: This only allows for two-layer nesting
-                        // TODO: Fix the shift math here
+                        // TODO: Views should be responsible for their own alignment (such as subview.allign(..::Center))
+                        //       This will allow for nesting all types of views (once they are separate, unique types)
                         WidgetOrView::View(subview) => {
-                            //subview.center(current_position)
+                            //TODO: Implement something like `subview.center_at(current_position)`
 
                             // Move the subview's center to the new center, then translate widgets appropriately
                             let center = (self.view_width / 2) as i32;
@@ -222,7 +222,6 @@ impl<T> View<T> {
 // TODO: Move view building out of the macro and into View's init() function
 //       This will help considerably with future refactoring & view nesting
 
-
 // ========================== VStack macro ========================== //
 
 #[macro_export]
@@ -258,7 +257,7 @@ macro_rules! VStack {
                         // TODO: Translate the view to the newly made position
                         for widget in subview.widgets_mut() {
                             widget.translate(0, current_y);
-                            // FIXME: The below should be handled by a View Trait (i.e.: subview.translate(..) or subview.place_at(..))
+                            // FIXME: The below should be handled by a View trait (i.e.: subview.translate(..) or subview.place_at(..))
                             // current_y += widget.draw_height() as i32 + default_padding;
                         }
                         current_y += subview.height() as i32;

@@ -1,6 +1,6 @@
 /*
 
-This file were serve as a usability test.
+This file will serve as a usability test.
 It will be structured as though creating a real project using this library.
 
 */
