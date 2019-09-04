@@ -44,7 +44,7 @@ fn main() {
             .with_color(colors::WHITE),
 
         HStack!(
-            Button::new("Increment")
+            Button::new("IncrementButton")
                 .with_text("++")
                 .with_on_click(|state: &mut State| {
                     if !state.is_locked {
@@ -58,7 +58,7 @@ fn main() {
             // CheckBox::new("Nesting Test3")
             //     .with_text("Nested3")
 
-            Button::new("Decrement")
+            Button::new("DecrementButton")
                 .with_text("--")
                 .with_on_click(|state: &mut State| {
                     if !state.is_locked {

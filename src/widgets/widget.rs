@@ -52,14 +52,35 @@ pub mod colors {
     pub const WHITE: Color = Color {r: 255, g: 255, b: 255, a: 0xff};
 }
 
+// FIXME: This is mirrored from /views/view.rs
+pub struct Padding {
+    left: u32,
+    right: u32,
+    top: u32,
+    bottom: u32,
+}
+
 /// This is the base widget struct from which all other widgets are derived
 /// ## Arguments
 /// * `id` - The widget's id as a string TODO: This should be a hash of the string instead for faster lookup.
 struct WidgetData {
-    // TODO: Ensure the id is truly unique
-    id: u32, // The widget's *unique* id
-    rect: Rect, // Width, height, and location
-    primary_color: Color, // The widget's base color (e.g.: button base color or text color)
+    /// The widget's *unique* id
+    // TODO: Ensure this is truly unique (need some way to check)
+    id: &'static str,
+
+    /// Widget positional data
+    rect: Rect,
+    /// The base color
+    primary_color: Color,
+
+    /// The 'accent' color (or active color)
+    // TODO: rename this
+    secondary_color: Color,
+    /// The on-hover color
+    hover_color: Color,
+
+    /// Spacing around the widget
+    padding: Padding,
 }
 
 // TODO: Consider callback types: https://oribenshir.github.io/afternoon_rusting/blog/closures

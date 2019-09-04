@@ -25,9 +25,12 @@ Download the above dependencies and place into project root directory
 Check for distribution-specific development packages/repos for the required libraries
 ### General
 1. When using text, place the .ttf font in /res/font/
-2. In font.rs, update `default_font` for the `FontParams` struct
+2. In `font.rs`, update `default_font` for the `FontParams` struct
 
 ## TODOs:
+- Implement ECS for widgets and views (see widgets/widget.rs & views/view.rs)
+  - What must each widget share?
+  - What must each view share?
 - Scaling for high resolution/dpi displays
 - Basic Widgets:
   - Slider (horizontal + vertical)
@@ -51,10 +54,14 @@ Check for distribution-specific development packages/repos for the required libr
   - Make these optional via flags
 - Add a GridView macro with respective methods (like tkinter)
 - Implement `font.rs` (separate widgets, backend, and font).
-- Accept widget ids as strings, then store their hashes
+- Accept widget ids as strings, then store their hashes?
 - Store a view's widget ids in a hash table
 - Stabilize FPS (without fixed loop dealys) -- implement delta time
 - Implement graphics
+  - Image rendering
+    - Eventually, consider SVG rendering
+  - Use images for buttons
+    - How to handle varying width/height?
 - Run callbacks on separate threads
 - At some point, should be able to simply pass a canvas and render UI to *existing* canvas
 - Support multiple windows
