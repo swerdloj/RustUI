@@ -16,9 +16,6 @@ pub enum WidgetOrView<T> {
 
 /// Trait utilized for storing `Widget` and `View` types together
 pub trait ViewComponent<T> {
-    // fn get_width(&self) -> u32;
-    // fn get_height(&self) -> u32;
-    // fn get_center(&self) -> (u32, u32);
     fn as_component(self) -> WidgetOrView<T>;
 }
 
@@ -315,6 +312,7 @@ macro_rules! VStack {
 // ========================== HStack macro ========================== //
 
 #[macro_export]
+/// Horizontal layout (space widgets horizontally)
 macro_rules! HStack {
     ( $($x:expr), + ) => {
         {
