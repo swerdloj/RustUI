@@ -34,6 +34,7 @@ pub struct Padding {
     pub bottom: u32,
 }
 
+/// Common data needed by *all* View structs
 pub struct ViewData<T> {
     // id: &'static str,
 

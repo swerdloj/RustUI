@@ -120,3 +120,47 @@ impl<T> View for VStack<T> {
         height + self.data.padding.top + self.data.padding.bottom
     }
 }
+
+macro_rules! VStack {
+    ( $($x:expr), + ) => {
+        {
+            let mut components: Vec<WidgetOrView<T>> = Vec::new();
+            // let mut vstack = VStack::new(components);
+            let default_padding = 10;
+
+            let mut current_y = 0;
+
+            // FIXME: Replace this with string in widget.rs
+            let mut current_id = 0;
+            
+            $(
+                let mut component = $x.as_component();
+
+                match &mut component {
+                    // FIXME: Placement needs to occur in the init function
+                    WidgetOrView::Widget(widget) => {
+                        widget.assign_id(current_id);
+                        current_id += 1;
+
+                        // TODO: Account for padding here?
+                        widget.place(0, current_y);
+
+                        current_y += widget.rect().height();
+                    }
+
+                    WidgetOrView::VIew(subview) => {
+                        for widget in subview.widgets_mut() {
+                            widget.translate(0, current_y);
+                        }
+                        current_y += subview.draw_height() as i32;
+                    }
+                }
+
+                components.push(component);
+                
+            )+
+        }
+
+        VStack::new(components)
+    };
+}
