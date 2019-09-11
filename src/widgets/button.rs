@@ -147,3 +147,10 @@ impl<T> ViewComponent<T> for Button<T> where T: 'static {
         WidgetOrView::Widget(Box::new(self))
     }
 }
+
+// FIXME: Remove this later during view refactor (here for testing)
+impl<T> crate::views::view::ViewComponent<T> for Button<T> where T: 'static {
+    fn as_component(self) -> crate::views::view::WidgetOrView<T> {
+        crate::views::view::WidgetOrView::Widget(Box::new(self))
+    }
+}

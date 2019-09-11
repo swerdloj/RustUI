@@ -1,7 +1,6 @@
 // TODO: Replace VStack! macro to use this file (ensure everything works)
 
-use super::view::*;
-use crate::view::{Alignment, WidgetOrView};
+use crate::views::view::*;
 
 pub struct VStack<T> {
     data: ViewData<T>,
@@ -121,10 +120,17 @@ impl<T> View for VStack<T> {
     }
 }
 
-macro_rules! VStack {
+impl<T> ViewComponent<T> for VStack<T> where T: 'static{
+    fn as_component(self) -> WidgetOrView<T> {
+        WidgetOrView::View(Box::new(self))
+    }
+}
+
+#[macro_export]
+macro_rules! VStack2 {
     ( $($x:expr), + ) => {
         {
-            let mut components: Vec<WidgetOrView<T>> = Vec::new();
+            let mut components = Vec::new();
             // let mut vstack = VStack::new(components);
             let default_padding = 10;
 
@@ -145,10 +151,10 @@ macro_rules! VStack {
                         // TODO: Account for padding here?
                         widget.place(0, current_y);
 
-                        current_y += widget.rect().height();
+                        current_y += widget.rect().height() as i32 + default_padding;
                     }
 
-                    WidgetOrView::VIew(subview) => {
+                    WidgetOrView::View(subview) => {
                         for widget in subview.widgets_mut() {
                             widget.translate(0, current_y);
                         }

@@ -46,6 +46,8 @@ Rust GUI library
 //! .fixed_width(400)
 //! .align(Alignment::Center);
 //! ```
+//! 
+//! ...
 
 /// Library backend for handling windowing, events, etc.
 pub mod backend;

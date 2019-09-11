@@ -2,8 +2,7 @@
 
 // TODO: Where should items such as dividers and spacers go? Would these be views?
 
-mod view;
-
+pub mod view;
 pub mod vstack;
 pub mod hstack;
 
