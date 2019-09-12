@@ -7,13 +7,12 @@ It will be structured as though creating a real project using this library.
 
 #[macro_use]
 extern crate RustUI;
-extern crate sdl2;
+// extern crate sdl2;
 
 use RustUI::backend::system::window::Window;
 use RustUI::widgets::widget::colors;
 use RustUI::widgets::*;
 use RustUI::view::*;
-// use RustUI::views::view::{WidgetOrView};
 
 struct State {
     button_clicks: i16,
@@ -35,12 +34,6 @@ fn main() {
     let mut main_window = Window::init("RustUI Testing", &mut app_state);
     main_window.set_icon("./res/logo/temp_logo_low_quality.bmp");
     // main_window.set_logical_size(800, 600);
-
-    // TODO: Test with button, make sure view can render
-    // let test2 = VStack2!(
-    //     Button::new("test")
-    //         .with_text("Success")
-    // );
 
     let test_view = VStack!(
         Text::new("CounterText", "Counter: 0")

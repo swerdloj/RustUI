@@ -1,6 +1,7 @@
 // TODO: Replace VStack! macro to use this file (ensure everything works)
 
 use crate::views::view::*;
+use crate::widgets::widget::Widget;
 
 pub struct VStack<T> {
     data: ViewData<T>,
@@ -29,9 +30,39 @@ impl<T> VStack<T> {
     }
 }
 
-impl<T> View for VStack<T> {
+impl<T> View<T> for VStack<T> {
     fn init(&mut self) {
 
+    }
+
+    fn widgets_mut(&mut self) -> Vec<&mut Box<dyn Widget<T>>> {
+        let mut widgets = Vec::new();
+
+        for component in &mut self.data.components {
+            match component {
+                WidgetOrView::Widget(widget) => {
+                    widgets.push(widget);
+                }
+                _ => {}
+            }
+        }
+
+        widgets
+    }
+
+    fn widgets(&self) -> Vec<&Box<dyn Widget<T>>> {
+        let mut widgets = Vec::new();
+
+        for component in &self.data.components {
+            match component {
+                WidgetOrView::Widget(widget) => {
+                    widgets.push(widget);
+                }
+                _ => {}
+            }
+        }
+
+        widgets
     }
 
     fn fixed_width(mut self, width: u32) -> Self {
@@ -58,8 +89,7 @@ impl<T> View for VStack<T> {
                     widget.translate(dx, dy);
                 }
                 WidgetOrView::View(view) => {
-                    // FIXME:
-                    // view.translate(dx, dy);
+                    view.translate(dx, dy);
                 }
             }
         }
@@ -121,7 +151,7 @@ impl<T> View for VStack<T> {
 }
 
 impl<T> ViewComponent<T> for VStack<T> where T: 'static{
-    fn as_component(self) -> WidgetOrView<T> {
+    fn as_component2(self) -> WidgetOrView<T> {
         WidgetOrView::View(Box::new(self))
     }
 }
@@ -140,7 +170,7 @@ macro_rules! VStack2 {
             let mut current_id = 0;
             
             $(
-                let mut component = $x.as_component();
+                let mut component = $x.as_component2();
 
                 match &mut component {
                     // FIXME: Placement needs to occur in the init function
@@ -165,8 +195,8 @@ macro_rules! VStack2 {
                 components.push(component);
                 
             )+
-        }
 
-        VStack::new(components)
+            VStack::new(components)
+        }
     };
 }

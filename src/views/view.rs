@@ -17,14 +17,14 @@ use crate::widgets::widget::Widget;
 /// Contains either a Widget or a View. Handle via `match`.
 pub enum WidgetOrView<T> {
     Widget(Box<dyn Widget<T>>),
-    View(Box<dyn View>),
+    View(Box<dyn View<T>>),
 }
 
 // ========================== ViewComponent trait ========================== //
 
 /// Trait utilized for storing `Widget` and `View` types together
 pub trait ViewComponent<T> {
-    fn as_component(self) -> WidgetOrView<T>;
+    fn as_component2(self) -> WidgetOrView<T>;
 }
 
 // ========================== Alignment enum ========================== //
@@ -43,7 +43,7 @@ pub enum Alignment {
 // ========================== View Trait ========================== //
 
 /// Base trait from which `View` types are derived
-pub trait View {
+pub trait View<T> {
     /// Initializes the view, combining all subviews
     fn init(&mut self);
 
@@ -57,7 +57,10 @@ pub trait View {
     /// The height of the view (as drawn)
     fn draw_height(&self) -> u32;
 
-    // fn widgets_mut(&mut self) -> Vec<&mut dyn Widget<T>>;
+    /// Obtain mutable references to all of a view's widgets
+    fn widgets_mut(&mut self) -> Vec<&mut Box<dyn Widget<T>>>;
+    /// Obtain references to all of a view's widgets
+    fn widgets(&self) -> Vec<&Box<dyn Widget<T>>>;
 
 
     // --------- Builder Functions --------- //

@@ -7,4 +7,4 @@ pub mod vstack;
 pub mod hstack;
 
 pub type VStack<T> = vstack::VStack<T>;
-// pub type HStack = hstack::HStack;
+pub type HStack<T> = hstack::HStack<T>;
