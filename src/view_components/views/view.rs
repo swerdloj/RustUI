@@ -10,22 +10,8 @@ When applicable, include ViewData & Padding structs.
 
 use std::collections::HashMap;
 
-use crate::widgets::widget::Widget;
-
-// ========================== WidgetOrView enum ========================== //
-
-/// Contains either a Widget or a View. Handle via `match`.
-pub enum WidgetOrView<T> {
-    Widget(Box<dyn Widget<T>>),
-    View(Box<dyn View<T>>),
-}
-
-// ========================== ViewComponent trait ========================== //
-
-/// Trait utilized for storing `Widget` and `View` types together
-pub trait ViewComponent<T> {
-    fn as_component2(self) -> WidgetOrView<T>;
-}
+use crate::view_components::{Padding, WidgetOrView, ViewComponent};
+use crate::view_components::widgets::widget::Widget;
 
 // ========================== Alignment enum ========================== //
 
@@ -70,14 +56,6 @@ pub trait View<T> {
     fn fixed_width(self, width: u32) -> Self where Self: Sized;
     fn fixed_height(self, height: u32) -> Self where Self: Sized;
     fn fixed_size(self, width: u32, height: u32) -> Self where Self: Sized;
-}
-
-// FIXME: This is mirrored in /widgets/widget.rs
-pub struct Padding {
-    pub left: u32,
-    pub right: u32,
-    pub top: u32,
-    pub bottom: u32,
 }
 
 /// Common data needed by *all* View structs

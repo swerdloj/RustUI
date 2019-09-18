@@ -22,6 +22,7 @@ use sdl2::rect::Rect;
 use sdl2::pixels::Color;
 
 use crate::backend::system::window::Window;
+use super::super::Padding;
 
 use super::text::Text;
 
@@ -50,14 +51,6 @@ pub mod colors {
     pub const MANILLA: Color = Color {r: 240, g: 240, b: 200, a: 0xff};
     /// `Color::RGB(255, 255, 255)` - White
     pub const WHITE: Color = Color {r: 255, g: 255, b: 255, a: 0xff};
-}
-
-// FIXME: This is mirrored from /views/view.rs
-pub struct Padding {
-    left: u32,
-    right: u32,
-    top: u32,
-    bottom: u32,
 }
 
 /// This is the base widget struct from which all other widgets are derived

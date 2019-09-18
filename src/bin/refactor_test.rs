@@ -2,10 +2,15 @@
 extern crate RustUI;
 
 use RustUI::backend::system::window::Window;
-use RustUI::widgets::widget::colors;
-use RustUI::widgets::*;
+// TODO: Work on imports & namespaces
+use RustUI::view_components::{
+    views::vstack::VStack,
+    widgets::Button,
+    WidgetOrView,
+    ViewComponent,
+};
 
-use RustUI::views::{VStack, view::WidgetOrView};
+// use RustUI::views::{VStack, view::WidgetOrView};
 
 fn main() {
     let mut state = 7;
