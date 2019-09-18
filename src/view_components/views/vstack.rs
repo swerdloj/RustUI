@@ -1,4 +1,8 @@
 // TODO: Replace VStack! macro to use this file (ensure everything works)
+extern crate sdl2;
+use sdl2::ttf;
+
+use crate::font::{Fonts};
 
 use crate::view_components::{WidgetOrView, ViewComponent, Padding};
 use crate::view_components::widgets::widget::Widget;
@@ -33,8 +37,41 @@ impl<T> VStack<T> {
 }
 
 impl<T> View<T> for VStack<T> {
-    fn init(&mut self) {
+    fn init(&mut self, ttf_context: &ttf::Sdl2TtfContext) {
+        // TODO: How to extend this lifetime and implement for text rendering?
+        let mut font_manager = Fonts::new();
 
+        // Step 1 -> Initially size text components
+        for item in &mut self.data.components {
+            match item {
+                WidgetOrView::Widget(widget) => {
+                    // If the widget has a text component, obtain its surface size
+                    if let Some(text_component) = widget.text_component() {
+                        font_manager.load_font(ttf_context, &text_component.font);
+                        let text_surface_size = font_manager.size_surface(&text_component.font, &text_component.text);
+                        widget.assign_text_dimensions(text_surface_size);
+                    }
+                }
+
+                WidgetOrView::View(nested_view) => {
+                    nested_view.init(ttf_context);
+                }
+            }
+        }
+
+        // Assign view dimensions if not defined
+        if self.data.view_width == 0 {
+            self.data.view_width = self.draw_width();
+        }
+        if self.data.view_height == 0 {
+            self.data.view_height = self.draw_height();
+        }
+
+        self.align(self.data.alignment.clone());
+    }
+
+    fn view_size(&self) -> (u32, u32) {
+        (self.data.view_width, self.data.view_height)
     }
 
     fn widgets_mut(&mut self) -> Vec<&mut Box<dyn Widget<T>>> {
@@ -65,6 +102,28 @@ impl<T> View<T> for VStack<T> {
         }
 
         widgets
+    }
+
+    fn child_widgets(&mut self) -> Vec<&mut Box<dyn Widget<T>>> {
+        let mut widgets = Vec::new();
+
+        for component in &mut self.data.components {
+            match component {
+                WidgetOrView::Widget(widget) => {
+                    widgets.push(widget);
+                }
+                WidgetOrView::View(subview) => {
+                    widgets.append(&mut subview.child_widgets());
+                }
+            }
+        }
+
+        widgets
+    }
+
+    fn alignment(mut self, alignment: Alignment) -> Self {
+        self.data.alignment = alignment;
+        self
     }
 
     fn fixed_width(mut self, width: u32) -> Self {
@@ -98,7 +157,7 @@ impl<T> View<T> for VStack<T> {
     }
 
     fn align(&mut self, alignment: Alignment) {
-        let draw_width = self.draw_width();
+        let width = self.data.view_width;
 
         match alignment {
             // Translate each widget to the center of the view
@@ -106,10 +165,12 @@ impl<T> View<T> for VStack<T> {
                 for component in &mut self.data.components {
                     match component {
                         WidgetOrView::Widget(widget) => {
-                            let new_x = (draw_width / 2) as i32 - (widget.draw_width() / 2) as i32;
+                            let new_x = (width / 2) as i32 - (widget.draw_width() / 2) as i32;
                             widget.translate(new_x - widget.rect().x(), 0);
                         }
-                        _ => {}
+                        WidgetOrView::View(subview) => {
+                            // TODO: This
+                        }
                     }
                 }
             }
@@ -166,7 +227,7 @@ macro_rules! VStack2 {
             // let mut vstack = VStack::new(components);
             let default_padding = 10;
 
-            let mut current_y = 0;
+            let mut current_y = default_padding;
 
             // FIXME: Replace this with string in widget.rs
             let mut current_id = 0;
@@ -187,15 +248,13 @@ macro_rules! VStack2 {
                     }
 
                     WidgetOrView::View(subview) => {
-                        for widget in subview.widgets_mut() {
-                            widget.translate(0, current_y);
-                        }
+                        subview.translate(0, current_y);
+                        
                         current_y += subview.draw_height() as i32;
                     }
                 }
 
                 components.push(component);
-                
             )+
 
             VStack::new(components)

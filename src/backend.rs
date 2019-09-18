@@ -51,7 +51,7 @@ pub mod system {
         use sdl2::keyboard::Keycode;
         use sdl2::mouse::MouseButton;
         use sdl2::rect::Point;
-        use crate::view::{View};
+        use crate::view_components::views::view::{View};
         use crate::view_components::widgets::widget::WidgetState;
         use crate::font::{FontParams, Fonts};
         use super::state::{ApplicationState};
@@ -143,19 +143,20 @@ pub mod system {
             }
 
             /// Resizes the application window to the specified pixel values
-            fn resize_window(&mut self, width: u32, height: u32) {
-                self.canvas.window_mut().set_size(width, height).expect("Failed to resize");
+            /// Usage: `resize_window((width, height));`
+            fn resize_window(&mut self, dimensions: (u32, u32)) {
+                self.canvas.window_mut().set_size(dimensions.0, dimensions.1).expect("Failed to resize");
             }
 
             // TODO: Allow multiple windows to run at once on multiple threads
             // TODO: How to handle window size changes from the user?
-            pub fn start(mut self, mut view: View<T>) {
+            pub fn start<V: View<T> + Sized>(mut self, mut view: V) {
                 /* Initialize here */
 
                 // Initialize the window/widget layout
                 view.init(&self.ttf_context);
                 // Set initial window size (will override the default of 800x600)
-                self.resize_window(view.view_width, view.view_height);
+                self.resize_window(view.view_size());
 
                 'window_loop: loop {
                     self.canvas.set_draw_color(Color::RGB(50, 50, 100));
@@ -232,7 +233,7 @@ pub mod system {
                     /* Render window below this line */
 
                     // Render each widget
-                    for widget in view.widgets_mut() {
+                    for widget in view.child_widgets() {
                         widget.update(self.window_state.get_user_state());
 
                         let mut widget_state = WidgetState::Base;
