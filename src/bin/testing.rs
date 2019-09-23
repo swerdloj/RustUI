@@ -12,13 +12,9 @@ extern crate RustUI;
 use RustUI::backend::system::window::Window;
 use RustUI::view_components::{
     WidgetOrView, ViewComponent,
-    views::view::{
-        View, Alignment
-    },
+    views::view::{View, Alignment},
     views::{VStack, HStack},
-    widgets::{
-        Text, Button, CheckBox, widget::colors
-    }
+    widgets::{Text, Button, CheckBox, widget::colors}
 };
 
 struct State {
@@ -113,8 +109,7 @@ fn main() {
             .with_on_click(example_callback) // Can now simply pass in regular functions
             .with_text("Button")        
     )
-    .fixed_width(400)
-    .fixed_height(320)
+    // .fixed_width(400)
     .alignment(Alignment::Center);
 
     // TODO: This must allow some mechanism for dynamic views

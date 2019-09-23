@@ -54,9 +54,9 @@ fn main() {
         // Button::new("asdf")
         //     .with_text("VS1 End")
     )
-    .alignment(Alignment::Center)
-    .fixed_width(500)
-    .fixed_height(400);
+    .alignment(Alignment::Center);
+    // .fixed_width(500)
+    // .fixed_height(400);
 
     // TODO: Refactor `backend.rs` to implement the new system
     main_window.start(view);

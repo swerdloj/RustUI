@@ -195,7 +195,12 @@ impl<T> View<T> for VStack<T> {
                         max_width = widget.draw_width();
                     }
                 }
-                _ => {}
+
+                WidgetOrView::View(subview) => {
+                    if subview.draw_width() > max_width {
+                        max_width = subview.draw_width();
+                    }
+                }
             }
         }
 
@@ -210,7 +215,9 @@ impl<T> View<T> for VStack<T> {
                 WidgetOrView::Widget(widget) => {
                     height += widget.draw_height();
                 }
-                _ => {}
+                WidgetOrView::View(subview) => {
+                    height += subview.draw_height();
+                }
             }
         }
 

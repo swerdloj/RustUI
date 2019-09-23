@@ -1,7 +1,6 @@
 pub mod views;
 pub mod widgets;
 
-// TODO: Add shortened import paths (types) for widgets & views
 
 // ========================== WidgetOrView enum ========================== //
 use views::view::View;

@@ -227,7 +227,11 @@ impl<T> View<T> for HStack<T> {
                         max_height = widget.draw_height();
                     }
                 }
-                _ => {}
+                WidgetOrView::View(subview) => {
+                    if subview.draw_height() > max_height {
+                        max_height = subview.draw_height();
+                    }
+                }
             }
         }
 

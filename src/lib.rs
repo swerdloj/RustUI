@@ -53,8 +53,6 @@ Rust GUI library
 pub mod backend;
 /// Widgets, Views, & Similar
 pub mod view_components;
-/// TODO: Refactor this out
-pub mod view;
 /// Font table
 pub mod font;
 
