@@ -87,7 +87,7 @@ struct WidgetData {
 /// The base Widget trait containing methods required for drawing & utilizing widgets
 pub trait Widget<T> {
     fn rect(&self) -> Rect;
-    fn id(&self) -> u32;
+    fn id(&self) -> &'static str;
     fn primary_color(&self) -> Color;
     fn secondary_color(&self) -> Color;
     fn hover_color(&self) -> Color;
@@ -101,7 +101,7 @@ pub trait Widget<T> {
     fn assign_text_dimensions(&mut self, dims: (u32, u32)) {}
 
     // TODO: store id hash
-    fn assign_id(&mut self, id: u32);
+    fn assign_id(&mut self, id: &'static str);
 
     /// Modify a widget's draw origin
     fn place(&mut self, x: i32, y: i32);

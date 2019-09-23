@@ -232,7 +232,7 @@ impl<T> ViewComponent<T> for VStack<T> where T: 'static{
 }
 
 #[macro_export]
-macro_rules! VStack2 {
+macro_rules! VStack {
     ( $($x:expr), + ) => {
         {
             let mut components = Vec::new();
@@ -240,9 +240,6 @@ macro_rules! VStack2 {
             let default_padding = 10;
 
             let mut current_y = 0;
-
-            // FIXME: Replace this with string in widget.rs
-            let mut current_id = 0;
             
             $(
                 let mut component = $x.as_component();
@@ -250,9 +247,6 @@ macro_rules! VStack2 {
                 match &mut component {
                     // FIXME: Placement needs to occur in the init function
                     WidgetOrView::Widget(widget) => {
-                        widget.assign_id(current_id);
-                        current_id += 1;
-
                         // TODO: Account for padding here?
                         widget.place(0, current_y);
 

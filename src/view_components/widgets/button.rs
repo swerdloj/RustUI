@@ -10,19 +10,19 @@ use super::text::Text;
 
 
 pub struct Button<T> {
-    pub id: u32,
+    pub id: &'static str,
     pub rect: Rect,
     pub primary_color: Color,
     pub secondary_color: Color,
     pub hover_color: Color,
     pub text: Option<Text<T>>,
-    pub on_click: Option<Box<Fn(&mut T)>>,
+    pub on_click: Option<Box<dyn Fn(&mut T)>>,
 }
 
 impl<T> Button<T> {
-    pub fn new(id: &str) -> Self {
+    pub fn new(id: &'static str) -> Self {
         Button {
-            id: 0,
+            id: id,
             rect: Rect::new(0, 0, 100, 40),
             primary_color: colors::MANILLA,
             secondary_color: Color::RGB(100, 100, 100),
@@ -51,7 +51,7 @@ impl<T> Button<T> {
 }
 
 impl<T> Widget<T> for Button<T> {
-    fn assign_id(&mut self, id: u32) {
+    fn assign_id(&mut self, id: &'static str) {
         self.id = id;
     }
 
@@ -107,7 +107,7 @@ impl<T> Widget<T> for Button<T> {
         self.rect
     }
 
-    fn id(&self) -> u32 {
+    fn id(&self) -> &'static str {
         self.id
     }
 

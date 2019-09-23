@@ -10,7 +10,7 @@ use super::text::Text;
 
 
 pub struct CheckBox<T> {
-    id: u32,
+    id: &'static str,
     rect: Rect,
     default_color: Color,
     click_color: Color,
@@ -21,16 +21,16 @@ pub struct CheckBox<T> {
     
     checkbox_padding_right: u32,
     // Callback accepting application state & check state
-    on_check: Option<Box<Fn(&mut T, bool)>>,
+    on_check: Option<Box<dyn Fn(&mut T, bool)>>,
 
     checkbox_width: u32,
     checkbox_height: u32,
 }
 
 impl<T> CheckBox<T> {
-    pub fn new(id: &str) -> Self {
+    pub fn new(id: &'static str) -> Self {
         CheckBox {
-            id: 200,
+            id: id,
             rect: Rect::new(0, 0, 100, 40),
             default_color: colors::MANILLA,
             click_color: Color::RGB(140, 140, 140),
@@ -80,7 +80,7 @@ impl<T> CheckBox<T> {
 }
 
 impl<T> Widget<T> for CheckBox<T> {
-    fn assign_id(&mut self, id: u32) {
+    fn assign_id(&mut self, id: &'static str) {
         self.id = id;
     }
 
@@ -114,7 +114,7 @@ impl<T> Widget<T> for CheckBox<T> {
         self.rect
     }
 
-    fn id(&self) -> u32 {
+    fn id(&self) -> &'static str {
         self.id
     }
 

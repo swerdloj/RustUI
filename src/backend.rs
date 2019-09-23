@@ -21,8 +21,8 @@ pub mod system {
     pub mod state {
         // TODO: Flesh this out and utilize appropriately. Or move event handling to Widget
         pub struct ApplicationState<'a, T> {
-            pub hovering: Option<u32>, // Widget being hovered over
-            pub clicking: Option<u32>, // Widget being clicked (left mouse down)
+            pub hovering: Option<&'static str>, // Widget being hovered over
+            pub clicking: Option<&'static str>, // Widget being clicked (left mouse down)
             user_state: &'a mut T, // User state to be passed to widgets
         }
 

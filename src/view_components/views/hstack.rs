@@ -246,7 +246,7 @@ impl<T> ViewComponent<T> for HStack<T> where T: 'static {
 }
 
 #[macro_export]
-macro_rules! HStack2 {
+macro_rules! HStack {
     ( $($x:expr), + ) => {
         {
             let mut components = Vec::new();
@@ -254,9 +254,6 @@ macro_rules! HStack2 {
             let default_padding = 10;
 
             let mut current_x = default_padding;
-
-            // FIXME: Replace this with string in widget.rs
-            let mut current_id = 100;
             
             $(
                 let mut component = $x.as_component();
@@ -264,9 +261,6 @@ macro_rules! HStack2 {
                 match &mut component {
                     // FIXME: Placement needs to occur in the init function
                     WidgetOrView::Widget(widget) => {
-                        widget.assign_id(current_id);
-                        current_id += 100;
-
                         widget.place(current_x, 0);
 
                         current_x += widget.draw_width() as i32 + default_padding;

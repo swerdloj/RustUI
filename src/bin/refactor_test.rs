@@ -15,38 +15,38 @@ fn main() {
 
     let main_window = Window::init("Test", &mut state);
 
-    let view = VStack2!(
-        Button::new("test")
+    let view = VStack!(
+        Button::new("test1")
             .with_text("VS1 1/3"),
-        Button::new("test")
+        Button::new("test2")
             .with_text("VS1 2/3"),
-        Button::new("empty")
+        Button::new("test3")
             .with_text("VS1 3/3"),
 
         // Text::new("Test", "Text")
 
-        HStack2!(
-            Button::new("empty")
+        HStack!(
+            Button::new("test4")
                 .with_text("HS1 1/3"),
-            Button::new("empty")
+            Button::new("test5")
                 .with_text("HS1 2/3"),
-            Button::new("empty")
+            Button::new("test6")
                 .with_text("HS1 3/3"),
 
             // Should be 4th element in HStack
-            VStack2!(
-                Button::new("empty")
+            VStack!(
+                Button::new("test7")
                     .with_text("VS2 1/3"),
-                Button::new("empty")
+                Button::new("test8")
                     .with_text("VS2 2/3"),
                 // FIXME: Something is not accounting for nested view width
-                // HStack2!(
+                // HStack!(
                 //     Button::new("empty")
                 //         .with_text("Nested1"),
                 //     Button::new("empty")
                 //         .with_text("Nested2")
                 // ),
-                Button::new("empty")
+                Button::new("test9")
                     .with_text("VS2 3/3")
             )
         )

@@ -38,7 +38,7 @@ fn main() {
     main_window.set_icon("./res/logo/temp_logo_low_quality.bmp");
     // main_window.set_logical_size(800, 600);
 
-    let test_view = VStack2!(
+    let test_view = VStack!(
         Text::new("CounterText", "Counter: 0")
             // TODO: When updating text, the text component must be resized
             .with_text_update(|state: &State| {
@@ -46,7 +46,7 @@ fn main() {
             })
             .with_color(colors::WHITE),
 
-        HStack2!(
+        HStack!(
             Button::new("IncrementButton")
                 .with_text("++")
                 .with_on_click(|state: &mut State| {

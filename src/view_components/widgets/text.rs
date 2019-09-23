@@ -13,7 +13,7 @@ use super::widget::{Widget, WidgetState, colors};
 
 
 pub struct Text<T> {
-    id: u32,
+    id: &'static str,
     pub container_rect: Rect,
     primary_color: Color,
     pub text: String,
@@ -32,9 +32,9 @@ pub struct Text<T> {
 }
 
 impl<T> Text<T> {
-    pub fn new(id: &str, text: &str) -> Self {
+    pub fn new(id: &'static str, text: &str) -> Self {
         Text {
-            id: 100,
+            id: id,
             container_rect: Rect::new(0, 0, 0, 28), // FIXME: 28 is only true for default font
             primary_color: colors::BLACK,
             text: String::from(text),
@@ -120,7 +120,7 @@ impl<T> Text<T> {
 }
 
 impl<T> Widget<T> for Text<T> {
-    fn assign_id(&mut self, id: u32) {
+    fn assign_id(&mut self, id: &'static str) {
         self.id = id;
     }
 
@@ -150,7 +150,7 @@ impl<T> Widget<T> for Text<T> {
         self.container_rect
     }
 
-    fn id(&self) -> u32 {
+    fn id(&self) -> &'static str {
         self.id
     }
 
