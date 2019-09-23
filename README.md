@@ -35,6 +35,7 @@ Check for distribution-specific development packages/repos for the required libr
 - Implement ECS for widgets and views (see widgets/widget.rs & views/view.rs)
   - What must each widget share?
   - What must each view share?
+  - What do both share?
 - Scaling for high resolution/dpi displays
 - Basic Widgets:
   - Slider (horizontal + vertical)

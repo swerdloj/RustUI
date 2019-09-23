@@ -21,7 +21,7 @@ pub struct Text<T> {
     // How far text must be from its boundary
     internal_padding: u32,
 
-    update_fn: Option<Box<Fn(&T) -> String>>,
+    update_fn: Option<Box<dyn Fn(&T) -> String>>,
 
     auto_resize: bool,
     center_text: bool,
@@ -43,8 +43,9 @@ impl<T> Text<T> {
             update_fn: None,
             auto_resize: false,
             center_text: false,
-            text_width: 0,
-            text_height: 0,
+            // FIXME: Defaults are not safe. Should be assigned when building view
+            text_width: 100,
+            text_height: 40,
         }
     }
 

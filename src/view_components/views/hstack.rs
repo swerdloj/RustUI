@@ -40,7 +40,7 @@ impl<T> View<T> for HStack<T> {
         // TODO: How to extend this lifetime and implement for text rendering?
         let mut font_manager = Fonts::new();
 
-        // Step 1 -> Initially size text components
+        // Initially size text components
         for item in &mut self.data.components {
             match item {
                 WidgetOrView::Widget(widget) => {
@@ -179,6 +179,7 @@ impl<T> View<T> for HStack<T> {
             }
             _ => {
                 // TODO: Implement the rest
+                //  Alignment::Left should be default (no extra work)
             }
         }
     }
@@ -188,6 +189,7 @@ impl<T> View<T> for HStack<T> {
         //        a nested view has other, wider nested views,
         //        we want to guarentee that we avoid overlapping widgets
         //        caused by wide, nested views
+
         // FIXME: Confirm this
         let mut draw_width = 0;
 
@@ -272,10 +274,8 @@ macro_rules! HStack2 {
                         current_x += subview.draw_width() as i32 + default_padding;
                     }
                 }
-                println!("Current x: {}", current_x);
 
-                components.push(component);
-                
+                components.push(component);                
             )+
 
             HStack::new(components)

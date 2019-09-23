@@ -114,6 +114,7 @@ fn main() {
             .with_text("Button")        
     )
     .fixed_width(400)
+    .fixed_height(320)
     .alignment(Alignment::Center);
 
     // TODO: This must allow some mechanism for dynamic views
