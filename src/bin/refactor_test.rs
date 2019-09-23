@@ -4,8 +4,12 @@ extern crate RustUI;
 use RustUI::backend::system::window::Window;
 // TODO: Work on imports & namespaces
 use RustUI::view_components::{
-    views::{VStack, HStack, view::{View, Alignment}},
-    widgets::Button,
+    views::{
+        VStack, HStack, view::{View, Alignment}
+    },
+    widgets::{
+        Button, CheckBox, Text, widget::colors,
+    },
     WidgetOrView,
     ViewComponent,
 };
@@ -16,14 +20,14 @@ fn main() {
     let main_window = Window::init("Test", &mut state);
 
     let view = VStack!(
+        Text::new("test0", "Start")
+            .with_color(colors::WHITE),
         Button::new("test1")
             .with_text("VS1 1/3"),
         Button::new("test2")
             .with_text("VS1 2/3"),
         Button::new("test3")
             .with_text("VS1 3/3"),
-
-        // Text::new("Test", "Text")
 
         HStack!(
             VStack!(
@@ -43,7 +47,7 @@ fn main() {
                     .with_text("VS2 1/3"),
                 Button::new("test9")
                     .with_text("VS2 2/3"),
-                // FIXME: Something is not accounting for nested view width
+                // FIXME: Why is this not correctly positioned?
                 // HStack!(
                 //     Button::new("empty")
                 //         .with_text("Nested1"),
@@ -55,10 +59,10 @@ fn main() {
             )
         ),
 
-        Button::new("test11")
+        CheckBox::new("test11")
             .with_text("End")
     )
-    .fixed_height(370)
+    .fixed_height(420)
     .alignment(Alignment::Center);
 
     // TODO: Refactor `backend.rs` to implement the new system

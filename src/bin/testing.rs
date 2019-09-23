@@ -7,7 +7,6 @@ It will be structured as though creating a real project using this library.
 
 #[macro_use]
 extern crate RustUI;
-// extern crate sdl2;
 
 use RustUI::backend::system::window::Window;
 use RustUI::view_components::{
@@ -54,12 +53,6 @@ fn main() {
                     }
                 }),
 
-            // Text::new("Nesting Test2", "Nested2")
-            //     .with_color(colors::WHITE),
-
-            // CheckBox::new("Nesting Test3")
-            //     .with_text("Nested3")
-
             Button::new("DecrementButton")
                 .with_text("--")
                 .with_on_click(|state: &mut State| {
@@ -68,17 +61,6 @@ fn main() {
                     }
                 })
         ),
-
-        // Button::new("IncrementCounter")
-        //     .with_on_click(|state: &mut State| {
-        //         if !state.is_locked {
-        //             state.button_clicks += 1;
-        //             println!("Clicked the button {} times", state.button_clicks);
-        //         } else {
-        //             println!("The counter is locked");
-        //         }
-        //     })
-        //     .with_text("Increment"),
 
         Button::new("ResetCounter")
             .with_on_click(|state: &mut State| {
@@ -97,15 +79,11 @@ fn main() {
                 state.is_locked = is_checked;
             }),
 
-        // Text::new("Test", "Text widget aligned center")
-        //     .with_rgb(255, 255, 255)
-        //     .center(),
-
         Text::new("Test", "Text Widget")
             .with_color(colors::WHITE),
 
         Button::new("ExampleButton")
-            .with_on_click(example_callback) // Can now simply pass in regular functions
+            .with_on_click(example_callback) // Can simply pass in regular functions
             .with_text("Button")        
     )
     // .fixed_width(400)

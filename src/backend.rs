@@ -258,10 +258,11 @@ pub mod system {
 
                     self.canvas.present();
 
-                    // FIXME: Hard-limit to 60fps to avoid excessive rendering (lowers GPU usage by 80%)
+                    // FIXME: Replace this with delta time for use in animations & frame rate limiting
+                    // Hard-limit to 60fps to avoid excessive rendering (lowers GPU usage considerably)
                     ::std::thread::sleep(std::time::Duration::new(0, 1_000_000_000u32 / 60));
                 } // end event loop
             } // end start() method
-        } // end imple window
+        } // end impl window
     } // end mod window
 } // end mod system
