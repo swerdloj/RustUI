@@ -2,7 +2,7 @@ extern crate sdl2;
 use sdl2::pixels::Color;
 use sdl2::rect::Rect;
 
-use crate::view::{ViewComponent, WidgetOrView};
+use crate::view_components::{ViewComponent, WidgetOrView};
 use crate::backend::system::window::Window;
 
 use super::widget::{Widget, WidgetState, colors};
@@ -145,12 +145,5 @@ impl<T> Widget<T> for Button<T> {
 impl<T> ViewComponent<T> for Button<T> where T: 'static {
     fn as_component(self) -> WidgetOrView<T> {
         WidgetOrView::Widget(Box::new(self))
-    }
-}
-
-// FIXME: Remove this later during view refactor (here for testing)
-impl<T> crate::view_components::ViewComponent<T> for Button<T> where T: 'static {
-    fn as_component2(self) -> crate::view_components::WidgetOrView<T> {
-        crate::view_components::WidgetOrView::Widget(Box::new(self))
     }
 }

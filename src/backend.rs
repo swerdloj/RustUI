@@ -155,6 +155,11 @@ pub mod system {
 
                 // Initialize the window/widget layout
                 view.init(&self.ttf_context);
+                // FIXME: This is only needed because only the parent
+                //        view should call this explicitly
+                view.align();
+
+                // FIXME: This needs to account for nested views if not fixed_size
                 // Set initial window size (will override the default of 800x600)
                 self.resize_window(view.view_size());
 

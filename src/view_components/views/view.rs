@@ -39,7 +39,8 @@ pub trait View<T> {
     /// Translates an entire view by dx & dy
     fn translate(&mut self, dx: i32, dy: i32);
     /// Aligns a view's components
-    fn align(&mut self, alignment: Alignment);
+    // fn align(&mut self, alignment: Alignment);
+    fn align(&mut self);
     
     /// The width of the view (as drawn)
     fn draw_width(&self) -> u32;

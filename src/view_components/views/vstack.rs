@@ -67,7 +67,7 @@ impl<T> View<T> for VStack<T> {
             self.data.view_height = self.draw_height();
         }
 
-        self.align(self.data.alignment.clone());
+        //self.align(self.data.alignment.clone());
     }
 
     fn view_size(&self) -> (u32, u32) {
@@ -156,20 +156,25 @@ impl<T> View<T> for VStack<T> {
         }
     }
 
-    fn align(&mut self, alignment: Alignment) {
+    fn align(&mut self) {
         let width = self.data.view_width;
+        let alignment = self.data.alignment;
 
         match alignment {
             // Translate each widget to the center of the view
             Alignment::Center => {
                 for component in &mut self.data.components {
                     match component {
+                        // Center widget within view
                         WidgetOrView::Widget(widget) => {
                             let new_x = (width / 2) as i32 - (widget.draw_width() / 2) as i32;
                             widget.translate(new_x - widget.rect().x(), 0);
                         }
+                        // Shift subview to center of current view
                         WidgetOrView::View(subview) => {
-                            // TODO: This
+                            // FIXME: Padding? Why the -5? Half padding?
+                            let shift_x = (width / 2) as i32 - (subview.draw_width() / 2) as i32;
+                            subview.translate(shift_x, 0);
                         }
                     }
                 }
@@ -214,7 +219,7 @@ impl<T> View<T> for VStack<T> {
 }
 
 impl<T> ViewComponent<T> for VStack<T> where T: 'static{
-    fn as_component2(self) -> WidgetOrView<T> {
+    fn as_component(self) -> WidgetOrView<T> {
         WidgetOrView::View(Box::new(self))
     }
 }
@@ -227,13 +232,13 @@ macro_rules! VStack2 {
             // let mut vstack = VStack::new(components);
             let default_padding = 10;
 
-            let mut current_y = default_padding;
+            let mut current_y = 0;
 
             // FIXME: Replace this with string in widget.rs
             let mut current_id = 0;
             
             $(
-                let mut component = $x.as_component2();
+                let mut component = $x.as_component();
 
                 match &mut component {
                     // FIXME: Placement needs to occur in the init function
@@ -244,13 +249,13 @@ macro_rules! VStack2 {
                         // TODO: Account for padding here?
                         widget.place(0, current_y);
 
-                        current_y += widget.rect().height() as i32 + default_padding;
+                        current_y += widget.draw_height() as i32 + default_padding;
                     }
 
                     WidgetOrView::View(subview) => {
                         subview.translate(0, current_y);
                         
-                        current_y += subview.draw_height() as i32;
+                        current_y += subview.draw_height() as i32 + default_padding;
                     }
                 }
 

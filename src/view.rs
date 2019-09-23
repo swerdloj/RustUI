@@ -1,3 +1,10 @@
+/*
+
+TODO: THIS IS OLD
+TODO: DELETE WHEN REFACTOR IS COMPLETE
+
+*/
+
 use sdl2::ttf;
 use sdl2::rect::Rect;
 use std::collections::HashMap;

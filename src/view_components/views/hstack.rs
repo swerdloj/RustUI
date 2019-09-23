@@ -66,7 +66,7 @@ impl<T> View<T> for HStack<T> {
             self.data.view_height = self.draw_height();
         }
 
-        self.align(self.data.alignment.clone());
+        //self.align(self.data.alignment.clone());
     }
 
     fn view_size(&self) -> (u32, u32) {
@@ -142,12 +142,13 @@ impl<T> View<T> for HStack<T> {
     }
 
     fn translate(&mut self, dx: i32, dy: i32) {
-        // Translate all components by the same amound
+        // Translate all components by the same amount
         for component in &mut self.data.components {
             match component {
                 WidgetOrView::Widget(widget) => {
                     widget.translate(dx, dy);
                 }
+
                 WidgetOrView::View(view) => {
                     view.translate(dx, dy);
                 }
@@ -155,8 +156,9 @@ impl<T> View<T> for HStack<T> {
         }
     }
 
-    fn align(&mut self, alignment: Alignment) {
+    fn align(&mut self) {
         // let draw_width = self.draw_width();
+        let alignment = self.data.alignment;
 
         match alignment {
             Alignment::Center => {
@@ -169,7 +171,8 @@ impl<T> View<T> for HStack<T> {
                             widget.translate(x_offset as i32, 0);
                         }
                         WidgetOrView::View(subview) => {
-                            // TODO: This
+                            // FIXME: Confirm this is correct
+                            subview.translate(x_offset as i32, 0);
                         }
                     }
                 }
@@ -181,6 +184,13 @@ impl<T> View<T> for HStack<T> {
     }
 
     fn draw_width(&self) -> u32 {
+        // FIXME: We fill this recursively because in the event
+        //        a nested view has other, wider nested views,
+        //        we want to guarentee that we avoid overlapping widgets
+        //        caused by wide, nested views
+        // FIXME: Confirm this
+        let mut draw_width = 0;
+
         let mut rightmost_x = 0;
         let mut leftmost_x = self.data.view_width as i32;
 
@@ -195,12 +205,14 @@ impl<T> View<T> for HStack<T> {
                         rightmost_x = widget.rect().x() + widget.draw_width() as i32;
                     }
                 }
-                _ => {}
+                WidgetOrView::View(subview) => {
+                    draw_width += subview.draw_width();
+                }
             }
         }
 
         // leftmost_x > rightmost_x
-        (rightmost_x - leftmost_x) as u32 + self.data.padding.left + self.data.padding.right
+        draw_width + (rightmost_x - leftmost_x) as u32 + self.data.padding.left + self.data.padding.right
     }
 
     fn draw_height(&self) -> u32 {
@@ -221,8 +233,8 @@ impl<T> View<T> for HStack<T> {
     }
 }
 
-impl<T> ViewComponent<T> for HStack<T> where T: 'static{
-    fn as_component2(self) -> WidgetOrView<T> {
+impl<T> ViewComponent<T> for HStack<T> where T: 'static {
+    fn as_component(self) -> WidgetOrView<T> {
         WidgetOrView::View(Box::new(self))
     }
 }
@@ -238,28 +250,29 @@ macro_rules! HStack2 {
             let mut current_x = default_padding;
 
             // FIXME: Replace this with string in widget.rs
-            let mut current_id = 0;
+            let mut current_id = 100;
             
             $(
-                let mut component = $x.as_component2();
+                let mut component = $x.as_component();
 
                 match &mut component {
                     // FIXME: Placement needs to occur in the init function
                     WidgetOrView::Widget(widget) => {
                         widget.assign_id(current_id);
-                        current_id += 1;
+                        current_id += 100;
 
-                        widget.place(current_x, default_padding);
+                        widget.place(current_x, 0);
 
-                        current_x += widget.rect().width() as i32 + default_padding;
+                        current_x += widget.draw_width() as i32 + default_padding;
                     }
 
                     WidgetOrView::View(subview) => {
                         subview.translate(current_x, 0);
                         
-                        current_x += subview.draw_width() as i32;
+                        current_x += subview.draw_width() as i32 + default_padding;
                     }
                 }
+                println!("Current x: {}", current_x);
 
                 components.push(component);
                 

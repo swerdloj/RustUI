@@ -10,44 +10,52 @@ use RustUI::view_components::{
     ViewComponent,
 };
 
-// use RustUI::views::{VStack, view::WidgetOrView};
-
 fn main() {
     let mut state = 7;
 
-    let mut main_window = Window::init("Test", &mut state);
+    let main_window = Window::init("Test", &mut state);
 
     let view = VStack2!(
         Button::new("test")
-            .with_text("Testing")
-            .with_on_click(|_| {
-                println!("Testing...");
-            }),
-
+            .with_text("VS1 1/3"),
         Button::new("test")
-            .with_text("Testing2")
-            .with_on_click(|_| {
-                println!("Testing2...");
-            }),
-        
-        Button::new("empty"),
+            .with_text("VS1 2/3"),
+        Button::new("empty")
+            .with_text("VS1 3/3"),
 
         // Text::new("Test", "Text")
 
         HStack2!(
-            Button::new("empty"),
-            Button::new("empty"),
-            Button::new("empty"),
+            Button::new("empty")
+                .with_text("HS1 1/3"),
+            Button::new("empty")
+                .with_text("HS1 2/3"),
+            Button::new("empty")
+                .with_text("HS1 3/3"),
+
+            // Should be 4th element in HStack
             VStack2!(
-                Button::new("empty"),
-                Button::new("empty"),
-                Button::new("empty"),
                 Button::new("empty")
+                    .with_text("VS2 1/3"),
+                Button::new("empty")
+                    .with_text("VS2 2/3"),
+                // FIXME: Something is not accounting for nested view width
+                // HStack2!(
+                //     Button::new("empty")
+                //         .with_text("Nested1"),
+                //     Button::new("empty")
+                //         .with_text("Nested2")
+                // ),
+                Button::new("empty")
+                    .with_text("VS2 3/3")
             )
         )
+        // ,
+        // Button::new("asdf")
+        //     .with_text("VS1 End")
     )
     .alignment(Alignment::Center)
-    .fixed_width(400)
+    .fixed_width(500)
     .fixed_height(400);
 
     // TODO: Refactor `backend.rs` to implement the new system

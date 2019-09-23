@@ -1,6 +1,7 @@
 pub mod views;
 pub mod widgets;
 
+// TODO: Add shortened import paths (types) for widgets & views
 
 // ========================== WidgetOrView enum ========================== //
 use views::view::View;
@@ -16,7 +17,7 @@ pub enum WidgetOrView<T> {
 
 /// Trait utilized for storing `Widget` and `View` types together
 pub trait ViewComponent<T> {
-    fn as_component2(self) -> WidgetOrView<T>;
+    fn as_component(self) -> WidgetOrView<T>;
 }
 
 // ========================== Padding Struct ========================== //

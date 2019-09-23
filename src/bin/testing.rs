@@ -10,9 +10,16 @@ extern crate RustUI;
 // extern crate sdl2;
 
 use RustUI::backend::system::window::Window;
-use RustUI::view_components::widgets::widget::colors;
-use RustUI::view_components::widgets::*;
-use RustUI::view::*;
+use RustUI::view_components::{
+    WidgetOrView, ViewComponent,
+    views::view::{
+        View, Alignment
+    },
+    views::{VStack, HStack},
+    widgets::{
+        Text, Button, CheckBox, widget::colors
+    }
+};
 
 struct State {
     button_clicks: i16,
@@ -35,7 +42,7 @@ fn main() {
     main_window.set_icon("./res/logo/temp_logo_low_quality.bmp");
     // main_window.set_logical_size(800, 600);
 
-    let test_view = VStack!(
+    let test_view = VStack2!(
         Text::new("CounterText", "Counter: 0")
             // TODO: When updating text, the text component must be resized
             .with_text_update(|state: &State| {
@@ -43,7 +50,7 @@ fn main() {
             })
             .with_color(colors::WHITE),
 
-        HStack!(
+        HStack2!(
             Button::new("IncrementButton")
                 .with_text("++")
                 .with_on_click(|state: &mut State| {
@@ -107,7 +114,7 @@ fn main() {
             .with_text("Button")        
     )
     .fixed_width(400)
-    .align_content(Alignment::Center);
+    .alignment(Alignment::Center);
 
     // TODO: This must allow some mechanism for dynamic views
     //       Consider requiring a function which takes the state and returns a view

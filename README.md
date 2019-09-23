@@ -42,15 +42,13 @@ Check for distribution-specific development packages/repos for the required libr
   - Drop Menu
   - Radio Buttons
 - Basic Views:
-  - HStack
   - Menubar
   - Header/Footer
 - Basic Components:
   - Dividers
   - Nested fixed-size views scrollable via scrollbars
 - Documentation:
-  - Create script for running `rustdoc` or `cargo doc` and generating html for RustUI crate only. Then open this html file.
-  - Bash script for Linux & batch script for Windows
+  - Finish documenting and add examples
 - Build Script:
   - Extract SDL2 libs for Windows
   - Generate docs (and provide option to open)
@@ -58,8 +56,6 @@ Check for distribution-specific development packages/repos for the required libr
   - Make these optional via flags
 - Add a GridView macro with respective methods (like tkinter)
 - Implement `font.rs` (separate widgets, backend, and font).
-- Accept widget ids as strings, then store their hashes?
-- Store a view's widget ids in a hash table
 - Stabilize FPS (without fixed loop dealys) -- implement delta time
 - Implement graphics
   - Image rendering

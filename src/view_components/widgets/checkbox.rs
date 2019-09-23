@@ -2,7 +2,7 @@ extern crate sdl2;
 use sdl2::pixels::Color;
 use sdl2::rect::Rect;
 
-use crate::view::{ViewComponent, WidgetOrView};
+use crate::view_components::{ViewComponent, WidgetOrView};
 use crate::backend::system::window::Window;
 
 use super::widget::{Widget, WidgetState, colors};
