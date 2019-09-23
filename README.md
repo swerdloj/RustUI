@@ -1,6 +1,8 @@
 # RustUI
 Rust GUI library inspired by SwiftUI.
 
+This library emphasises the usage of declarative syntax for clean & simple UI development.
+
 ## Testing Binaries
 Different executables can be tested by including them in /src/bin.  
 Run them via `cargo run --bin file_name`  
@@ -20,7 +22,7 @@ The following items are required to run RustUI projects:
 
 ## Usage (unstable)
 ### Windows
-Download the above dependencies and place into project root directory
+Download the above dependencies and place into project root directory (with `Cargo.toml`)
 ### Linux
 Check for distribution-specific development packages/repos for the required libraries
 ### General
@@ -28,10 +30,6 @@ Check for distribution-specific development packages/repos for the required libr
 2. In `font.rs`, update `default_font` for the `FontParams` struct
 
 ## TODOs:
-- Refactor widget ids from being `u32`s to `&'static str`s
-  - Allow for lookup by string
-  - Enforce uniqueness
-  - Maintain in hash table (id -> widget)
 - Implement ECS for widgets and views (see widgets/widget.rs & views/view.rs)
   - What must each widget share?
   - What must each view share?

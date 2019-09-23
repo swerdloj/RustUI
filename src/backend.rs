@@ -55,8 +55,6 @@ pub mod system {
         use crate::view_components::widgets::widget::WidgetState;
         use crate::font::{FontParams, Fonts};
         use super::state::{ApplicationState};
-
-        use std::rc::Rc;
         
         // Expected lifetime ('a) -> the initializing function containing the .start() call
         // Generic type (T) -> The user-defined application state struct for use with callbacks

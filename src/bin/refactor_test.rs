@@ -26,18 +26,22 @@ fn main() {
         // Text::new("Test", "Text")
 
         HStack!(
-            Button::new("test4")
-                .with_text("HS1 1/3"),
-            Button::new("test5")
-                .with_text("HS1 2/3"),
-            Button::new("test6")
-                .with_text("HS1 3/3"),
-
-            // Should be 4th element in HStack
             VStack!(
-                Button::new("test7")
-                    .with_text("VS2 1/3"),
+                Button::new("test4")
+                    .with_text("VS3 1/2"),
+                Button::new("test5")
+                    .with_text("VS3 2/2")
+            ),
+            Button::new("test6")
+                .with_text("HS1 1/2"),
+            Button::new("test7")
+                .with_text("HS1 2/2"),
+
+            // Should be last element in HStack
+            VStack!(
                 Button::new("test8")
+                    .with_text("VS2 1/3"),
+                Button::new("test9")
                     .with_text("VS2 2/3"),
                 // FIXME: Something is not accounting for nested view width
                 // HStack!(
@@ -46,17 +50,16 @@ fn main() {
                 //     Button::new("empty")
                 //         .with_text("Nested2")
                 // ),
-                Button::new("test9")
+                Button::new("test10")
                     .with_text("VS2 3/3")
             )
-        )
-        // ,
-        // Button::new("asdf")
-        //     .with_text("VS1 End")
+        ),
+
+        Button::new("test11")
+            .with_text("End")
     )
+    .fixed_height(370)
     .alignment(Alignment::Center);
-    // .fixed_width(500)
-    // .fixed_height(400);
 
     // TODO: Refactor `backend.rs` to implement the new system
     main_window.start(view);
