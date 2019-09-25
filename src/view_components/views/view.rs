@@ -12,7 +12,7 @@ use sdl2::ttf;
 
 use std::collections::HashMap;
 
-use crate::view_components::{Padding, WidgetOrView, ViewComponent};
+use crate::view_components::{Padding, WidgetOrView};
 use crate::view_components::widgets::widget::Widget;
 
 // ========================== Alignment enum ========================== //
@@ -46,7 +46,8 @@ pub trait View<T> {
     /// The height of the view (as drawn)
     fn draw_height(&self) -> u32;
 
-    /// The actual size of the view (maybe fixed size, maybe not) (width, height)
+    /// The actual size of the view. 
+    /// Accounts for fixed dimensions unlike `draw_width()` & `draw_height()`
     fn view_size(&self) -> (u32, u32);
 
     /// Obtain mutable references to all of a view's widgets
@@ -65,6 +66,7 @@ pub trait View<T> {
     fn fixed_width(self, width: u32) -> Self where Self: Sized;
     fn fixed_height(self, height: u32) -> Self where Self: Sized;
     fn fixed_size(self, width: u32, height: u32) -> Self where Self: Sized;
+    /// (left, right, top, bottom)
     fn padding(self, left: u32, right: u32, top: u32, botton: u32) -> Self where Self: Sized;
 }
 
@@ -77,13 +79,12 @@ pub struct ViewData<T> {
     /// The items (widgets or nested views) owned by the view
     pub components: Vec<WidgetOrView<T>>,
 
-    // TODO: Consider replacing these with functions
-    //       Although some way to contain manual sizes are needed
-    /// Assigned width of view 
+    /// View's draw width unless manually assigned
     pub view_width: u32,
-    /// Assigned height of view
+    /// View's draw height unless manually assigned
     pub view_height: u32,
-    /// Whether the view has manually-fixed sizes
+    /// Whether the view has manually-fixed sizes (view_width or view_height)
+    // FIXME: This is never used
     pub fixed_size: bool,
 
     /// The view's padding (not the widgets')

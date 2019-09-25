@@ -9,8 +9,10 @@ Rust GUI library
 // TODO: IMPORTANT - Document the code according to the following:
 // https://doc.rust-lang.org/rust-by-example/meta/doc.html
 
-// For design help, see:
+// For design help/ideas, see:
 // https://github.com/gyscos/cursive
+// &
+// https://github.com/hecrj/iced
 
 //! # Handling Data
 //!   

@@ -47,7 +47,7 @@ fn main() {
                     .with_text("VS2 1/3"),
                 Button::new("test9")
                     .with_text("VS2 2/3"),
-                // FIXME: Why is this not correctly positioned?
+                // FIXME: Subvew width still needs to be accounted for
                 // HStack!(
                 //     Button::new("empty")
                 //         .with_text("Nested1"),
@@ -65,6 +65,5 @@ fn main() {
     .fixed_height(420)
     .alignment(Alignment::Center);
 
-    // TODO: Refactor `backend.rs` to implement the new system
     main_window.start(view);
 }

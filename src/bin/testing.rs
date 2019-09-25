@@ -10,21 +10,23 @@ extern crate RustUI;
 
 use RustUI::backend::system::window::Window;
 use RustUI::view_components::{
+    // TODO: User should not need to import these
     WidgetOrView, ViewComponent,
     views::view::{View, Alignment},
+
     views::{VStack, HStack},
     widgets::{Text, Button, CheckBox, widget::colors}
 };
 
 struct State {
-    button_clicks: i16,
+    counter: i16,
     is_locked: bool,
 }
 
 impl State {
     fn new() -> Self {
         State {
-            button_clicks: 0,
+            counter: 0,
             is_locked: false,
         }
     }
@@ -38,9 +40,9 @@ fn main() {
 
     let test_view = VStack!(
         Text::new("CounterText", "Counter: 0")
-            // TODO: When updating text, the text component must be resized
+            // FIXME: When updating text, the text component must be resized
             .with_text_update(|state: &State| {
-                format!("Counter: {}", state.button_clicks)
+                format!("Counter: {}", state.counter)
             })
             .with_color(colors::WHITE),
 
@@ -49,7 +51,7 @@ fn main() {
                 .with_text("++")
                 .with_on_click(|state: &mut State| {
                     if !state.is_locked {
-                        state.button_clicks += 1;
+                        state.counter += 1;
                     }
                 }),
 
@@ -57,7 +59,7 @@ fn main() {
                 .with_text("--")
                 .with_on_click(|state: &mut State| {
                     if !state.is_locked {
-                        state.button_clicks -= 1;
+                        state.counter -= 1;
                     }
                 })
         )
@@ -66,7 +68,7 @@ fn main() {
         Button::new("ResetCounter")
             .with_on_click(|state: &mut State| {
                 if !state.is_locked {
-                    state.button_clicks = 0;
+                    state.counter = 0;
                     println!("Resetting counter");
                 } else {
                     println!("The counter is locked");

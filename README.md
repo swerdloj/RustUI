@@ -30,6 +30,7 @@ Check for distribution-specific development packages/repos for the required libr
 2. In `font.rs`, update `default_font` for the `FontParams` struct
 
 ## TODOs:
+- See [Projects](https://github.com/swerdloj/RustUI/projects)
 - Implement ECS for widgets and views (see widgets/widget.rs & views/view.rs)
   - What must each widget share?
   - What must each view share?
