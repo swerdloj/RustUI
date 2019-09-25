@@ -53,7 +53,7 @@ Rust GUI library
 
 /// Library backend for handling windowing, events, etc.
 pub mod backend;
-/// Widgets, Views, & Similar
+/// Widgets and Views
 pub mod view_components;
 /// Font table
 pub mod font;

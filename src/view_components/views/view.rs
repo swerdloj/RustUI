@@ -55,7 +55,8 @@ pub trait View<T> {
     /// Obtain references to all of a view's widgets
     fn widgets(&self) -> Vec<&Box<dyn Widget<T>>>;
 
-    fn child_widgets(&mut self) -> Vec<&mut Box<dyn Widget<T>>>;
+    /// Obtain mutable references to *all* nested widgets
+    fn child_widgets_mut(&mut self) -> Vec<&mut Box<dyn Widget<T>>>;
 
 
     // --------- Builder Functions --------- //

@@ -103,7 +103,7 @@ impl<T> View<T> for HStack<T> {
         widgets
     }
 
-    fn child_widgets(&mut self) -> Vec<&mut Box<dyn Widget<T>>> {
+    fn child_widgets_mut(&mut self) -> Vec<&mut Box<dyn Widget<T>>> {
         let mut widgets = Vec::new();
 
         for component in &mut self.data.components {
@@ -112,7 +112,7 @@ impl<T> View<T> for HStack<T> {
                     widgets.push(widget);
                 }
                 WidgetOrView::View(subview) => {
-                    widgets.append(&mut subview.child_widgets());
+                    widgets.append(&mut subview.child_widgets_mut());
                 }
             }
         }
