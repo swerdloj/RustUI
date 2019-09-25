@@ -60,7 +60,8 @@ fn main() {
                         state.button_clicks -= 1;
                     }
                 })
-        ),
+        )
+        .padding(10, 10, 5, 0),
 
         Button::new("ResetCounter")
             .with_on_click(|state: &mut State| {

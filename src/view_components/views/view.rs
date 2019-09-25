@@ -65,6 +65,7 @@ pub trait View<T> {
     fn fixed_width(self, width: u32) -> Self where Self: Sized;
     fn fixed_height(self, height: u32) -> Self where Self: Sized;
     fn fixed_size(self, width: u32, height: u32) -> Self where Self: Sized;
+    fn padding(self, left: u32, right: u32, top: u32, botton: u32) -> Self where Self: Sized;
 }
 
 /// Common data needed by *all* View structs

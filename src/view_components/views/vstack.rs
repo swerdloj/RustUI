@@ -142,6 +142,14 @@ impl<T> View<T> for VStack<T> {
         self
     }
 
+    fn padding(mut self, left: u32, right: u32, top: u32, bottom: u32) -> Self {
+        self.data.padding.left = left;
+        self.data.padding.right = right;
+        self.data.padding.top = top;
+        self.data.padding.bottom = bottom;
+        self
+    }
+
     fn translate(&mut self, dx: i32, dy: i32) {
         // Translate all components by the same amound
         for component in &mut self.data.components {
