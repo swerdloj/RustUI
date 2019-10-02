@@ -16,12 +16,14 @@ Each window will run on its own thread.
 
 extern crate sdl2;
 
-// TODO: Confirm this is correct, then refactor generic `T`s into `State`s
-// pub type State<T> = dyn system::state::GenerateView<T>;
 
 // TODO: Call this 'context' instead of 'system'?
 pub mod system {
+    // TODO: Confirm this is correct, then refactor generic `T`s into `State`s
+    // pub type State<T> = dyn state::GenerateView<T>;
+    
     pub mod state {
+        // use super::State;
         use crate::view_components::views::view::View;
 
         // TODO: Flesh this out and utilize appropriately. Or move event handling to Widget
@@ -43,8 +45,9 @@ pub mod system {
 
         // TODO: Is here the correct place for this trait?
         // FIXME: Box is a workaround
-        pub trait GenerateView<T> {
-            fn generate_view(&self) -> Box<dyn View<T>>;
+        // FIXME: Can this work with only one generic?
+        pub trait GenerateView<T, S> {
+            fn generate_view(&self) -> Box<dyn View<S>>;
         }
     } // end mod state
 
