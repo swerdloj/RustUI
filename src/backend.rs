@@ -16,14 +16,19 @@ Each window will run on its own thread.
 
 extern crate sdl2;
 
+// TODO: Confirm this is correct, then refactor generic `T`s into `State`s
+// pub type State<T> = dyn system::state::GenerateView<T>;
+
 // TODO: Call this 'context' instead of 'system'?
 pub mod system {
     pub mod state {
+        use crate::view_components::views::view::View;
+
         // TODO: Flesh this out and utilize appropriately. Or move event handling to Widget
         pub struct ApplicationState<'a, T> {
             pub hovering: Option<&'static str>, // Widget being hovered over
             pub clicking: Option<&'static str>, // Widget being clicked (left mouse down)
-            user_state: &'a mut T, // User state to be passed to widgets
+            pub user_state: &'a mut T, // User state to be passed to widgets
         }
 
         impl<'a, T> ApplicationState<'a, T> {
@@ -34,10 +39,12 @@ pub mod system {
                     user_state: user_state,
                 }
             }
+        }
 
-            pub fn get_user_state(&mut self) -> &mut T {
-                self.user_state
-            }
+        // TODO: Is here the correct place for this trait?
+        // FIXME: Box is a workaround
+        pub trait GenerateView<T> {
+            fn generate_view(&self) -> Box<dyn View<T>>;
         }
     } // end mod state
 
@@ -54,7 +61,7 @@ pub mod system {
         use crate::view_components::views::view::{View};
         use crate::view_components::widgets::widget::WidgetState;
         use crate::font::{FontParams, Fonts};
-        use super::state::{ApplicationState};
+        use super::state::{ApplicationState, GenerateView};
         
         // Expected lifetime ('a) -> the initializing function containing the .start() call
         // Generic type (T) -> The user-defined application state struct for use with callbacks
@@ -149,7 +156,10 @@ pub mod system {
             // TODO: Allow multiple windows to run at once on multiple threads
             // TODO: How to handle window size changes from the user?
             pub fn start<V: View<T> + Sized>(mut self, mut view: V) {
+            // pub fn start(mut self) {
                 /* Initialize here */
+
+                // let mut view = self.window_state.user_state.generate_view();
 
                 // Initialize the window/widget layout
                 view.init(&self.ttf_context);
@@ -217,7 +227,7 @@ pub mod system {
                                     for widget in view.child_widgets_mut() { // Look at each widget
                                         if widget.rect().contains_point(event_location) { // If the mouse was released on any widget
                                             if active_id == widget.id() { // Trigger the callback if that widget was active
-                                                widget.on_click(self.window_state.get_user_state());
+                                                widget.on_click(self.window_state.user_state);
                                             }
                                             self.window_state.hovering = Some(widget.id()); // If the mouse is on a widget, it is now hovering
                                         }
@@ -237,7 +247,7 @@ pub mod system {
 
                     // Render each widget
                     for widget in view.child_widgets_mut() {
-                        widget.update(self.window_state.get_user_state());
+                        widget.update(self.window_state.user_state);
 
                         let mut widget_state = WidgetState::Base;
 

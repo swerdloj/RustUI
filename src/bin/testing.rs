@@ -32,6 +32,15 @@ impl State {
     }
 }
 
+// TODO: Implement trait requirement for backend
+impl<T> RustUI::backend::system::state::GenerateView<T> for State where T: 'static {
+    fn generate_view(&self) -> Box<dyn View<T>> {
+        let view = VStack!(Button::new("test"));
+
+        Box::new(view)
+    }
+}
+
 fn main() {
     let mut app_state = State::new();
 
