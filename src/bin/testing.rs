@@ -42,9 +42,6 @@ impl<T> GenerateView<T, State> for State {
         let view = VStack!(
             // New method
             Text::new("CounterText", format!("Counter: {}", self.counter).as_str())
-                // .with_text_update(|state: &State| {
-                //     format!("Counter: {}", state.counter)
-                // })
                 .with_color(colors::WHITE),
 
             // Old method

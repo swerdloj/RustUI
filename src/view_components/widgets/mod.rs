@@ -8,6 +8,6 @@ pub use crate::backend::system::state::GenerateView;
 
 // Simplified widget imports
 // Allows user to type `::widget::Name` or `::widget::*` rather than full namespaces
-pub type Button<T> = button::Button<T>;
-pub type CheckBox<T> = checkbox::CheckBox<T>;
-pub type Text<T> = text::Text<T>;
+pub use button::Button;
+pub use checkbox::CheckBox;
+pub use text::Text;

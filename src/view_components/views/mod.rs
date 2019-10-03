@@ -4,8 +4,8 @@ pub mod view;
 pub mod vstack;
 pub mod hstack;
 
-pub type VStack<T> = vstack::VStack<T>;
-pub type HStack<T> = hstack::HStack<T>;
+pub use vstack::VStack;
+pub use hstack::HStack;
 
 
 // ========================== Example macro ========================== //

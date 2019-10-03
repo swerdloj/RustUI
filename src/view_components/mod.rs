@@ -4,8 +4,8 @@ pub mod widgets;
 use views::view::View;
 use widgets::widget::Widget;
 
-// ========================== WidgetOrView enum ========================== //
 
+// ========================== WidgetOrView enum ========================== //
 
 /// Contains either a Widget or a View. Handle via `match`.
 pub enum WidgetOrView<T> {
