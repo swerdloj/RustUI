@@ -110,7 +110,8 @@ pub trait Widget<T> {
     fn on_click(&mut self, state: &mut T);
 
     /// Render the widget to the window
-    fn render(&self, window: &mut Window<T>, widget_state: WidgetState);
+    fn render(&self, window: &mut Window<T>, widget_state: WidgetState)
+    where T: super::GenerateView<T, T>;
 
     /// Update the widget according to state
     fn update(&mut self, state: &T);

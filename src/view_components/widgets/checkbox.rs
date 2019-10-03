@@ -137,7 +137,8 @@ impl<T> Widget<T> for CheckBox<T> {
     }
 
     // TODO: Should the text also change color on hover? such as making it slightly gray?
-    fn render(&self, window: &mut Window<T>, widget_state: WidgetState) {
+    fn render(&self, window: &mut Window<T>, widget_state: WidgetState)
+    where T: super::GenerateView<T, T> {
         // First, draw the checkbox itself
         match widget_state {
             WidgetState::Hovering => window.canvas.set_draw_color(self.hover_color),

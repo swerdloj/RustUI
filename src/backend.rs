@@ -27,13 +27,13 @@ pub mod system {
         use crate::view_components::views::view::View;
 
         // TODO: Flesh this out and utilize appropriately. Or move event handling to Widget
-        pub struct ApplicationState<'a, T> {
+        pub struct ApplicationState<'a, T: GenerateView<T, T>> {
             pub hovering: Option<&'static str>, // Widget being hovered over
             pub clicking: Option<&'static str>, // Widget being clicked (left mouse down)
             pub user_state: &'a mut T, // User state to be passed to widgets
         }
 
-        impl<'a, T> ApplicationState<'a, T> {
+        impl<'a, T: GenerateView<T, T>> ApplicationState<'a, T> {
             pub fn new(user_state: &'a mut T) -> Self {
                 ApplicationState {
                     hovering: None,
@@ -68,7 +68,7 @@ pub mod system {
         
         // Expected lifetime ('a) -> the initializing function containing the .start() call
         // Generic type (T) -> The user-defined application state struct for use with callbacks
-        pub struct Window<'a, T> {
+        pub struct Window<'a, T: GenerateView<T, T>> {
             sdl_context: sdl2::Sdl,
             pub ttf_context: sdl2::ttf::Sdl2TtfContext,
             video_subsystem: sdl2::VideoSubsystem,
@@ -83,7 +83,7 @@ pub mod system {
 
         // TODO: Create a builder similar to widget declaration
         //       include things like .scale, .resizable, .accelerated, .background_color, etc.
-        impl<'a, T> Window<'a, T> {
+        impl<'a, T: GenerateView<T, T>> Window<'a, T> {
             pub fn init(window_title: &str, state: &'a mut T) -> Self {
                 let sdl_context = sdl2::init().map_err(|e| e.to_string()).unwrap();
                 let video_subsystem = sdl_context.video().map_err(|e| e.to_string()).unwrap();
@@ -158,23 +158,32 @@ pub mod system {
 
             // TODO: Allow multiple windows to run at once on multiple threads
             // TODO: How to handle window size changes from the user?
-            pub fn start<V: View<T> + Sized>(mut self, mut view: V) {
-            // pub fn start(mut self) {
+            // pub fn start<V: View<T> + Sized>(mut self, mut view: V) {
+            pub fn start(mut self) {
                 /* Initialize here */
 
-                // let mut view = self.window_state.user_state.generate_view();
 
-                // Initialize the window/widget layout
-                view.init(&self.ttf_context);
-                // FIXME: This is only needed because only the parent
-                //        view should call this explicitly
-                view.align();
-
-                // FIXME: This needs to account for nested views if not fixed_size
-                // Set initial window size (will override the default of 800x600)
-                self.resize_window(view.view_size());
+                // Used to determine whether to resize window
+                let mut window_size = (0u32, 0u32);
 
                 'window_loop: loop {
+                    // Generate the view
+                    // FIXME: This should only happen when view is modified
+                    // old state vs. new state is still cheaper than generating on each frame
+                    let mut view = self.window_state.user_state.generate_view();
+                    // Initialize the window/widget layout
+                    view.init(&self.ttf_context);
+                    // FIXME: This is only needed because only the parent
+                    //        view should call this explicitly
+                    view.align();
+                    // View's size has changed -> adjust
+                    if view.view_size() != window_size {
+                        window_size = view.view_size();
+                        // FIXME: This needs to account for nested views if not fixed_size
+                        // Set initial window size (will override the default of 800x600)
+                        self.resize_window(window_size);
+                    }
+
                     self.canvas.set_draw_color(Color::RGB(50, 50, 100));
                     self.canvas.clear();
 

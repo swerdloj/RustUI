@@ -76,7 +76,8 @@ impl<T> Widget<T> for Button<T> {
         self.text_component().expect("Attempted to size nonexistant text component").assign_text_dimensions(dims);
     }
 
-    fn render(&self, window: &mut Window<T>, widget_state: WidgetState) {
+    fn render(&self, window: &mut Window<T>, widget_state: WidgetState)
+    where T: super::GenerateView<T, T> {
         match widget_state {
             WidgetState::Hovering => window.canvas.set_draw_color(self.hover_color),
             WidgetState::Active => window.canvas.set_draw_color(self.secondary_color),
