@@ -81,7 +81,7 @@ impl<T> GenerateView<T, State> for State {
                 })
                 .with_text("Reset"),
 
-            CheckBox::new("LockCounter")
+            CheckBox::new("LockCounter", self.is_locked)
                 .with_text("Lock")
                 .with_on_check(|state: &mut State, is_checked| {
                     state.is_locked = is_checked;

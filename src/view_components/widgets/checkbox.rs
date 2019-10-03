@@ -28,7 +28,7 @@ pub struct CheckBox<T> {
 }
 
 impl<T> CheckBox<T> {
-    pub fn new(id: &'static str) -> Self {
+    pub fn new(id: &'static str, is_checked: bool) -> Self {
         CheckBox {
             id: id,
             rect: Rect::new(0, 0, 100, 40),
@@ -37,7 +37,7 @@ impl<T> CheckBox<T> {
             hover_color: Color::RGB(200, 200, 200),
             check_color: Color::RGB(80, 80, 80),
             text: None,
-            is_checked: false,
+            is_checked: is_checked,
             checkbox_padding_right: 10,
             on_check: None,
 
