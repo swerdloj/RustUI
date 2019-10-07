@@ -18,7 +18,7 @@ use RustUI::view_components::{
     views::view::{View, Alignment},
 
     views::{VStack, HStack},
-    widgets::{Text, Button, CheckBox, widget::colors}
+    widgets::{Text, Button, CheckBox, TextBox, widget::colors}
 };
 
 struct State {
@@ -87,8 +87,8 @@ impl<T> GenerateView<T, State> for State {
                     state.is_locked = is_checked;
                 }),
 
-            Text::new("Test", "Text Widget")
-                .with_color(colors::WHITE),
+            TextBox::new("Test")
+                .with_default_text("Testing..."),
 
             Button::new("ExampleButton")
                 .with_on_click(example_callback) // Can simply pass in regular functions

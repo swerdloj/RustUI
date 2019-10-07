@@ -51,10 +51,6 @@ impl<T> Button<T> {
 }
 
 impl<T> Widget<T> for Button<T> {
-    fn assign_id(&mut self, id: &'static str) {
-        self.id = id;
-    }
-
     fn place(&mut self, x: i32, y: i32)  {
         // Place the button at (x, y)
         self.rect = Rect::new(x, y, self.rect.width(), self.rect.height());

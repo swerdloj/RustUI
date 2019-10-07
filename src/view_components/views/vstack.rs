@@ -216,20 +216,30 @@ impl<T> View<T> for VStack<T> {
     }
 
     fn draw_height(&self) -> u32 {
-        let mut height = 0u32;
+        let mut max_height = 0u32;
+        let mut current_height: u32;
 
         for component in &self.data.components {
             match component {
                 WidgetOrView::Widget(widget) => {
-                    height += widget.draw_height();
+                    current_height = widget.rect().y as u32 + widget.draw_height();
+                    if current_height > max_height {
+                        max_height = current_height;
+                    }
                 }
                 WidgetOrView::View(subview) => {
-                    height += subview.draw_height();
+                    // FIXME: Account for view's y position
+                    //  The below line is a (working/logical) hack
+                    //  This only works because VStacks increase height with each widget
+                    current_height = max_height + subview.draw_height();
+                    if current_height > max_height {
+                        max_height = current_height;
+                    }
                 }
             }
         }
 
-        height + self.data.padding.top + self.data.padding.bottom
+        max_height + self.data.padding.top + self.data.padding.bottom
     }
 }
 

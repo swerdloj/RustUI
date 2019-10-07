@@ -120,10 +120,6 @@ impl<T> Text<T> {
 }
 
 impl<T> Widget<T> for Text<T> {
-    fn assign_id(&mut self, id: &'static str) {
-        self.id = id;
-    }
-
     fn place(&mut self, x: i32, y: i32) {
         self.container_rect = Rect::new(x, y, self.container_rect.width(), self.container_rect.height());
     }

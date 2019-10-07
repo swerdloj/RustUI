@@ -9,7 +9,7 @@ Run them via `cargo run --bin file_name`
 For simplification, a script can be created to enter this command and any parameters.
 
 ## Current Standing
-Very early development
+Early development
 
 ## Dependencies
 The following items are required to run RustUI projects:
@@ -31,11 +31,21 @@ Check for distribution-specific development packages/repos for the required libr
 
 ## TODOs:
 - See [Projects](https://github.com/swerdloj/RustUI/projects)
+- Pass event to widget for custom handling
+  - Could pass within the WidgetState enum
+  - Allows for keyboard inputs & user-defined events
+- Default text ids?
+  - For example, CheckBox widgets own a Text widget with id `""`
+  - Does this need to change? User should never access them regardless?
 - Implement ECS for widgets and views (see widgets/widget.rs & views/view.rs)
   - What must each widget share?
   - What must each view share?
   - What do both share?
 - Scaling for high resolution/dpi displays
+- Better GFX:
+  - Rounded rects
+  - Circles
+  - Cursors
 - Basic Widgets:
   - Slider (horizontal + vertical)
   - Text Input (static + dynamic)
@@ -47,6 +57,9 @@ Check for distribution-specific development packages/repos for the required libr
 - Basic Components:
   - Dividers
   - Nested fixed-size views scrollable via scrollbars
+- Basic Utilities:
+  - File Browser
+  - Message/Dialog Boxes
 - Documentation:
   - Finish documenting and add examples
 - Build Script:
@@ -64,4 +77,5 @@ Check for distribution-specific development packages/repos for the required libr
     - How to handle varying width/height?
 - Run callbacks on separate threads
 - At some point, should be able to simply pass a canvas and render UI to *existing* canvas
+  - This will require a different render cycle, as the user will define the run-loop
 - Support multiple windows

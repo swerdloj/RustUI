@@ -6,9 +6,11 @@ use crate::view_components::{ViewComponent, WidgetOrView};
 use crate::backend::system::window::Window;
 
 use super::widget::{Widget, WidgetState, colors};
-use super::text::Text;
+use super::Text;
 
 
+/// CheckBox Widget
+/// - Maintain true/false state
 pub struct CheckBox<T> {
     id: &'static str,
     rect: Rect,
@@ -80,10 +82,6 @@ impl<T> CheckBox<T> {
 }
 
 impl<T> Widget<T> for CheckBox<T> {
-    fn assign_id(&mut self, id: &'static str) {
-        self.id = id;
-    }
-
     fn place(&mut self, x: i32, y: i32) {
         self.rect = Rect::new(x, y, self.rect.width(), self.rect.height());
 

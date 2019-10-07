@@ -51,6 +51,10 @@ pub mod colors {
     pub const MANILLA: Color = Color {r: 240, g: 240, b: 200, a: 0xff};
     /// `Color::RGB(255, 255, 255)` - White
     pub const WHITE: Color = Color {r: 255, g: 255, b: 255, a: 0xff};
+    /// `Color::RGB(200, 200, 200)` - Light Gray
+    pub const LIGHT_GRAY: Color = Color {r: 200, g: 200, b: 200, a: 0xff};
+    /// `Color::RGB(80, 80, 80)` - Light Gray
+    pub const DARK_GRAY: Color = Color {r: 80, g: 80, b: 80, a: 0xff};
 }
 
 /// This is the base widget struct from which all other widgets are derived
@@ -99,9 +103,6 @@ pub trait Widget<T> {
     /// - Note that this function is called **only when text exists**  
     /// - Improper usage will therefore `panic` at `.expect()` on `None`
     fn assign_text_dimensions(&mut self, dims: (u32, u32)) {}
-
-    // TODO: store id hash
-    fn assign_id(&mut self, id: &'static str);
 
     /// Modify a widget's draw origin
     fn place(&mut self, x: i32, y: i32);
