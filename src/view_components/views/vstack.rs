@@ -243,7 +243,7 @@ impl<T> View<T> for VStack<T> {
     }
 }
 
-impl<T> ViewComponent<T> for VStack<T> where T: 'static{
+impl<T> ViewComponent<T> for VStack<T> where T: 'static {
     fn as_component(self) -> WidgetOrView<T> {
         WidgetOrView::View(Box::new(self))
     }

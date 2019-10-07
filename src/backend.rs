@@ -18,19 +18,24 @@ extern crate sdl2;
 
 
 // TODO: Call this 'context' instead of 'system'?
-pub mod system {
-    // TODO: Confirm this is correct, then refactor generic `T`s into `State`s
-    // pub type State<T> = dyn state::GenerateView<T>;
-    
+pub mod system {    
     pub mod state {
-        // use super::State;
         use crate::view_components::views::view::View;
 
         // TODO: Flesh this out and utilize appropriately. Or move event handling to Widget
+        /// Holds application state relating to window events
+        /// - `hovering`: Mouse is hovering over widget
+        /// - `clicking`: Left mouse button is pressed over widget
+        /// - `focused`: The widget currently focused on (e.g.: `TextBox`)
         pub struct ApplicationState<'a, T: GenerateView<T, T>> {
-            pub hovering: Option<&'static str>, // Widget being hovered over
-            pub clicking: Option<&'static str>, // Widget being clicked (left mouse down)
-            pub user_state: &'a mut T, // User state to be passed to widgets
+            /// Widget being hovered
+            pub hovering: Option<&'static str>,
+            /// Widget being clicked (mouse down)
+            pub clicking: Option<&'static str>,
+            /// Focused Widget (maintains active state after mouse up)
+            pub focused: Option<&'static str>,
+            /// User state to be passed to widgets
+            pub user_state: &'a mut T,
         }
 
         impl<'a, T: GenerateView<T, T>> ApplicationState<'a, T> {
@@ -38,6 +43,7 @@ pub mod system {
                 ApplicationState {
                     hovering: None,
                     clicking: None,
+                    focused: None,
                     user_state: user_state,
                 }
             }
@@ -45,7 +51,7 @@ pub mod system {
 
         // TODO: Is here the correct place for this trait?
         // FIXME: Box is a workaround
-        // FIXME: Can this work with only one generic?
+        // FIXME: Can this work with only one generic param?
         pub trait GenerateView<T, S> {
             fn generate_view(&self) -> Box<dyn View<S>>;
         }
@@ -61,7 +67,6 @@ pub mod system {
         use sdl2::keyboard::Keycode;
         use sdl2::mouse::MouseButton;
         use sdl2::rect::Point;
-        use crate::view_components::views::view::{View};
         use crate::view_components::widgets::widget::WidgetState;
         use crate::font::{FontParams, Fonts};
         use super::state::{ApplicationState, GenerateView};
@@ -240,6 +245,13 @@ pub mod system {
                                         if widget.rect().contains_point(event_location) { // If the mouse was released on any widget
                                             if active_id == widget.id() { // Trigger the callback if that widget was active
                                                 widget.on_click(self.window_state.user_state);
+
+                                                //FIXME: Clicking nothing should also defocus
+                                                if widget.should_stay_active() {
+                                                    self.window_state.focused = Some(widget.id());
+                                                } else {
+                                                    self.window_state.focused = None;
+                                                }
                                             }
                                             self.window_state.hovering = Some(widget.id()); // If the mouse is on a widget, it is now hovering
                                         }
@@ -272,6 +284,13 @@ pub mod system {
                         if let Some(hover_id) = self.window_state.hovering {
                             if hover_id == widget.id() {
                                 widget_state = WidgetState::Hovering;
+                            }
+                        }
+
+                        if let Some(focus_id) = self.window_state.focused {
+                            if focus_id == widget.id() {
+                                // FIXME: Need to update widget before rendering
+                                widget_state = WidgetState::Focused("test");
                             }
                         }
 

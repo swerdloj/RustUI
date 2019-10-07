@@ -142,6 +142,7 @@ impl<T> Widget<T> for CheckBox<T> {
             WidgetState::Hovering => window.canvas.set_draw_color(self.hover_color),
             WidgetState::Active => window.canvas.set_draw_color(self.click_color),
             WidgetState::Base => window.canvas.set_draw_color(self.default_color),
+            WidgetState::Focused(_) => panic!("CheckBox cannot be focused"),
         }
         let checkbox_x = self.rect.x();// + self.internal_padding as i32;
         let checkbox_y = self.rect.y() + (self.rect.height() as i32 - self.checkbox_height as i32) / 2;

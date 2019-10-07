@@ -20,6 +20,7 @@ TODO: Implement an ECS for widgets (reduce redundancy & increase consistency)
 extern crate sdl2;
 use sdl2::rect::Rect;
 use sdl2::pixels::Color;
+// use sdl2::event::Event;
 
 use crate::backend::system::window::Window;
 use super::super::Padding;
@@ -28,12 +29,15 @@ use super::text::Text;
 
 /// Possible widget states
 /// ## States
-/// * `Active` - The widget is currently being clicked
-/// * `Hovering` - The widget is being hovered over
-/// * `Base` - The widget is in its default state
+/// - `Active` - The widget is currently being clicked
+/// - `Hovering` - The widget is being hovered over
+/// - `Base` - The widget is in its default state
+/// - `Focused` - The widget is currently focused
+// TODO: See this and backend. Both need to make state names more clear
 pub enum WidgetState {
     // TODO: Should the state be called 'Active' or 'Clicking'?
     //       or should these be two different states?
+    Focused(&'static str),
     Active,
     Hovering,
     Base,
@@ -96,13 +100,21 @@ pub trait Widget<T> {
     fn secondary_color(&self) -> Color;
     fn hover_color(&self) -> Color;
 
+    // TODO: Rename this to something more logical
+    /// Whether the widget should grab focus (active state)
+    fn should_stay_active(&self) -> bool {
+        false
+    }
+
     /// Obtain a reference to a widget's text component for sizing/modifying
     fn text_component(&mut self) -> Option<&mut Text<T>>;
 
     /// Update the widget with known text dimensions  
     /// - Note that this function is called **only when text exists**  
     /// - Improper usage will therefore `panic` at `.expect()` on `None`
-    fn assign_text_dimensions(&mut self, dims: (u32, u32)) {}
+    fn assign_text_dimensions(&mut self, dims: (u32, u32)) {
+        panic!("Called assign_text_dimensions on a Widget that does not implement Text");
+    }
 
     /// Modify a widget's draw origin
     fn place(&mut self, x: i32, y: i32);

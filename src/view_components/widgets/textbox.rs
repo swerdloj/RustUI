@@ -90,6 +90,7 @@ impl<T> Widget<T> for TextBox<T> {
     fn render(&self, window: &mut Window<T>, widget_state: WidgetState) 
     where T: super::GenerateView<T, T> {
         match widget_state {
+            WidgetState::Focused(_) |
             WidgetState::Active => window.canvas.set_draw_color(self.active_color),
             _ => window.canvas.set_draw_color(self.background_color),
         }
@@ -147,6 +148,10 @@ impl<T> Widget<T> for TextBox<T> {
 
     fn update(&mut self, state: &T) {
 
+    }
+
+    fn should_stay_active(&self) -> bool {
+        true
     }
 }
 
