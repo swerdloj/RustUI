@@ -1,6 +1,7 @@
 extern crate sdl2;
 use sdl2::pixels::Color;
 use sdl2::rect::Rect;
+use sdl2::event::Event;
 
 use crate::view_components::{ViewComponent, WidgetOrView};
 use crate::backend::system::window::Window;
@@ -16,23 +17,23 @@ pub struct TextBox<T> {
     rect: Rect,
     background_color: Color,
     // hover_color: Color,
-    active_color: Color,
+    focus_color: Color,
 
-    default_text: Option<Text<T>>,
-    user_text: Option<Text<T>>,
+    default_text: Text<T>,
+    user_text: Text<T>,
 }
 
 impl<T> TextBox<T> {
-    pub fn new(id: &'static str) -> Self {
+    pub fn new(id: &'static str, text: &'static str) -> Self {
         TextBox {
             id: id,
             rect: Rect::new(0, 0, 100, 40),
             background_color: colors::LIGHT_GRAY,
             // hover_color: 
-            active_color: colors::WHITE,
+            focus_color: colors::WHITE,
 
-            default_text: None,
-            user_text: None,
+            default_text: Text::new("", ""),
+            user_text: Text::new("", text),
         }
     }
 
@@ -44,7 +45,7 @@ impl<T> TextBox<T> {
         // TODO: Should the size of this widget be based on text dimensions?
         owned_text.place(self.rect.x() + 5, self.rect.y);
 
-        self.default_text = Some(owned_text);
+        self.default_text = owned_text;
         self
     }
 }
@@ -63,7 +64,7 @@ impl<T> Widget<T> for TextBox<T> {
     }
 
     fn secondary_color(&self) -> Color {
-        self.active_color
+        self.focus_color
     }
 
     fn hover_color(&self) -> Color {
@@ -73,25 +74,28 @@ impl<T> Widget<T> for TextBox<T> {
     fn text_component(&mut self) -> Option<&mut Text<T>> {
         // FIXME: Clean this up
 
-        // Prioritize user text
-        if let Some(text) = &mut self.user_text {
-            return Some(text);
+        // Sizes user text if any, otherwise sizes default text if any
+        if self.user_text.text != "" {
+            return Some(&mut self.user_text);
         }
-        if let Some(text) = &mut self.default_text {
-            return Some(text);
+        else if self.default_text.text != "" {
+            return Some(&mut self.default_text);
         }
         None
     }
 
     fn assign_text_dimensions(&mut self, dims: (u32, u32)) {
-        self.text_component().expect("Attempted to size nonexistant text component").assign_text_dimensions(dims);
+        // Sizes user text if any, otherwise sizes default text if any
+        // Never need both to be sized at once, so this works
+        
+        // FIXME: This should not expect. Use if-let instead.
+        self.text_component().expect("Failed to obtain text").assign_text_dimensions(dims);
     }
 
     fn render(&self, window: &mut Window<T>, widget_state: WidgetState) 
     where T: super::GenerateView<T, T> {
         match widget_state {
-            WidgetState::Focused(_) |
-            WidgetState::Active => window.canvas.set_draw_color(self.active_color),
+            WidgetState::Focused => window.canvas.set_draw_color(self.focus_color),
             _ => window.canvas.set_draw_color(self.background_color),
         }
 
@@ -99,11 +103,11 @@ impl<T> Widget<T> for TextBox<T> {
         window.canvas.fill_rect(self.rect).unwrap();
         
         // Draw user_text > default_text
-        if let Some(text) = &self.user_text {
-            text.render(window, widget_state);
+        if self.user_text.text != "" {
+            self.user_text.render(window, widget_state);
         }
-        else if let Some(text) = &self.default_text {
-            text.render(window, widget_state);
+        else if self.default_text.text != "" {
+            self.default_text.render(window, widget_state);
         }
     }
 
@@ -115,23 +119,15 @@ impl<T> Widget<T> for TextBox<T> {
             self.rect.height(),
         );
 
-        if let Some(text) = &mut self.default_text {
-            text.translate(dx, dy);
-        }
-        if let Some(text) = &mut self.user_text {
-            text.translate(dx, dy);
-        }
+        self.default_text.translate(dx, dy);
+        self.user_text.translate(dx, dy);
     }
 
     fn place(&mut self, x: i32, y: i32) {
         self.rect = Rect::new(x, y, self.rect.width(), self.rect.height());
 
-        if let Some(text) = &mut self.default_text {
-            text.container_rect = self.rect;
-        }
-        if let Some(text) = &mut self.user_text {
-            text.container_rect = self.rect;
-        }
+        self.default_text.container_rect = self.rect;
+        self.user_text.container_rect = self.rect;
     }
 
     fn draw_width(&self) -> u32 {
@@ -146,12 +142,17 @@ impl<T> Widget<T> for TextBox<T> {
 
     }
 
-    fn update(&mut self, state: &T) {
-
-    }
-
     fn should_stay_active(&self) -> bool {
         true
+    }
+
+    fn update(&mut self, state: &T, event: &Event) {
+        match event {
+            Event::TextInput {text, ..} => {
+                self.user_text.text += text;
+            }
+            _ => {}
+        }
     }
 }
 

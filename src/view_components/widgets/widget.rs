@@ -20,7 +20,7 @@ TODO: Implement an ECS for widgets (reduce redundancy & increase consistency)
 extern crate sdl2;
 use sdl2::rect::Rect;
 use sdl2::pixels::Color;
-// use sdl2::event::Event;
+use sdl2::event::Event;
 
 use crate::backend::system::window::Window;
 use super::super::Padding;
@@ -37,7 +37,7 @@ use super::text::Text;
 pub enum WidgetState {
     // TODO: Should the state be called 'Active' or 'Clicking'?
     //       or should these be two different states?
-    Focused(&'static str),
+    Focused,
     Active,
     Hovering,
     Base,
@@ -126,8 +126,10 @@ pub trait Widget<T> {
     fn render(&self, window: &mut Window<T>, widget_state: WidgetState)
     where T: super::GenerateView<T, T>;
 
-    /// Update the widget according to state
-    fn update(&mut self, state: &T);
+    /// Update the widget according to state & event
+    fn update(&mut self, state: &T, event: &Event) {
+
+    }
 
     /// Translate the widget by the given x & y differences
     fn translate(&mut self, dx: i32, dy: i32);

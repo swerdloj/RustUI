@@ -173,8 +173,8 @@ pub mod system {
 
                 'window_loop: loop {
                     // Generate the view
-                    // FIXME: This should only happen when view is modified
-                    // old state vs. new state is still cheaper than generating on each frame
+                    // FIXME: This should only happen when view is modified, and view depends on state
+                    // old state vs. new state will be cheaper than generating on each frame
                     let mut view = self.window_state.user_state.generate_view();
                     // Initialize the window/widget layout
                     view.init(&self.ttf_context);
@@ -223,9 +223,20 @@ pub mod system {
                             Event::MouseButtonDown { mouse_btn: MouseButton::Left, x, y, .. } => {
                                 let event_location = Point::new(x, y);
 
+                                // Whether a widget was clicked
+                                let mut clicked_widget = false;
+
                                 self.window_state.clicking = None;
                                 for widget in view.child_widgets_mut() {
                                     if widget.rect().contains_point(event_location) {
+                                        clicked_widget = true;
+
+                                        if let Some(focus_id) = self.window_state.focused {
+                                            if focus_id != widget.id() { // Did not click previously active widget
+                                                self.window_state.focused = None; // That widget is no longer active
+                                            }
+                                        }
+
                                         if let Some(hover_id) = self.window_state.hovering {
                                             if hover_id == widget.id() {
                                                 self.window_state.hovering = None; // Cannot be both hover & active
@@ -234,6 +245,11 @@ pub mod system {
                                         self.window_state.clicking = Some(widget.id());
                                         break; // Found a widget, don't need to keep checking
                                     }
+                                }
+
+                                // If no widgets were clicked, no widgets should be focused
+                                if !clicked_widget {
+                                    self.window_state.focused = None;
                                 }
                             }
 
@@ -249,14 +265,13 @@ pub mod system {
                                                 //FIXME: Clicking nothing should also defocus
                                                 if widget.should_stay_active() {
                                                     self.window_state.focused = Some(widget.id());
-                                                } else {
-                                                    self.window_state.focused = None;
                                                 }
                                             }
                                             self.window_state.hovering = Some(widget.id()); // If the mouse is on a widget, it is now hovering
+                                            break; // Already handled click. Can stop checking for collision.
                                         }
-                                        self.window_state.clicking = None; // Mouse was released, so nothing should be active
                                     }
+                                    self.window_state.clicking = None; // Mouse was released, so nothing should be active
                                 }
                             }
 
@@ -265,14 +280,21 @@ pub mod system {
                                 println!("Unhandled Event: {:?}", event);
                             }
                         }
+
+                        //FIXME: Placing this here doesn't seem right
+                        for widget in view.child_widgets_mut() {
+                            if let Some(focus_id) = self.window_state.focused {
+                                if focus_id == widget.id() {
+                                    widget.update(self.window_state.user_state, &event);
+                                }
+                            }
+                        }
                     } // end event loop
 
                     /* Render window below this line */
 
                     // Render each widget
                     for widget in view.child_widgets_mut() {
-                        widget.update(self.window_state.user_state);
-
                         let mut widget_state = WidgetState::Base;
 
                         if let Some(active_id) = self.window_state.clicking {
@@ -290,7 +312,7 @@ pub mod system {
                         if let Some(focus_id) = self.window_state.focused {
                             if focus_id == widget.id() {
                                 // FIXME: Need to update widget before rendering
-                                widget_state = WidgetState::Focused("test");
+                                widget_state = WidgetState::Focused;
                             }
                         }
 

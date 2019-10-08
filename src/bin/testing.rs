@@ -24,6 +24,8 @@ use RustUI::view_components::{
 struct State {
     counter: i16,
     is_locked: bool,
+
+    text_input: &'static str,
 }
 
 impl State {
@@ -31,6 +33,7 @@ impl State {
         State {
             counter: 1,
             is_locked: false,
+            text_input: "",
         }
     }
 }
@@ -41,7 +44,8 @@ impl<T> GenerateView<T, State> for State {
         // TODO: Need a way to handle loops/if statements for view generation (within macros)
         let view = VStack!(
             // New method
-            Text::new("CounterText", format!("Counter: {}", self.counter).as_str())
+            Text::new("CounterText", 
+                    format!("Counter: {}", self.counter).as_str())
                 .with_color(colors::WHITE),
 
             // Old method
@@ -87,7 +91,8 @@ impl<T> GenerateView<T, State> for State {
                     state.is_locked = is_checked;
                 }),
 
-            TextBox::new("Test")
+            // TODO: How can input text persist between view cycles without user-defined variable?
+            TextBox::new("Test", self.text_input)
                 .with_default_text("Testing..."),
 
             Button::new("ExampleButton")

@@ -120,10 +120,6 @@ impl<T> Widget<T> for Button<T> {
         self.hover_color
     }
 
-    fn update(&mut self, state: &T) {
-
-    }
-
     fn on_click(&mut self, state: &mut T) {
         if let Some(ref on_click_function) = self.on_click {
             (on_click_function)(state);

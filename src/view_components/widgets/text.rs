@@ -167,7 +167,7 @@ impl<T> Widget<T> for Text<T> {
     }
 
     // TODO: Resize the text surface on update
-    fn update(&mut self, state: &T) {
+    fn update(&mut self, state: &T, event: &sdl2::event::Event) {
         if let Some(ref update_callback) = self.update_fn {
             self.text = (update_callback)(state);
         }
