@@ -31,9 +31,6 @@ Check for distribution-specific development packages/repos for the required libr
 
 ## TODOs:
 - See [Projects](https://github.com/swerdloj/RustUI/projects)
-- Pass event to widget for custom handling
-  - Could pass within the WidgetState enum
-  - Allows for keyboard inputs & user-defined events
 - Default text ids?
   - For example, CheckBox widgets own a Text widget with id `""`
   - Does this need to change? User should never access them regardless?
@@ -48,7 +45,6 @@ Check for distribution-specific development packages/repos for the required libr
   - Cursors
 - Basic Widgets:
   - Slider (horizontal + vertical)
-  - Text Input (static + dynamic)
   - Drop Menu
   - Radio Buttons
 - Basic Views:

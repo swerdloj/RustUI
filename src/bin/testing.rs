@@ -98,6 +98,17 @@ impl<T> GenerateView<T, State> for State {
                 .with_default_text("Testing...")
                 .with_on_text_changed(|state: &mut State, text| {
                     state.text_input = text;
+                })
+                .with_on_text_submit(|state: &mut State, text| {
+                    if !state.is_locked {
+                        // Note how Rust enforces input safety
+                        if let Ok(number) = text.parse::<i16>() {
+                            state.counter = number;
+                            println!("Setting counter to {}", number);
+                        } else {
+                            println!("Warning: '{}' is either not a number or exceeds i16 capacity", text);
+                        }
+                    }
                 }),
 
             Button::new("ExampleButton")

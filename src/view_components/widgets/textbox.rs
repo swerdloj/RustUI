@@ -25,6 +25,8 @@ pub struct TextBox<T> {
 
     // Interacts with user state when text input changes
     pub on_text_changed: Option<Box<dyn Fn(&mut T, String)>>,
+    // Notifies that text entry is submitted (Enter key)
+    pub on_text_submit: Option<Box<dyn Fn(&mut T, String)>>,
 }
 
 impl<T> TextBox<T> {
@@ -40,6 +42,7 @@ impl<T> TextBox<T> {
             user_text: Text::new("", text.as_str()),
 
             on_text_changed: None,
+            on_text_submit: None,
         }
     }
 
@@ -60,6 +63,15 @@ impl<T> TextBox<T> {
     (mut self, callback: F) -> Self 
     {
         self.on_text_changed = Some(Box::new(callback));
+        self
+    }
+
+    /// Called when Enter key is pressed on focused TextBox
+    /// - "Submits" TextBox content
+    pub fn with_on_text_submit<F: 'static + Fn(&mut T, String)>
+    (mut self, callback: F) -> Self
+    {
+        self.on_text_submit = Some(Box::new(callback));
         self
     }
 }
@@ -166,16 +178,21 @@ impl<T> Widget<T> for TextBox<T> {
 
         // Clone is only used because render() will not account for text-size changes after update
         match event {
-            Event::TextInput {text, ..} => {
+            Event::TextInput { text, .. } => {
                 if let Some(on_text_changed) = &self.on_text_changed {
                     (on_text_changed)(state, self.user_text.text.clone() + text);
                 }
             }
-            Event::KeyDown { keycode: Some(Keycode::Backspace), ..} => {
+            Event::KeyDown { keycode: Some(Keycode::Backspace), .. } => {
                 let mut text = self.user_text.text.clone();
                 text.pop();
                 if let Some(on_text_changed) = &self.on_text_changed {
                     (on_text_changed)(state, text);
+                }
+            }
+            Event::KeyDown { keycode: Some(Keycode::Return), .. } => {
+                if let Some(on_text_submit) = &self.on_text_submit {
+                    (on_text_submit)(state, self.user_text.text.clone())
                 }
             }
             _ => {}
