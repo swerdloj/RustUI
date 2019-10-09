@@ -2,6 +2,7 @@ extern crate sdl2;
 use sdl2::pixels::Color;
 use sdl2::rect::Rect;
 use sdl2::event::Event;
+use sdl2::keyboard::Keycode;
 
 use crate::view_components::{ViewComponent, WidgetOrView};
 use crate::backend::system::window::Window;
@@ -21,10 +22,13 @@ pub struct TextBox<T> {
 
     default_text: Text<T>,
     user_text: Text<T>,
+
+    // Interacts with user state when text input changes
+    pub on_text_changed: Option<Box<dyn Fn(&mut T, String)>>,
 }
 
 impl<T> TextBox<T> {
-    pub fn new(id: &'static str, text: &'static str) -> Self {
+    pub fn new(id: &'static str, text: String) -> Self {
         TextBox {
             id: id,
             rect: Rect::new(0, 0, 100, 40),
@@ -33,7 +37,9 @@ impl<T> TextBox<T> {
             focus_color: colors::WHITE,
 
             default_text: Text::new("", ""),
-            user_text: Text::new("", text),
+            user_text: Text::new("", text.as_str()),
+
+            on_text_changed: None,
         }
     }
 
@@ -46,6 +52,14 @@ impl<T> TextBox<T> {
         owned_text.place(self.rect.x() + 5, self.rect.y);
 
         self.default_text = owned_text;
+        self
+    }
+
+    /// Interact with mutable state reference when text input changes
+    pub fn with_on_text_changed<F: 'static + Fn(&mut T, String)>
+    (mut self, callback: F) -> Self 
+    {
+        self.on_text_changed = Some(Box::new(callback));
         self
     }
 }
@@ -106,7 +120,7 @@ impl<T> Widget<T> for TextBox<T> {
         if self.user_text.text != "" {
             self.user_text.render(window, widget_state);
         }
-        else if self.default_text.text != "" {
+        else if widget_state != WidgetState::Focused && self.default_text.text != "" {
             self.default_text.render(window, widget_state);
         }
     }
@@ -146,15 +160,28 @@ impl<T> Widget<T> for TextBox<T> {
         true
     }
 
-    fn update(&mut self, state: &T, event: &Event) {
+    fn update(&mut self, state: &mut T, event: &Event) {
+        // TODO: Do something else to avoid mutable state
+        // TODO: Avoid using .clone()
+
+        // Clone is only used because render() will not account for text-size changes after update
         match event {
             Event::TextInput {text, ..} => {
-                self.user_text.text += text;
+                if let Some(on_text_changed) = &self.on_text_changed {
+                    (on_text_changed)(state, self.user_text.text.clone() + text);
+                }
+            }
+            Event::KeyDown { keycode: Some(Keycode::Backspace), ..} => {
+                let mut text = self.user_text.text.clone();
+                text.pop();
+                if let Some(on_text_changed) = &self.on_text_changed {
+                    (on_text_changed)(state, text);
+                }
             }
             _ => {}
-        }
-    }
-}
+        } 
+    } //end update
+} // end impl Widget
 
 impl<T> ViewComponent<T> for TextBox<T> where T: 'static {
     fn as_component(self) -> WidgetOrView<T> {

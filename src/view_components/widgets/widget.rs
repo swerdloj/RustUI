@@ -34,6 +34,7 @@ use super::text::Text;
 /// - `Base` - The widget is in its default state
 /// - `Focused` - The widget is currently focused
 // TODO: See this and backend. Both need to make state names more clear
+#[derive(PartialEq)]
 pub enum WidgetState {
     // TODO: Should the state be called 'Active' or 'Clicking'?
     //       or should these be two different states?
@@ -127,8 +128,9 @@ pub trait Widget<T> {
     where T: super::GenerateView<T, T>;
 
     /// Update the widget according to state & event
-    fn update(&mut self, state: &T, event: &Event) {
-
+    // TODO: Is there anyway to avoid mutable reference here?
+    //  See textbox's update fn. Persistant state would help
+    fn update(&mut self, state: &mut T, event: &Event) {
     }
 
     /// Translate the widget by the given x & y differences

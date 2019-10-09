@@ -21,7 +21,7 @@ pub struct Text<T> {
     // How far text must be from its boundary
     internal_padding: u32,
 
-    update_fn: Option<Box<dyn Fn(&T) -> String>>,
+    update_fn: Option<Box<dyn Fn(&mut T) -> String>>,
 
     auto_resize: bool,
     center_text: bool,
@@ -54,7 +54,7 @@ impl<T> Text<T> {
         self
     }
 
-    pub fn with_text_update<F: 'static + Fn(&T) -> String>
+    pub fn with_text_update<F: 'static + Fn(&mut T) -> String>
     (mut self, update_fn: F) -> Self  
     {
         self.update_fn = Some(Box::new(update_fn));
@@ -167,7 +167,7 @@ impl<T> Widget<T> for Text<T> {
     }
 
     // TODO: Resize the text surface on update
-    fn update(&mut self, state: &T, event: &sdl2::event::Event) {
+    fn update(&mut self, state: &mut T, event: &sdl2::event::Event) {
         if let Some(ref update_callback) = self.update_fn {
             self.text = (update_callback)(state);
         }

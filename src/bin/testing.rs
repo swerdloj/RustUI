@@ -25,7 +25,7 @@ struct State {
     counter: i16,
     is_locked: bool,
 
-    text_input: &'static str,
+    text_input: String,
 }
 
 impl State {
@@ -33,7 +33,7 @@ impl State {
         State {
             counter: 1,
             is_locked: false,
-            text_input: "",
+            text_input: String::new(),
         }
     }
 }
@@ -92,8 +92,13 @@ impl<T> GenerateView<T, State> for State {
                 }),
 
             // TODO: How can input text persist between view cycles without user-defined variable?
-            TextBox::new("Test", self.text_input)
-                .with_default_text("Testing..."),
+            // TODO: Avoid using clone
+            // TODO: Account for text 'submission' such as enter key press
+            TextBox::new("Test", self.text_input.clone())
+                .with_default_text("Testing...")
+                .with_on_text_changed(|state: &mut State, text| {
+                    state.text_input = text;
+                }),
 
             Button::new("ExampleButton")
                 .with_on_click(example_callback) // Can simply pass in regular functions
