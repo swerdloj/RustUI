@@ -19,7 +19,7 @@ struct State {
     counter: i16,
 }
 
-impl<T> RustUI::backend::system::state::GenerateView<T, State> for State {
+impl RustUI::backend::system::state::GenerateView<State> for State {
     fn generate_view(&self) -> Box<dyn View<State>> {
         // Dynamic view example. This would realistically be done by calling generator functions
         let view = if self.counter % 2 == 0 {

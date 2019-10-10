@@ -38,7 +38,7 @@ impl State {
     }
 }
 
-impl<T> GenerateView<T, State> for State {
+impl GenerateView<State> for State {
     fn generate_view(&self) -> Box<dyn View<State>> {
         // TODO: Need a way to handle loops/if statements for view generation (within macros)
         let view = VStack!(

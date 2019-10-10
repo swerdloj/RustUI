@@ -27,7 +27,7 @@ pub mod system {
         /// - `hovering`: Mouse is hovering over widget
         /// - `clicking`: Left mouse button is pressed over widget
         /// - `focused`: The widget currently focused on (e.g.: `TextBox`)
-        pub struct ApplicationState<'a, T: GenerateView<T, T>> {
+        pub struct ApplicationState<'a, T> {
             /// Widget being hovered
             pub hovering: Option<&'static str>,
             /// Widget being clicked (mouse down)
@@ -38,7 +38,7 @@ pub mod system {
             pub user_state: &'a mut T,
         }
 
-        impl<'a, T: GenerateView<T, T>> ApplicationState<'a, T> {
+        impl<'a, T> ApplicationState<'a, T> {
             pub fn new(user_state: &'a mut T) -> Self {
                 ApplicationState {
                     hovering: None,
@@ -51,9 +51,8 @@ pub mod system {
 
         // TODO: Is here the correct place for this trait?
         // FIXME: Box is a workaround
-        // FIXME: Can this work with only one generic param?
-        pub trait GenerateView<T, S> {
-            fn generate_view(&self) -> Box<dyn View<S>>;
+        pub trait GenerateView<T> {
+            fn generate_view(&self) -> Box<dyn View<T>>;
         }
     } // end mod state
 
@@ -73,12 +72,10 @@ pub mod system {
         
         // Expected lifetime ('a) -> the initializing function containing the .start() call
         // Generic type (T) -> The user-defined application state struct for use with callbacks
-        pub struct Window<'a, T: GenerateView<T, T>> {
+        pub struct Window<'a, T: GenerateView<T>> {
             sdl_context: sdl2::Sdl,
             pub ttf_context: sdl2::ttf::Sdl2TtfContext,
-            video_subsystem: sdl2::VideoSubsystem,
-            // window: sdl2::video::Window,
-            
+            video_subsystem: sdl2::VideoSubsystem,           
             pub canvas: sdl2::render::WindowCanvas,
             event_pump: sdl2::EventPump,
 
@@ -88,7 +85,7 @@ pub mod system {
 
         // TODO: Create a builder similar to widget declaration
         //       include things like .scale, .resizable, .accelerated, .background_color, etc.
-        impl<'a, T: GenerateView<T, T> + Clone + PartialEq> Window<'a, T> {
+        impl<'a, T: GenerateView<T> + Clone + PartialEq> Window<'a, T> {
             pub fn init(window_title: &str, state: &'a mut T) -> Self {
                 let sdl_context = sdl2::init().map_err(|e| e.to_string()).unwrap();
                 let video_subsystem = sdl_context.video().map_err(|e| e.to_string()).unwrap();

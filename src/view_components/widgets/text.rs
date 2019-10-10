@@ -174,7 +174,7 @@ impl<T> Widget<T> for Text<T> {
     }
 
     fn render(&self, window: &mut Window<T>, widget_state: WidgetState)
-    where T: super::GenerateView<T, T> {
+    where T: super::GenerateView<T> {
         // FIXME: Allocating texture_creator here is probably bad if we use it each render
         let texture_creator = window.canvas.texture_creator();
 

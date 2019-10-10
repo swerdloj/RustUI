@@ -124,7 +124,7 @@ pub trait Widget<T> {
 
     /// Render the widget to the window
     fn render(&self, window: &mut Window<T>, widget_state: WidgetState)
-    where T: super::GenerateView<T, T>;
+    where T: super::GenerateView<T>;
 
     /// Update the widget according to state & event
     // TODO: Is there anyway to avoid mutable reference here?

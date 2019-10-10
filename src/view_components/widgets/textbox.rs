@@ -127,7 +127,7 @@ impl<T> Widget<T> for TextBox<T> {
     }
 
     fn render(&self, window: &mut Window<T>, widget_state: WidgetState) 
-    where T: super::GenerateView<T, T> {
+    where T: super::GenerateView<T> {
         match widget_state {
             WidgetState::Focused => window.canvas.set_draw_color(self.focus_color),
             _ => window.canvas.set_draw_color(self.background_color),
