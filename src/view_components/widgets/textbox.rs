@@ -199,6 +199,7 @@ impl<T> Widget<T> for TextBox<T> {
                     (on_text_changed)(state, text);
                 }
             }
+            Event::KeyDown { keycode: Some(Keycode::KpEnter), .. } |
             Event::KeyDown { keycode: Some(Keycode::Return), .. } => {
                 if let Some(on_text_submit) = &self.on_text_submit {
                     (on_text_submit)(state, self.user_text.text.clone())

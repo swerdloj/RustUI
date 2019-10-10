@@ -88,7 +88,7 @@ pub mod system {
 
         // TODO: Create a builder similar to widget declaration
         //       include things like .scale, .resizable, .accelerated, .background_color, etc.
-        impl<'a, T: GenerateView<T, T>> Window<'a, T> {
+        impl<'a, T: GenerateView<T, T> + Clone + PartialEq> Window<'a, T> {
             pub fn init(window_title: &str, state: &'a mut T) -> Self {
                 let sdl_context = sdl2::init().map_err(|e| e.to_string()).unwrap();
                 let video_subsystem = sdl_context.video().map_err(|e| e.to_string()).unwrap();
@@ -167,26 +167,37 @@ pub mod system {
             pub fn start(mut self) {
                 /* Initialize here */
 
-
                 // Used to determine whether to resize window
-                let mut window_size = (0u32, 0u32);
+                let mut last_window_size = (0u32, 0u32);
+                // Used to detect state changes, triggering view generation
+                let mut last_user_state = self.window_state.user_state.clone();
+                // Stores the root view
+                let mut view = self.window_state.user_state.generate_view();
+
+                // Initialize the window/widget layout
+                view.init(&self.ttf_context);
+                // FIXME: This is only needed because only the parent
+                //        view should call this explicitly
+                view.align();
+                // FIXME: This needs to account for nested views if not fixed_size
+                // Set initial window size (will override the default of 800x600)
+                self.resize_window(view.view_size());
 
                 'window_loop: loop {
-                    // Generate the view
-                    // FIXME: This should only happen when view is modified, and view depends on state
-                    // old state vs. new state will be cheaper than generating on each frame
-                    let mut view = self.window_state.user_state.generate_view();
-                    // Initialize the window/widget layout
-                    view.init(&self.ttf_context);
-                    // FIXME: This is only needed because only the parent
-                    //        view should call this explicitly
-                    view.align();
-                    // View's size has changed -> adjust
-                    if view.view_size() != window_size {
-                        window_size = view.view_size();
-                        // FIXME: This needs to account for nested views if not fixed_size
-                        // Set initial window size (will override the default of 800x600)
-                        self.resize_window(window_size);
+                    // Only update the view tree if state was modified
+                    if *self.window_state.user_state != last_user_state {
+                        last_user_state = self.window_state.user_state.clone();
+
+                        // Generate the new view
+                        view = self.window_state.user_state.generate_view();
+                        view.init(&self.ttf_context);
+                        view.align();
+
+                        // View's size has changed -> adjust
+                        if view.view_size() != last_window_size {
+                            last_window_size = view.view_size();
+                            self.resize_window(last_window_size);
+                        }
                     }
 
                     self.canvas.set_draw_color(Color::RGB(50, 50, 100));
@@ -216,6 +227,7 @@ pub mod system {
                                         }
                                         // Hovering over inactive widget -> set it as hover
                                         self.window_state.hovering = Some(widget.id());
+                                        break; // don't need to check other widgets
                                     }
                                 }
                             }
@@ -281,11 +293,12 @@ pub mod system {
                             }
                         }
 
-                        //FIXME: Placing this here doesn't seem right
-                        for widget in view.child_widgets_mut() {
-                            if let Some(focus_id) = self.window_state.focused {
+                        // Update focused widget
+                        if let Some(focus_id) = self.window_state.focused { // find widget if one is focused
+                            for widget in view.child_widgets_mut() {
                                 if focus_id == widget.id() {
                                     widget.update(self.window_state.user_state, &event);
+                                    break; // found widget, don't need to keep looking
                                 }
                             }
                         }

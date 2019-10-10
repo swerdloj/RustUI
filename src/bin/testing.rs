@@ -21,10 +21,10 @@ use RustUI::view_components::{
     widgets::{Text, Button, CheckBox, TextBox, widget::colors}
 };
 
+#[derive(Clone, PartialEq)]
 struct State {
     counter: i16,
     is_locked: bool,
-
     text_input: String,
 }
 
@@ -76,6 +76,7 @@ impl<T> GenerateView<T, State> for State {
                 .with_on_text_submit(|state: &mut State, text| {
                     if !state.is_locked {
                         set_counter_from_string(state, text);
+                        state.text_input.clear();
                     }
                 }),
 

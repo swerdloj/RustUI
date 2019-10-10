@@ -14,6 +14,7 @@ use RustUI::view_components::{
     ViewComponent,
 };
 
+#[derive(Clone, PartialEq)]
 struct State {
     counter: i16,
 }
