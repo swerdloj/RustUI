@@ -7,19 +7,14 @@ It will be structured as though creating a real project using this library.
 
 #[macro_use]
 extern crate RustUI;
+macro_imports!();
 
-// TODO: A number of modules/components need to be re-exported. Maybe in lib.rs for convenience
-//  An import macro might also be useful for convenience
-use RustUI::backend::system::window::Window;
 use RustUI::backend::system::state::GenerateView;
-use RustUI::view_components::{
-    // TODO: User should not need to import these
-    WidgetOrView, ViewComponent,
-    views::view::{View, Alignment},
 
-    views::{VStack, HStack},
-    widgets::{Text, Button, CheckBox, TextBox, widget::colors}
-};
+use RustUI::{Window, colors, Alignment};
+use RustUI::widgets::{Text, Button, TextBox, CheckBox};
+use RustUI::views::{HStack, VStack};
+
 
 #[derive(Clone, PartialEq)]
 struct State {

@@ -58,5 +58,25 @@ pub mod view_components;
 /// Font table
 pub mod font;
 
-// pub mod rust_gui {
-// }
+// ========================== Convenience Re-Exports ========================== //
+pub use view_components::{views, widgets};
+pub use view_components::colors;
+// TODO: This may not be necessary
+pub use view_components::{
+    widgets::widget::Widget, 
+    views::view::View
+};
+pub use view_components::views::view::Alignment;
+pub use backend::system::window::Window;
+
+// ========================== Macro Import Macro ========================== //
+/// Imports items required by macros
+/// - Required Traits
+/// - Required Enums
+#[macro_export]
+macro_rules! macro_imports {
+    () => {
+        use RustUI::view_components::{WidgetOrView, ViewComponent};
+        use RustUI::view_components::views::view::View;
+    };
+}

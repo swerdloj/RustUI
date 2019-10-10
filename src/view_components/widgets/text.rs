@@ -5,8 +5,9 @@ use sdl2::rect::Rect;
 use crate::view_components::{ViewComponent, WidgetOrView};
 use crate::font::FontParams;
 use crate::backend::system::window::Window;
+use crate::colors;
 
-use super::widget::{Widget, WidgetState, colors};
+use super::widget::{Widget, WidgetState};
 
 // See https://github.com/Rust-SDL2/rust-sdl2/blob/master/src/sdl2/ttf/font.rs for help
 // TTF is undocumented on sdl2 crate docs.

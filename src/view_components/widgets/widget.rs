@@ -44,24 +44,6 @@ pub enum WidgetState {
     Base,
 }
 
-/// Default color implementations
-pub mod colors {
-    use super::Color;
-
-    /// `Color::RGB(0, 0, 0)` - Black
-    pub const BLACK: Color = Color {r: 0, g: 0, b: 0, a: 0xff};
-    /// `Color::RGB(50, 50, 100)` - Default background color
-    pub const DARK_PURPLE: Color = Color {r: 50, g: 50, b: 100, a: 0xff};
-    /// `Color::RGB(240, 240, 200)` - Default button color
-    pub const MANILLA: Color = Color {r: 240, g: 240, b: 200, a: 0xff};
-    /// `Color::RGB(255, 255, 255)` - White
-    pub const WHITE: Color = Color {r: 255, g: 255, b: 255, a: 0xff};
-    /// `Color::RGB(200, 200, 200)` - Light Gray
-    pub const LIGHT_GRAY: Color = Color {r: 200, g: 200, b: 200, a: 0xff};
-    /// `Color::RGB(80, 80, 80)` - Light Gray
-    pub const DARK_GRAY: Color = Color {r: 80, g: 80, b: 80, a: 0xff};
-}
-
 /// This is the base widget struct from which all other widgets are derived
 /// ## Arguments
 /// * `id` - The widget's id as a string TODO: This should be a hash of the string instead for faster lookup.

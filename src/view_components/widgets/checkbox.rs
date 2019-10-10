@@ -4,8 +4,9 @@ use sdl2::rect::Rect;
 
 use crate::view_components::{ViewComponent, WidgetOrView};
 use crate::backend::system::window::Window;
+use crate::colors;
 
-use super::widget::{Widget, WidgetState, colors};
+use super::widget::{Widget, WidgetState};
 use super::Text;
 
 

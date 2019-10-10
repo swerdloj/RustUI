@@ -1,18 +1,12 @@
 #[macro_use]
 extern crate RustUI;
+macro_imports!();
 
-use RustUI::backend::system::window::Window;
-// TODO: Work on imports & namespaces
-use RustUI::view_components::{
-    views::{
-        VStack, HStack, view::{View, Alignment}
-    },
-    widgets::{
-        Button, CheckBox, Text, widget::colors,
-    },
-    WidgetOrView,
-    ViewComponent,
-};
+use RustUI::Window;
+
+use RustUI::widgets::{Button, Text};
+use RustUI::views::{HStack, VStack};
+use RustUI::colors;
 
 #[derive(Clone, PartialEq)]
 struct State {
