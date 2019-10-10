@@ -31,7 +31,7 @@ struct State {
 impl State {
     fn new() -> Self {
         State {
-            counter: 1,
+            counter: 0,
             is_locked: false,
             text_input: String::new(),
         }

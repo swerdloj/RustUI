@@ -48,6 +48,22 @@ impl<T> Button<T> {
         self.on_click = Some(Box::new(callback));
         self
     }
+
+    pub fn with_width(mut self, width: u32) -> Self {
+        self.rect.set_width(width);
+        self
+    }
+
+    pub fn with_height(mut self, height: u32) -> Self {
+        self.rect.set_height(height);
+        self
+    }
+
+    pub fn with_dimensions(mut self, width: u32, height: u32) -> Self {
+        self.rect.set_width(width);
+        self.rect.set_height(height);
+        self
+    }
 }
 
 impl<T> Widget<T> for Button<T> {
