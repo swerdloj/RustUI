@@ -40,20 +40,11 @@ impl State {
 
 impl<T> GenerateView<T, State> for State {
     fn generate_view(&self) -> Box<dyn View<State>> {
-
         // TODO: Need a way to handle loops/if statements for view generation (within macros)
         let view = VStack!(
-            // New method
             Text::new("CounterText", 
                     format!("Counter: {}", self.counter).as_str())
                 .with_color(colors::WHITE),
-
-            // Old method
-            // Text::new("CounterText", "Counter: 0")
-            //     .with_text_update(|state: &State| {
-            //         format!("Counter: {}", state.counter)
-            //     })
-            //     .with_color(colors::WHITE),
 
             HStack!(
                 Button::new("IncrementButton")
@@ -74,6 +65,26 @@ impl<T> GenerateView<T, State> for State {
             )
             .padding(10, 10, 5, 0),
 
+            // TODO: How can input text persist between view cycles without user-defined variable?
+            // TODO: Avoid using clone
+            // TODO: Account for text 'submission' such as enter key press
+            TextBox::new("Test", self.text_input.clone())
+                .with_default_text("Number...")
+                .with_on_text_changed(|state: &mut State, text| {
+                    state.text_input = text;
+                })
+                .with_on_text_submit(|state: &mut State, text| {
+                    if !state.is_locked {
+                        set_counter_from_string(state, text);
+                    }
+                }),
+
+            CheckBox::new("LockCounter", self.is_locked)
+                .with_text("Lock")
+                .with_on_check(|state: &mut State, is_checked| {
+                    state.is_locked = is_checked;
+                }),
+
             Button::new("ResetCounter")
                 .with_on_click(|state: &mut State| {
                     if !state.is_locked {
@@ -83,37 +94,7 @@ impl<T> GenerateView<T, State> for State {
                         println!("The counter is locked");
                     }
                 })
-                .with_text("Reset"),
-
-            CheckBox::new("LockCounter", self.is_locked)
-                .with_text("Lock")
-                .with_on_check(|state: &mut State, is_checked| {
-                    state.is_locked = is_checked;
-                }),
-
-            // TODO: How can input text persist between view cycles without user-defined variable?
-            // TODO: Avoid using clone
-            // TODO: Account for text 'submission' such as enter key press
-            TextBox::new("Test", self.text_input.clone())
-                .with_default_text("Testing...")
-                .with_on_text_changed(|state: &mut State, text| {
-                    state.text_input = text;
-                })
-                .with_on_text_submit(|state: &mut State, text| {
-                    if !state.is_locked {
-                        // Note how Rust enforces input safety
-                        if let Ok(number) = text.parse::<i16>() {
-                            state.counter = number;
-                            println!("Setting counter to {}", number);
-                        } else {
-                            println!("Warning: '{}' is either not a number or exceeds i16 capacity", text);
-                        }
-                    }
-                }),
-
-            Button::new("ExampleButton")
-                .with_on_click(example_callback) // Can simply pass in regular functions
-                .with_text("Button")
+                .with_text("Reset")
         )
         // .fixed_width(400)
         .alignment(Alignment::Center);
@@ -131,6 +112,15 @@ fn main() {
     main_window.start();
 }
 
-fn example_callback(_state: &mut State) {
-    println!("This is a function");
+/// Example helper function
+/// - Parses `String` as integer
+/// - Sets state.counter if `String` is valid number
+fn set_counter_from_string(state: &mut State, text: String) {
+    // Note how Rust enforces input safety
+    if let Ok(number) = text.parse() {
+        state.counter = number;
+        println!("Setting counter to {}", number);
+    } else {
+        println!("Warning: '{}' is either not a number or exceeds i16 capacity", text);
+    }
 }

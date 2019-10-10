@@ -263,7 +263,7 @@ pub mod system {
                                                 widget.on_click(self.window_state.user_state);
 
                                                 //FIXME: Clicking nothing should also defocus
-                                                if widget.should_stay_active() {
+                                                if widget.can_focus() {
                                                     self.window_state.focused = Some(widget.id());
                                                 }
                                             }
@@ -277,7 +277,7 @@ pub mod system {
 
                             // All unhandled events match here
                             _ => {
-                                println!("Unhandled Event: {:?}", event);
+                                // println!("Unhandled Event: {:?}", event);
                             }
                         }
 

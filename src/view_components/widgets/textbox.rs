@@ -176,7 +176,7 @@ impl<T> Widget<T> for TextBox<T> {
 
     }
 
-    fn should_stay_active(&self) -> bool {
+    fn can_focus(&self) -> bool {
         true
     }
 

@@ -101,9 +101,8 @@ pub trait Widget<T> {
     fn secondary_color(&self) -> Color;
     fn hover_color(&self) -> Color;
 
-    // TODO: Rename this to something more logical
-    /// Whether the widget should grab focus (active state)
-    fn should_stay_active(&self) -> bool {
+    /// Whether the widget should grab focus when clicked
+    fn can_focus(&self) -> bool {
         false
     }
 
