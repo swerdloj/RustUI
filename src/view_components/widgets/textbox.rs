@@ -23,6 +23,12 @@ pub struct TextBox<T> {
     default_text: Text<T>,
     user_text: Text<T>,
 
+    // FIXME: This is a hack
+    //  update() is called before render(), so adding characters
+    //  will display them for a single frame in wrong proportions.
+    //  This is a workaround for holding multiple characters.
+    input_buffer: String,
+
     // Interacts with user state when text input changes
     pub on_text_changed: Option<Box<dyn Fn(&mut T, String)>>,
     // Notifies that text entry is submitted (Enter key)
@@ -40,6 +46,8 @@ impl<T> TextBox<T> {
 
             default_text: Text::new("", ""),
             user_text: Text::new("", text.as_str()),
+
+            input_buffer: String::from(""),
 
             on_text_changed: None,
             on_text_submit: None,
@@ -180,7 +188,8 @@ impl<T> Widget<T> for TextBox<T> {
         match event {
             Event::TextInput { text, .. } => {
                 if let Some(on_text_changed) = &self.on_text_changed {
-                    (on_text_changed)(state, self.user_text.text.clone() + text);
+                    self.input_buffer += text;
+                    (on_text_changed)(state, self.user_text.text.clone() + &self.input_buffer);
                 }
             }
             Event::KeyDown { keycode: Some(Keycode::Backspace), .. } => {
