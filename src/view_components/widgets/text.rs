@@ -225,7 +225,14 @@ impl<T> Widget<T> for Text<T> {
     }
 
     fn draw_height(&self) -> u32 {
-        self.text_height
+        // FIXME: Until widget data can persist between render cycles, text size is lost,
+        //  meaning self.text_height resets to 40
+
+        //println!("Text: {} has height {}", self.text, self.text_height);
+        
+        //self.text_height
+
+        28
     }
 }
 

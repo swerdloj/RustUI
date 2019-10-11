@@ -10,9 +10,10 @@ extern crate RustUI;
 macro_imports!();
 
 use RustUI::state::GenerateView;
-use RustUI::{Window, colors, Alignment};
+use RustUI::{Window, colors, Alignment, Orientation};
 use RustUI::widgets::{Text, Button, TextBox, CheckBox};
 use RustUI::views::{HStack, VStack};
+use RustUI::view_components::components::divider::Divider;
 
 
 #[derive(Clone, PartialEq)]
@@ -39,6 +40,8 @@ impl GenerateView<State> for State {
             Text::new("CounterText", 
                     format!("Counter: {}", self.counter).as_str())
                 .with_color(colors::WHITE),
+
+            Divider::new(Orientation::Horizontal),
 
             HStack!(
                 Button::new("IncrementButton")

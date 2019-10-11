@@ -67,6 +67,7 @@ pub use view_components::{
     views::view::View
 };
 pub use view_components::views::view::Alignment;
+pub use view_components::Orientation;
 pub use backend::system::window::Window;
 pub use backend::system::state;
 

@@ -6,6 +6,7 @@ use crate::font::{Fonts};
 
 use crate::view_components::{ViewComponent, IntoViewComponent, Padding};
 use crate::view_components::widgets::widget::Widget;
+use crate::view_components::components::component::Component;
 use crate::view_components::views::view::{View, ViewData, Alignment};
 
 
@@ -104,6 +105,24 @@ impl<T> View<T> for VStack<T> {
         }
 
         widgets
+    }
+
+    fn child_comps(&self) -> Vec<&Box<dyn Component<T>>> {
+        let mut comps = Vec::new();
+
+        for component in &self.data.components {
+            match component {
+                ViewComponent::Component(comp) => {
+                    comps.push(comp);
+                }
+                ViewComponent::View(subview) => {
+                    comps.append(&mut subview.child_comps());
+                }
+                _ => {}
+            }
+        }
+
+        comps
     }
 
     fn child_widgets_mut(&mut self) -> Vec<&mut Box<dyn Widget<T>>> {
@@ -264,7 +283,7 @@ macro_rules! VStack {
             // let mut vstack = VStack::new(components);
             let default_padding = 10;
 
-            let mut current_y = 0;
+            let mut current_y = default_padding;
             
             $(
                 let mut component = $x.as_component();
@@ -284,7 +303,10 @@ macro_rules! VStack {
                         current_y += subview.draw_height() as i32 + default_padding;
                     }
 
-                    _ => {}
+                    ViewComponent::Component(comp) => {
+                        comp.place(0, current_y);
+                        current_y += comp.draw_height() as i32 + default_padding;
+                    }
                 }
 
                 components.push(component);

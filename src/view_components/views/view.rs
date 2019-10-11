@@ -14,6 +14,7 @@ use std::collections::HashMap;
 
 use crate::view_components::{Padding, ViewComponent};
 use crate::view_components::widgets::widget::Widget;
+use crate::view_components::components::component::Component;
 
 // ========================== Alignment enum ========================== //
 
@@ -57,7 +58,9 @@ pub trait View<T> {
 
     /// Obtain mutable references to *all* nested widgets
     fn child_widgets_mut(&mut self) -> Vec<&mut Box<dyn Widget<T>>>;
-
+    
+    fn child_comps(&self) -> Vec<&Box<dyn Component<T>>>;
+    
 
     // --------- Builder Functions --------- //
 

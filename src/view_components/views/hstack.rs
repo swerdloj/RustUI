@@ -5,6 +5,7 @@ use crate::font::Fonts;
 
 use crate::view_components::{ViewComponent, IntoViewComponent, Padding};
 use crate::view_components::widgets::widget::Widget;
+use crate::view_components::components::component::Component;
 use crate::view_components::views::view::{View, ViewData, Alignment};
 
 
@@ -103,6 +104,24 @@ impl<T> View<T> for HStack<T> {
         }
 
         widgets
+    }
+
+    fn child_comps(&self) -> Vec<&Box<dyn Component<T>>> {
+        let mut comps = Vec::new();
+
+        for component in &self.data.components {
+            match component {
+                ViewComponent::Component(comp) => {
+                    comps.push(comp);
+                }
+                ViewComponent::View(subview) => {
+                    comps.append(&mut subview.child_comps());
+                }
+                _ => {}
+            }
+        }
+
+        comps
     }
 
     fn child_widgets_mut(&mut self) -> Vec<&mut Box<dyn Widget<T>>> {

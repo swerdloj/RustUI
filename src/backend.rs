@@ -164,8 +164,6 @@ pub mod system {
             pub fn start(mut self) {
                 /* Initialize here */
 
-                // Used to determine whether to resize window
-                let mut last_window_size = (0u32, 0u32);
                 // Used to detect state changes, triggering view generation
                 let mut last_user_state = self.window_state.user_state.clone();
                 // Stores the root view
@@ -176,9 +174,13 @@ pub mod system {
                 // FIXME: This is only needed because only the parent
                 //        view should call this explicitly
                 view.align();
+
+                // Used to determine whether to resize window
+                let mut last_window_size = view.view_size();
+
                 // FIXME: This needs to account for nested views if not fixed_size
                 // Set initial window size (will override the default of 800x600)
-                self.resize_window(view.view_size());
+                self.resize_window(last_window_size);
 
                 'window_loop: loop {
                     // Only update the view tree if state was modified
@@ -303,6 +305,12 @@ pub mod system {
 
                     /* Render window below this line */
 
+                    // TODO: Create 'Render' trait and get all renderables, not just widgets
+                    
+                    for comp in view.child_comps() {
+                        comp.render(&mut self, last_window_size);
+                    }
+                    
                     // Render each widget
                     for widget in view.child_widgets_mut() {
                         let mut widget_state = WidgetState::Base;
@@ -333,7 +341,7 @@ pub mod system {
 
                     // FIXME: Replace this with delta time for use in animations & frame rate limiting
                     // Hard-limit to 60fps to avoid excessive rendering (lowers GPU usage considerably)
-                    ::std::thread::sleep(std::time::Duration::new(0, 1_000_000_000u32 / 60));
+                    std::thread::sleep(std::time::Duration::new(0, 1_000_000_000u32 / 60));
                 } // end event loop
             } // end start() method
         } // end impl window

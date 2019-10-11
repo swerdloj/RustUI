@@ -1,5 +1,6 @@
 pub mod views;
 pub mod widgets;
+pub mod components;
 
 // ========================== ViewComponent enum ========================== //
 
@@ -7,7 +8,15 @@ pub mod widgets;
 pub enum ViewComponent<T> {
     Widget(Box<dyn widgets::widget::Widget<T>>),
     View(Box<dyn views::view::View<T>>),
-    Component(/* TODO: This */),
+    Component(Box<dyn components::component::Component<T>>),
+}
+
+// ========================== Orientation enum ========================== //
+
+/// Determines a component's layout as either horizontal or vertical
+pub enum Orientation {
+    Horizontal,
+    Vertical,
 }
 
 // ========================== IntoViewComponent trait ========================== //
