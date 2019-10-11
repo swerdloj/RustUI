@@ -102,7 +102,8 @@ pub trait Widget<T> {
     fn place(&mut self, x: i32, y: i32);
 
     /// Trigger a callback when clicked
-    fn on_click(&mut self, state: &mut T);
+    fn on_click(&mut self, state: &mut T) {
+    }
 
     /// Render the widget to the window
     fn render(&self, window: &mut Window<T>, widget_state: WidgetState)

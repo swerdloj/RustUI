@@ -4,7 +4,7 @@ use sdl2::rect::Rect;
 use sdl2::event::Event;
 use sdl2::keyboard::Keycode;
 
-use crate::view_components::{ViewComponent, WidgetOrView};
+use crate::view_components::{ViewComponent, IntoViewComponent};
 use crate::backend::system::window::Window;
 use crate::colors;
 
@@ -37,7 +37,7 @@ pub struct TextBox<T> {
 }
 
 impl<T> TextBox<T> {
-    pub fn new(id: &'static str, text: String) -> Self {
+    pub fn new(id: &'static str, text: &str) -> Self {
         TextBox {
             id: id,
             rect: Rect::new(0, 0, 100, 40),
@@ -46,7 +46,7 @@ impl<T> TextBox<T> {
             focus_color: colors::WHITE,
 
             default_text: Text::new("", ""),
-            user_text: Text::new("", text.as_str()),
+            user_text: Text::new("", text),
 
             input_buffer: String::from(""),
 
@@ -61,7 +61,7 @@ impl<T> TextBox<T> {
 
         // TODO: How to calculate this?
         // TODO: Should the size of this widget be based on text dimensions?
-        owned_text.place(self.rect.x() + 5, self.rect.y);
+        owned_text.place(self.rect.x(), self.rect.y);
 
         self.default_text = owned_text;
         self
@@ -122,9 +122,9 @@ impl<T> Widget<T> for TextBox<T> {
     fn assign_text_dimensions(&mut self, dims: (u32, u32)) {
         // Sizes user text if any, otherwise sizes default text if any
         // Never need both to be sized at once, so this works
-        
-        // FIXME: This should not expect. Use if-let instead.
-        self.text_component().expect("Failed to obtain text").assign_text_dimensions(dims);
+        if let Some(text) = self.text_component() {
+            text.assign_text_dimensions(dims);
+        }
     }
 
     fn render(&self, window: &mut Window<T>, widget_state: WidgetState) 
@@ -173,10 +173,6 @@ impl<T> Widget<T> for TextBox<T> {
         self.rect.height()
     }
 
-    fn on_click(&mut self, state: &mut T) {
-
-    }
-
     fn can_focus(&self) -> bool {
         true
     }
@@ -194,9 +190,15 @@ impl<T> Widget<T> for TextBox<T> {
                 }
             }
             Event::KeyDown { keycode: Some(Keycode::Backspace), .. } => {
-                let mut text = self.user_text.text.clone();
-                text.pop();
                 if let Some(on_text_changed) = &self.on_text_changed {
+                    let text = if let Some(_) = self.input_buffer.pop() {
+                        self.user_text.text.clone() + &self.input_buffer
+                    } else {
+                        let mut temp = self.user_text.text.clone();
+                        temp.pop();
+                        temp
+                    };
+
                     (on_text_changed)(state, text);
                 }
             }
@@ -208,11 +210,11 @@ impl<T> Widget<T> for TextBox<T> {
             }
             _ => {}
         } 
-    } //end update
+    } //end update()
 } // end impl Widget
 
-impl<T> ViewComponent<T> for TextBox<T> where T: 'static {
-    fn as_component(self) -> WidgetOrView<T> {
-        WidgetOrView::Widget(Box::new(self))
+impl<T> IntoViewComponent<T> for TextBox<T> where T: 'static {
+    fn as_component(self) -> ViewComponent<T> {
+        ViewComponent::Widget(Box::new(self))
     }
 }

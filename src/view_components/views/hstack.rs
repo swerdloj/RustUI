@@ -3,7 +3,7 @@ use sdl2::ttf;
 
 use crate::font::Fonts;
 
-use crate::view_components::{WidgetOrView, ViewComponent, Padding};
+use crate::view_components::{ViewComponent, IntoViewComponent, Padding};
 use crate::view_components::widgets::widget::Widget;
 use crate::view_components::views::view::{View, ViewData, Alignment};
 
@@ -13,7 +13,7 @@ pub struct HStack<T> {
 }
 
 impl<T> HStack<T> {
-    pub fn new(components: Vec<WidgetOrView<T>>) -> Self {
+    pub fn new(components: Vec<ViewComponent<T>>) -> Self {
         HStack {
             data:
                 ViewData {
@@ -43,7 +43,7 @@ impl<T> View<T> for HStack<T> {
         // Initially size text components
         for item in &mut self.data.components {
             match item {
-                WidgetOrView::Widget(widget) => {
+                ViewComponent::Widget(widget) => {
                     // If the widget has a text component, obtain its surface size
                     if let Some(text_component) = widget.text_component() {
                         font_manager.load_font(ttf_context, &text_component.font);
@@ -52,9 +52,11 @@ impl<T> View<T> for HStack<T> {
                     }
                 }
 
-                WidgetOrView::View(nested_view) => {
+                ViewComponent::View(nested_view) => {
                     nested_view.init(ttf_context);
                 }
+
+                _ => {}
             }
         }
 
@@ -78,7 +80,7 @@ impl<T> View<T> for HStack<T> {
 
         for component in &mut self.data.components {
             match component {
-                WidgetOrView::Widget(widget) => {
+                ViewComponent::Widget(widget) => {
                     widgets.push(widget);
                 }
                 _ => {}
@@ -93,7 +95,7 @@ impl<T> View<T> for HStack<T> {
 
         for component in &self.data.components {
             match component {
-                WidgetOrView::Widget(widget) => {
+                ViewComponent::Widget(widget) => {
                     widgets.push(widget);
                 }
                 _ => {}
@@ -108,12 +110,13 @@ impl<T> View<T> for HStack<T> {
 
         for component in &mut self.data.components {
             match component {
-                WidgetOrView::Widget(widget) => {
+                ViewComponent::Widget(widget) => {
                     widgets.push(widget);
                 }
-                WidgetOrView::View(subview) => {
+                ViewComponent::View(subview) => {
                     widgets.append(&mut subview.child_widgets_mut());
                 }
+                _ => {}
             }
         }
 
@@ -153,13 +156,14 @@ impl<T> View<T> for HStack<T> {
         // Translate all components by the same amount
         for component in &mut self.data.components {
             match component {
-                WidgetOrView::Widget(widget) => {
+                ViewComponent::Widget(widget) => {
                     widget.translate(dx, dy);
                 }
 
-                WidgetOrView::View(view) => {
+                ViewComponent::View(view) => {
                     view.translate(dx, dy);
                 }
+                _ => {}
             }
         }
     }
@@ -175,13 +179,14 @@ impl<T> View<T> for HStack<T> {
 
                 for component in &mut self.data.components {
                     match component {
-                        WidgetOrView::Widget(widget) => {
+                        ViewComponent::Widget(widget) => {
                             widget.translate(x_offset as i32, 0);
                         }
-                        WidgetOrView::View(subview) => {
+                        ViewComponent::View(subview) => {
                             // FIXME: Confirm this is correct
                             subview.translate(x_offset as i32, 0);
                         }
+                        _ => {}
                     }
                 }
             }
@@ -206,7 +211,7 @@ impl<T> View<T> for HStack<T> {
 
         for component in &self.data.components {
             match component {
-                WidgetOrView::Widget(widget) => {
+                ViewComponent::Widget(widget) => {
                     if widget.rect().x() < leftmost_x {
                         leftmost_x = widget.rect().x();
                     }
@@ -215,9 +220,10 @@ impl<T> View<T> for HStack<T> {
                         rightmost_x = widget.rect().x() + widget.draw_width() as i32;
                     }
                 }
-                WidgetOrView::View(subview) => {
+                ViewComponent::View(subview) => {
                     draw_width += subview.draw_width();
                 }
+                _ => {}
             }
         }
 
@@ -230,16 +236,17 @@ impl<T> View<T> for HStack<T> {
 
         for component in &self.data.components {
             match component {
-                WidgetOrView::Widget(widget) => {
+                ViewComponent::Widget(widget) => {
                     if widget.draw_height() > max_height {
                         max_height = widget.draw_height();
                     }
                 }
-                WidgetOrView::View(subview) => {
+                ViewComponent::View(subview) => {
                     if subview.draw_height() > max_height {
                         max_height = subview.draw_height();
                     }
                 }
+                _ => {}
             }
         }
 
@@ -247,9 +254,9 @@ impl<T> View<T> for HStack<T> {
     }
 }
 
-impl<T> ViewComponent<T> for HStack<T> where T: 'static {
-    fn as_component(self) -> WidgetOrView<T> {
-        WidgetOrView::View(Box::new(self))
+impl<T> IntoViewComponent<T> for HStack<T> where T: 'static {
+    fn as_component(self) -> ViewComponent<T> {
+        ViewComponent::View(Box::new(self))
     }
 }
 
@@ -268,17 +275,18 @@ macro_rules! HStack {
 
                 match &mut component {
                     // FIXME: Placement needs to occur in the init function
-                    WidgetOrView::Widget(widget) => {
+                    ViewComponent::Widget(widget) => {
                         widget.place(current_x, 0);
 
                         current_x += widget.draw_width() as i32 + default_padding;
                     }
 
-                    WidgetOrView::View(subview) => {
+                    ViewComponent::View(subview) => {
                         subview.translate(current_x, 0);
                         
                         current_x += subview.draw_width() as i32 + default_padding;
                     }
+                    _ => {}
                 }
 
                 components.push(component);                

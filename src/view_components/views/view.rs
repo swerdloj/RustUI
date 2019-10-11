@@ -12,7 +12,7 @@ use sdl2::ttf;
 
 use std::collections::HashMap;
 
-use crate::view_components::{Padding, WidgetOrView};
+use crate::view_components::{Padding, ViewComponent};
 use crate::view_components::widgets::widget::Widget;
 
 // ========================== Alignment enum ========================== //
@@ -78,7 +78,7 @@ pub struct ViewData<T> {
     /// Map of user-assigned widget names -> widget
     pub component_map: HashMap<u32, Box<dyn Widget<T>>>,
     /// The items (widgets or nested views) owned by the view
-    pub components: Vec<WidgetOrView<T>>,
+    pub components: Vec<ViewComponent<T>>,
 
     /// View's draw width unless manually assigned
     pub view_width: u32,

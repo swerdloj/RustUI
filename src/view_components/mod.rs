@@ -1,19 +1,20 @@
 pub mod views;
 pub mod widgets;
 
-// ========================== WidgetOrView enum ========================== //
+// ========================== ViewComponent enum ========================== //
 
 /// Contains either a Widget or a View. Handle via `match`.
-pub enum WidgetOrView<T> {
+pub enum ViewComponent<T> {
     Widget(Box<dyn widgets::widget::Widget<T>>),
     View(Box<dyn views::view::View<T>>),
+    Component(/* TODO: This */),
 }
 
-// ========================== ViewComponent trait ========================== //
+// ========================== IntoViewComponent trait ========================== //
 
 /// Trait utilized for storing `Widget` and `View` types together
-pub trait ViewComponent<T> {
-    fn as_component(self) -> WidgetOrView<T>;
+pub trait IntoViewComponent<T> {
+    fn as_component(self) -> ViewComponent<T>;
 }
 
 // ========================== Padding Struct ========================== //

@@ -2,7 +2,7 @@ extern crate sdl2;
 use sdl2::pixels::Color;
 use sdl2::rect::Rect;
 
-use crate::view_components::{ViewComponent, WidgetOrView};
+use crate::view_components::{ViewComponent, IntoViewComponent};
 use crate::font::FontParams;
 use crate::backend::system::window::Window;
 use crate::colors;
@@ -229,8 +229,8 @@ impl<T> Widget<T> for Text<T> {
     }
 }
 
-impl<T> ViewComponent<T> for Text<T> where T: 'static {
-    fn as_component(self) -> WidgetOrView<T> {
-        WidgetOrView::Widget(Box::new(self))
+impl<T> IntoViewComponent<T> for Text<T> where T: 'static {
+    fn as_component(self) -> ViewComponent<T> {
+        ViewComponent::Widget(Box::new(self))
     }
 }

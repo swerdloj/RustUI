@@ -9,8 +9,7 @@ It will be structured as though creating a real project using this library.
 extern crate RustUI;
 macro_imports!();
 
-use RustUI::backend::system::state::GenerateView;
-
+use RustUI::state::GenerateView;
 use RustUI::{Window, colors, Alignment};
 use RustUI::widgets::{Text, Button, TextBox, CheckBox};
 use RustUI::views::{HStack, VStack};
@@ -61,9 +60,7 @@ impl GenerateView<State> for State {
             .padding(10, 10, 5, 0),
 
             // TODO: How can input text persist between view cycles without user-defined variable?
-            // TODO: Avoid using clone
-            // TODO: Account for text 'submission' such as enter key press
-            TextBox::new("Test", self.text_input.clone())
+            TextBox::new("Test", &self.text_input)
                 .with_default_text("Number...")
                 .with_on_text_changed(|state: &mut State, text| {
                     state.text_input = text;

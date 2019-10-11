@@ -68,6 +68,7 @@ pub use view_components::{
 };
 pub use view_components::views::view::Alignment;
 pub use backend::system::window::Window;
+pub use backend::system::state;
 
 // ========================== Macro Import Macro ========================== //
 /// Imports items required by macros
@@ -76,7 +77,7 @@ pub use backend::system::window::Window;
 #[macro_export]
 macro_rules! macro_imports {
     () => {
-        use RustUI::view_components::{WidgetOrView, ViewComponent};
+        use RustUI::view_components::{ViewComponent, IntoViewComponent};
         use RustUI::view_components::views::view::View;
     };
 }
