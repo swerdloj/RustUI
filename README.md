@@ -31,13 +31,17 @@ Check for distribution-specific development packages/repos for the required libr
 
 ## TODOs:
 - See [Projects](https://github.com/swerdloj/RustUI/projects)
-- Persistant State
+- Persistent State:
   - Persist widget state between view-generation cycles
     - User would no longer need to maintain that widget's state
   - Consider a map of widget id -> widget data
     - Enforces unique ids
   - Can use a trait to get data that needs to persist
     - How to get this data back from the map?
+- Persistent State Alternative:
+  - Do not generate new view, instead update view and re-layout
+  - Implement a signal for view change to generate new view
+  - Would then only lose state when new view is obtained
 - Implement ECS for widgets and views (see widgets/widget.rs & views/view.rs)
   - What must each widget share?
   - What must each view share?

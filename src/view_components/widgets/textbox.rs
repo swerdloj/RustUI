@@ -56,12 +56,8 @@ impl<T> TextBox<T> {
     }
 
     pub fn with_default_text(mut self, text: &str) -> Self {
-        let mut owned_text = Text::new("", text)
+        let owned_text = Text::new("", text)
             .with_color(colors::DARK_GRAY);
-
-        // TODO: How to calculate this?
-        // TODO: Should the size of this widget be based on text dimensions?
-        owned_text.place(self.rect.x(), self.rect.y);
 
         self.default_text = owned_text;
         self
@@ -92,18 +88,6 @@ impl<T> Widget<T> for TextBox<T> {
 
     fn id(&self) -> &'static str {
         self.id
-    }
-
-    fn primary_color(&self) -> Color {
-        self.background_color
-    }
-
-    fn secondary_color(&self) -> Color {
-        self.focus_color
-    }
-
-    fn hover_color(&self) -> Color {
-        self.background_color
     }
 
     fn text_component(&mut self) -> Option<&mut Text<T>> {
@@ -147,19 +131,16 @@ impl<T> Widget<T> for TextBox<T> {
     }
 
     fn translate(&mut self, dx: i32, dy: i32) {
-        self.rect = Rect::new(
-            self.rect.x + dx,
-            self.rect.y + dy,
-            self.rect.width(),
-            self.rect.height(),
-        );
+        self.rect.set_x(self.rect.x + dx);
+        self.rect.set_y(self.rect.y + dy);
 
         self.default_text.translate(dx, dy);
         self.user_text.translate(dx, dy);
     }
 
     fn place(&mut self, x: i32, y: i32) {
-        self.rect = Rect::new(x, y, self.rect.width(), self.rect.height());
+        self.rect.set_x(x);
+        self.rect.set_y(y);
 
         self.default_text.container_rect = self.rect;
         self.user_text.container_rect = self.rect;
@@ -170,11 +151,11 @@ impl<T> Widget<T> for TextBox<T> {
     }
 
     fn draw_height(&self) -> u32 {
-        self.rect.height()
+       self.rect.height()
     }
 
     fn can_focus(&self) -> bool {
-        true
+       true
     }
 
     fn update(&mut self, state: &mut T, event: &Event) {

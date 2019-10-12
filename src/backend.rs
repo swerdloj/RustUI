@@ -292,12 +292,23 @@ pub mod system {
                             }
                         }
 
+                        // TODO: Consider combining update & render
+                        //  Call update first, then render
+
                         // Update focused widget
                         if let Some(focus_id) = self.window_state.focused { // find widget if one is focused
                             for widget in view.child_widgets_mut() {
                                 if focus_id == widget.id() {
                                     widget.update(self.window_state.user_state, &event);
                                     break; // found widget, don't need to keep looking
+                                }
+                            }
+                        // ...
+                        } else if let Some(active_id) = self.window_state.clicking {
+                            for widget in view.child_widgets_mut() {
+                                if active_id == widget.id() {
+                                    widget.update(self.window_state.user_state, &event);
+                                    break;
                                 }
                             }
                         }

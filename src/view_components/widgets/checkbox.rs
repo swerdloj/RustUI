@@ -98,10 +98,7 @@ impl<T> Widget<T> for CheckBox<T> {
     }
 
     fn text_component(&mut self) -> Option<&mut Text<T>> {
-        if let Some(text) = &mut self.text {
-            return Some(text);
-        }
-        None
+        self.text.as_mut()
     }
 
     fn assign_text_dimensions(&mut self, dims: (u32, u32)) {
@@ -115,18 +112,6 @@ impl<T> Widget<T> for CheckBox<T> {
 
     fn id(&self) -> &'static str {
         self.id
-    }
-
-    fn primary_color(&self) -> Color {
-        self.default_color
-    }
-
-    fn secondary_color(&self) -> Color {
-        self.click_color
-    }
-
-    fn hover_color(&self) -> Color {
-        self.hover_color
     }
 
     // TODO: Allow user to decide whether this should trigger when the widget is clicked

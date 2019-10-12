@@ -12,8 +12,8 @@ use super::text::Text;
 pub struct Button<T> {
     pub id: &'static str,
     pub rect: Rect,
-    pub primary_color: Color,
-    pub secondary_color: Color,
+    pub passive_color: Color,
+    pub clicking_color: Color,
     pub hover_color: Color,
     pub text: Option<Text<T>>,
     pub on_click: Option<Box<dyn Fn(&mut T)>>,
@@ -24,8 +24,8 @@ impl<T> Button<T> {
         Button {
             id: id,
             rect: Rect::new(0, 0, 100, 40),
-            primary_color: colors::MANILLA,
-            secondary_color: Color::RGB(100, 100, 100),
+            passive_color: colors::MANILLA,
+            clicking_color: Color::RGB(100, 100, 100),
             hover_color: Color::RGB(200, 200, 200),
             text: None,
             on_click: None,
@@ -78,10 +78,7 @@ impl<T> Widget<T> for Button<T> {
     }
 
     fn text_component(&mut self) -> Option<&mut Text<T>> {
-        if let Some(text) = &mut self.text {
-            return Some(text);
-        }
-        None
+        self.text.as_mut()
     }
 
     fn assign_text_dimensions(&mut self, dims: (u32, u32)) {
@@ -92,8 +89,8 @@ impl<T> Widget<T> for Button<T> {
     where T: super::GenerateView<T> {
         match widget_state {
             WidgetState::Hovering => window.canvas.set_draw_color(self.hover_color),
-            WidgetState::Active => window.canvas.set_draw_color(self.secondary_color),
-            _ => window.canvas.set_draw_color(self.primary_color),
+            WidgetState::Active => window.canvas.set_draw_color(self.clicking_color),
+            _ => window.canvas.set_draw_color(self.passive_color),
         }
 
         window.canvas.fill_rect(self.rect).unwrap();
@@ -122,18 +119,6 @@ impl<T> Widget<T> for Button<T> {
 
     fn id(&self) -> &'static str {
         self.id
-    }
-
-    fn primary_color(&self) -> Color {
-        self.primary_color
-    }
-
-    fn secondary_color(&self) -> Color {
-        self.secondary_color
-    }
-
-    fn hover_color(&self) -> Color {
-        self.hover_color
     }
 
     fn on_click(&mut self, state: &mut T) {

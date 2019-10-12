@@ -151,18 +151,6 @@ impl<T> Widget<T> for Text<T> {
         self.id
     }
 
-    fn primary_color(&self) -> Color {
-        self.primary_color
-    }
-
-    fn secondary_color(&self) -> Color {
-        Color::RGB(0, 0, 0)
-    }
-
-    fn hover_color(&self) -> Color {
-        Color::RGB(0, 0, 0)
-    }
-
     fn on_click(&mut self, state: &mut T) {
 
     }

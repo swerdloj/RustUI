@@ -79,9 +79,6 @@ struct WidgetData {
 pub trait Widget<T> {
     fn rect(&self) -> Rect;
     fn id(&self) -> &'static str;
-    fn primary_color(&self) -> Color;
-    fn secondary_color(&self) -> Color;
-    fn hover_color(&self) -> Color;
 
     /// Whether the widget should grab focus when clicked
     fn can_focus(&self) -> bool {

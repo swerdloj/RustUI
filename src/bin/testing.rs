@@ -11,16 +11,17 @@ macro_imports!();
 
 use RustUI::state::GenerateView;
 use RustUI::{Window, colors, Alignment, Orientation};
-use RustUI::widgets::{Text, Button, TextBox, CheckBox};
+use RustUI::widgets::{Text, Button, TextBox, CheckBox, ScrollBar};
 use RustUI::views::{HStack, VStack};
 use RustUI::view_components::components::divider::Divider;
 
 
 #[derive(Clone, PartialEq)]
 struct State {
-    counter: i16,
+    counter: i32,
     is_locked: bool,
     text_input: String,
+    slider_val: i32,
 }
 
 impl State {
@@ -29,6 +30,7 @@ impl State {
             counter: 0,
             is_locked: false,
             text_input: String::new(),
+            slider_val: 1,
         }
     }
 }
@@ -41,6 +43,13 @@ impl GenerateView<State> for State {
                     format!("Counter: {}", self.counter).as_str())
                 .with_color(colors::WHITE),
 
+            // TODO: This
+            ScrollBar::new("TestScroll", 0, 10, self.slider_val)
+                .with_on_value_changed(|state: &mut State, value| {
+                    println!("value {}", state.slider_val);
+                    state.slider_val = value;
+                }),
+
             Divider::new(Orientation::Horizontal),
 
             HStack!(
@@ -48,7 +57,7 @@ impl GenerateView<State> for State {
                     .with_text("++")
                     .with_on_click(|state: &mut State| {
                         if !state.is_locked {
-                            state.counter += 1;
+                            state.counter += state.slider_val;
                         }
                     }),
 
@@ -56,7 +65,7 @@ impl GenerateView<State> for State {
                     .with_text("--")
                     .with_on_click(|state: &mut State| {
                         if !state.is_locked {
-                            state.counter -= 1;
+                            state.counter -= state.slider_val;
                         }
                     })
             )
@@ -117,6 +126,6 @@ fn set_counter_from_string(state: &mut State, text: String) {
         state.counter = number;
         println!("Setting counter to {}", number);
     } else {
-        println!("Warning: '{}' is either not a number or exceeds i16 capacity", text);
+        println!("Warning: '{}' is either not a number or exceeds i32 capacity", text);
     }
 }
