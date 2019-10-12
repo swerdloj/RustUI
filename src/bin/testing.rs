@@ -41,28 +41,33 @@ impl GenerateView<State> for State {
         let view = VStack!(
             Text::new("CounterText", 
                     format!("Counter: {}", self.counter).as_str())
+                .with_point_size(35)
                 .with_color(colors::WHITE),
-
-            // TODO: This
-            ScrollBar::new("TestScroll", 0, 10, self.slider_val)
-                .with_on_value_changed(|state: &mut State, value| {
-                    println!("value {}", state.slider_val);
-                    state.slider_val = value;
-                }),
 
             Divider::new(Orientation::Horizontal),
 
+            ScrollBar::new("TestScroll", 0, 10, self.slider_val)
+                .with_length(200)
+                .with_on_value_changed(|state: &mut State, value| {
+                    state.slider_val = value;
+                }),
+
             HStack!(
-                Button::new("IncrementButton")
-                    .with_text("++")
+                Button::new("AddButton")
+                    .with_text("+")
                     .with_on_click(|state: &mut State| {
                         if !state.is_locked {
                             state.counter += state.slider_val;
                         }
                     }),
 
-                Button::new("DecrementButton")
-                    .with_text("--")
+                Text::new("ScrollText", &format!("{}", self.slider_val))
+                    .with_color(colors::WHITE)
+                    .with_point_size(50)
+                    .center(),
+                
+                Button::new("SubtractButton")
+                    .with_text("-")
                     .with_on_click(|state: &mut State| {
                         if !state.is_locked {
                             state.counter -= state.slider_val;

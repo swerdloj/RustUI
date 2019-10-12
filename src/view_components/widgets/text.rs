@@ -30,6 +30,11 @@ pub struct Text<T> {
     // Text surface parameters    
     text_width: u32,
     text_height: u32,
+
+    // FIXME: This is a hack to fix layout issues
+    //  This is caused by layout seeing only the default text_width & text_height
+    //  and laying out view (within the macros) before text sizing occurs
+    default_width: i32,
 }
 
 impl<T> Text<T> {
@@ -47,7 +52,13 @@ impl<T> Text<T> {
             // FIXME: Defaults are not safe. Should be assigned when building view
             text_width: 100,
             text_height: 40,
+            default_width: 100,
         }
+    }
+
+    pub fn with_point_size(mut self, point_size: u16) -> Self {
+        self.font.point_size = point_size;
+        self
     }
 
     pub fn center(mut self) -> Self {
@@ -171,7 +182,7 @@ impl<T> Widget<T> for Text<T> {
         // TODO: Implement font.rs
         let font = window.ttf_context.load_font(
             std::path::Path::new("./res/font/OpenSans-Regular.ttf"), 
-            20
+            self.font.point_size
         ).expect("Failed to load font");
 
         let surface = font.render(&self.text)
@@ -187,7 +198,7 @@ impl<T> Widget<T> for Text<T> {
             self.fit_and_center_within_container(&self.container_rect)
         } else if self.center_text {
             // Center the text, disregarding containers
-            let center_x = self.container_rect.x() + self.container_rect.width() as i32 / 2;
+            let center_x = self.container_rect.x() + self.default_width / 2;
             let target_x = center_x - self.text_width as i32 / 2;
             Rect::new(
                 target_x,
@@ -218,9 +229,9 @@ impl<T> Widget<T> for Text<T> {
 
         //println!("Text: {} has height {}", self.text, self.text_height);
         
-        //self.text_height
+        self.text_height
 
-        28
+        // 28
     }
 }
 

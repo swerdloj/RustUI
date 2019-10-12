@@ -40,7 +40,7 @@ impl<T> ScrollBar<T> {
             to: to,
             value: current,
 
-            slider: Rect::new(0, 0, 12, 12),
+            slider: Rect::new(0, 0, 12, 16),
             rail: Rect::new(0, 0, 120, 4),
 
             value_text: None,
@@ -114,7 +114,7 @@ impl<T> Widget<T> for ScrollBar<T> {
         self.rail.set_x(x);
         self.rail.set_y(y);
         // self.slider.set_x(self.value_to_pixel(self.value) - self.slider.width() as i32 / 2);
-        self.slider.set_y(y - self.slider.height() as i32 / 2);
+        self.slider.set_y(y - (self.slider.height() - self.rail.height()) as i32 / 2);
     }
 
     fn update(&mut self, state: &mut T, event: &Event) {
@@ -135,8 +135,8 @@ impl<T> Widget<T> for ScrollBar<T> {
     where T: super::GenerateView<T> {
         // Draw rail
         match widget_state {
-            WidgetState::Active |
-            WidgetState::Hovering => window.canvas.set_draw_color(self.rail_hover_color),
+            // WidgetState::Active |
+            // WidgetState::Hovering => window.canvas.set_draw_color(self.rail_hover_color),
             _ => window.canvas.set_draw_color(self.rail_passive_color),
         }
         window.canvas.fill_rect(self.rail).unwrap();
