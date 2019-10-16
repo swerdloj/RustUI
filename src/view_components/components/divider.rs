@@ -29,7 +29,7 @@ impl<T> Divider<T> {
 
             orientation: orientation,
             thickness: 4,
-            color: colors::MANILLA,
+            color: colors::DARKER_PURPLE,
             
             padding_before: 20,
             padding_after: 20,

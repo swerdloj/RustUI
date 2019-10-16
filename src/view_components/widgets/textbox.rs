@@ -113,13 +113,40 @@ impl<T> Widget<T> for TextBox<T> {
 
     fn render(&self, window: &mut Window<T>, widget_state: WidgetState) 
     where T: super::GenerateView<T> {
+        let mut draw_cursor = false;
         match widget_state {
-            WidgetState::Focused => window.canvas.set_draw_color(self.focus_color),
-            _ => window.canvas.set_draw_color(self.background_color),
+            WidgetState::Focused => {
+                draw_cursor = true;
+                window.canvas.set_draw_color(self.focus_color);
+            }
+            _ => {
+                window.canvas.set_draw_color(self.background_color);
+            }
         }
 
         // Draw the background
         window.canvas.fill_rect(self.rect).unwrap();
+
+        // Draw cursor
+        if draw_cursor {
+            let cursor_height = 20;
+            let mut cursor_x;
+            // FIXME: This is a hack because of default text sizing
+            if self.user_text.text == "" {
+                cursor_x = self.user_text.rect().x + 1;
+            } else {
+                cursor_x = self.user_text.rect().x + self.user_text.text_width as i32 + 1;
+            }
+            window.canvas.set_draw_color(colors::BLACK);
+            window.canvas.fill_rect(
+                Rect::new(
+                    cursor_x,
+                    self.user_text.rect().y + self.user_text.rect().height() as i32 / 2 - cursor_height / 2,
+                    3,
+                    cursor_height as u32
+                )
+            ).unwrap();
+        }
         
         // Draw user_text > default_text
         if self.user_text.text != "" {

@@ -46,6 +46,8 @@ pub mod colors {
     pub const BLACK: Color = Color {r: 0, g: 0, b: 0, a: 0xff};
     /// `Color::RGB(50, 50, 100)` - Default background color
     pub const DARK_PURPLE: Color = Color {r: 50, g: 50, b: 100, a: 0xff};
+    /// `Color::RGB(30, 30, 80)` - Default background color
+    pub const DARKER_PURPLE: Color = Color {r: 30, g: 30, b: 80, a: 0xff};
     /// `Color::RGB(240, 240, 200)` - Default button color
     pub const MANILLA: Color = Color {r: 240, g: 240, b: 200, a: 0xff};
     /// `Color::RGB(255, 255, 255)` - White

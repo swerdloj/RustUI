@@ -28,8 +28,8 @@ pub struct Text<T> {
     center_text: bool,
    
     // Text surface parameters    
-    text_width: u32,
-    text_height: u32,
+    pub text_width: u32,
+    pub text_height: u32,
 
     // FIXME: This is a hack to fix layout issues
     //  This is caused by layout seeing only the default text_width & text_height
