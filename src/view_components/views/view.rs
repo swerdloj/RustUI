@@ -12,7 +12,7 @@ use sdl2::ttf;
 
 use std::collections::HashMap;
 
-use crate::view_components::{Padding, ViewComponent};
+use crate::view_components::ViewComponent;
 use crate::view_components::widgets::widget::Widget;
 use crate::view_components::components::component::Component;
 
@@ -59,6 +59,7 @@ pub trait View<T> {
     /// Obtain mutable references to *all* nested widgets
     fn child_widgets_mut(&mut self) -> Vec<&mut Box<dyn Widget<T>>>;
     
+    // TODO: rename/fix this
     fn child_comps(&self) -> Vec<&Box<dyn Component<T>>>;
     
 
@@ -74,12 +75,14 @@ pub trait View<T> {
     fn padding(self, left: u32, right: u32, top: u32, botton: u32) -> Self where Self: Sized;
 }
 
-/// Common data needed by *all* View structs
+// TODO: Many copy/pasted functions can be applied to this struct
+//  rather than each individual view (anything that uses only view.data)
+/// Common data needed by all View structs
 pub struct ViewData<T> {
     // id: &'static str,
 
-    /// Map of user-assigned widget names -> widget
-    pub component_map: HashMap<u32, Box<dyn Widget<T>>>,
+    /// Map of user-assigned widget ids -> widgets
+    pub component_map: HashMap<&'static str, Box<dyn Widget<T>>>,
     /// The items (widgets or nested views) owned by the view
     pub components: Vec<ViewComponent<T>>,
 
@@ -91,8 +94,6 @@ pub struct ViewData<T> {
     // FIXME: This is never used
     pub fixed_size: bool,
 
-    /// The view's padding (not the widgets')
-    pub padding: Padding,
     /// View alignment
     pub alignment: Alignment,
 }

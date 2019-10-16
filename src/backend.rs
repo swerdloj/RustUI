@@ -12,8 +12,6 @@ Each window will run on its own thread.
 
 */
 
-// TODO: Consider moving event handling to Widget functionality
-
 extern crate sdl2;
 
 
@@ -30,7 +28,7 @@ pub mod system {
         pub struct ApplicationState<'a, T> {
             /// Widget being hovered
             pub hovering: Option<&'static str>,
-            /// Widget being clicked (mouse down)
+            /// Widget being clicked (left mouse down)
             pub clicking: Option<&'static str>,
             /// Focused Widget (maintains active state after mouse up)
             pub focused: Option<&'static str>,
@@ -58,6 +56,7 @@ pub mod system {
 
     /// This module handles application windows and related events:
     /// - Window Creation
+    /// - Window Properties
     /// - Event Handling (within the window)
     /// - Application State (both backend and user-level)
     pub mod window {
@@ -129,8 +128,7 @@ pub mod system {
                 let path = std::path::Path::new(resource_path);
                 let surface = sdl2::surface::Surface::load_bmp(path).expect("Failed to load resource");
 
-                let mut window = self.canvas.window_mut();
-
+                let window = self.canvas.window_mut();
                 window.set_icon(surface);
 
                 /*  TODO:
@@ -146,21 +144,24 @@ pub mod system {
                 // window.set_icon(SurfaceRef)
             }
 
-            /// Used for scaling
+            /// Used for scaling to device independent resolutions
+            /// - Accepts tuple: `(width, height)`
             // TODO: See this: https://gamedev.stackexchange.com/questions/119414/resolution-scaling
-            pub fn set_logical_size(&mut self, width: u32, height: u32) {
-                self.canvas.set_logical_size(width, height).unwrap();
+            pub fn set_logical_size(&mut self, dimensions:(u32, u32)) {
+                self.canvas.set_logical_size(dimensions.0, dimensions.1).expect("Failed to set logical size");
             }
 
             /// Resizes the application window to the specified pixel values
-            /// Usage: `resize_window((width, height));`
+            /// - Usage: `resize_window((width, height));`
             fn resize_window(&mut self, dimensions: (u32, u32)) {
                 self.canvas.window_mut().set_size(dimensions.0, dimensions.1).expect("Failed to resize");
             }
 
             // TODO: Allow multiple windows to run at once on multiple threads
             // TODO: How to handle window size changes from the user?
+            // FIXME: Implementing HashMap will remove *all* for-loops
             // pub fn start<V: View<T> + Sized>(mut self, mut view: V) {
+            /// Begin UI window main loop
             pub fn start(mut self) {
                 /* Initialize here */
 
@@ -206,6 +207,9 @@ pub mod system {
                         match event {
                             Event::Quit {..} |
                             Event::KeyDown { keycode: Some(Keycode::Escape), .. } => {
+                                // TODO: Defocus widgets on escape by default
+                                //  allow user to define which button defocuses
+                                //  allow user to define which button exits
                                 break 'window_loop;
                             }
 
@@ -295,7 +299,7 @@ pub mod system {
                         // TODO: Consider combining update & render
                         //  Call update first, then render
 
-                        // Update focused widget
+                        // Update focused widget (TextBox or similar)
                         if let Some(focus_id) = self.window_state.focused { // find widget if one is focused
                             for widget in view.child_widgets_mut() {
                                 if focus_id == widget.id() {
@@ -303,7 +307,7 @@ pub mod system {
                                     break; // found widget, don't need to keep looking
                                 }
                             }
-                        // ...
+                        // or clicking widget (ScrollBar or similar)
                         } else if let Some(active_id) = self.window_state.clicking {
                             for widget in view.child_widgets_mut() {
                                 if active_id == widget.id() {
@@ -313,7 +317,6 @@ pub mod system {
                             }
                         }
                     } // end event loop
-
                     /* Render window below this line */
 
                     // TODO: Create 'Render' trait and get all renderables, not just widgets
@@ -340,7 +343,6 @@ pub mod system {
 
                         if let Some(focus_id) = self.window_state.focused {
                             if focus_id == widget.id() {
-                                // FIXME: Need to update widget before rendering
                                 widget_state = WidgetState::Focused;
                             }
                         }

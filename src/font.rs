@@ -9,9 +9,9 @@ TODO: Major refactoring to include this in widgets.rs & backend.rs
 use sdl2::ttf;
 use sdl2::ttf::Sdl2TtfContext;
 
-use std::rc::Rc;
 use std::collections::HashMap;
-use std::path::Path;
+// use std::rc::Rc;
+// use std::path::Path;
 
 // ========================== Font Parameters ========================== //
 

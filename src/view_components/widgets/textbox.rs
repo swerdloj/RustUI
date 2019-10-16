@@ -130,13 +130,14 @@ impl<T> Widget<T> for TextBox<T> {
         // Draw cursor
         if draw_cursor {
             let cursor_height = 20;
-            let mut cursor_x;
+            
             // FIXME: This is a hack because of default text sizing
-            if self.user_text.text == "" {
-                cursor_x = self.user_text.rect().x + 1;
+            let cursor_x = if self.user_text.text == "" {
+                self.user_text.rect().x + 1
             } else {
-                cursor_x = self.user_text.rect().x + self.user_text.text_width as i32 + 1;
-            }
+                self.user_text.rect().x + self.user_text.text_width as i32 + 1
+            };
+            
             window.canvas.set_draw_color(colors::BLACK);
             window.canvas.fill_rect(
                 Rect::new(
@@ -148,7 +149,7 @@ impl<T> Widget<T> for TextBox<T> {
             ).unwrap();
         }
         
-        // Draw user_text > default_text
+        // Prioritize drawing user_text over default_text
         if self.user_text.text != "" {
             self.user_text.render(window, widget_state);
         }
@@ -185,6 +186,7 @@ impl<T> Widget<T> for TextBox<T> {
        true
     }
 
+    // TODO: Implement https://docs.rs/sdl2/0.32.2/sdl2/clipboard/struct.ClipboardUtil.html
     fn update(&mut self, state: &mut T, event: &Event) {
         // TODO: Do something else to avoid mutable state
         // TODO: Avoid using .clone()

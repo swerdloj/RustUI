@@ -19,11 +19,9 @@ TODO: Implement an ECS for widgets (reduce redundancy & increase consistency)
 
 extern crate sdl2;
 use sdl2::rect::Rect;
-use sdl2::pixels::Color;
 use sdl2::event::Event;
 
 use crate::backend::system::window::Window;
-use super::super::Padding;
 
 use super::text::Text;
 
@@ -44,28 +42,6 @@ pub enum WidgetState {
     Base,
 }
 
-/// This is the base widget struct from which all other widgets are derived
-/// ## Arguments
-/// * `id` - The widget's id as a string TODO: This should be a hash of the string instead for faster lookup.
-struct WidgetData {
-    /// The widget's *unique* id
-    // TODO: Ensure this is truly unique (need some way to check)
-    id: &'static str,
-
-    /// Widget positional data
-    rect: Rect,
-    /// The base color
-    primary_color: Color,
-
-    /// The 'accent' color (or active color)
-    // TODO: rename this
-    secondary_color: Color,
-    /// The on-hover color
-    hover_color: Color,
-
-    /// Spacing around the widget
-    padding: Padding,
-}
 
 // TODO: Consider callback types: https://oribenshir.github.io/afternoon_rusting/blog/closures
 
@@ -91,7 +67,7 @@ pub trait Widget<T> {
     /// Update the widget with known text dimensions  
     /// - Note that this function is called **only when text exists**  
     /// - Improper usage will therefore `panic` at `.expect()` on `None`
-    fn assign_text_dimensions(&mut self, dims: (u32, u32)) {
+    fn assign_text_dimensions(&mut self, _dims: (u32, u32)) {
         panic!("Called assign_text_dimensions on a Widget that does not implement Text");
     }
 
@@ -99,7 +75,7 @@ pub trait Widget<T> {
     fn place(&mut self, x: i32, y: i32);
 
     /// Trigger a callback when clicked
-    fn on_click(&mut self, state: &mut T) {
+    fn on_click(&mut self, _state: &mut T) {
     }
 
     /// Render the widget to the window
@@ -109,7 +85,7 @@ pub trait Widget<T> {
     /// Update the widget according to state & event
     // TODO: Is there anyway to avoid mutable reference here?
     //  See textbox's update fn. Persistant state would help
-    fn update(&mut self, state: &mut T, event: &Event) {
+    fn update(&mut self, _state: &mut T, _event: &Event) {
     }
 
     /// Translate the widget by the given x & y differences

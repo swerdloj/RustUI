@@ -12,6 +12,7 @@ use crate::view_components::views::view::{View, ViewData, Alignment};
 
 pub struct VStack<T> {
     data: ViewData<T>,
+    padding: Padding,
 }
 
 impl<T> VStack<T> {
@@ -24,15 +25,15 @@ impl<T> VStack<T> {
                     view_width: 0,
                     view_height: 0,
                     fixed_size: false,
-                    padding:
-                        Padding {
-                            left: 10,
-                            right: 10,
-                            top: 10,
-                            bottom: 10,
-                        },
                     alignment: Alignment::Center,
-                }
+                },
+            padding:
+                Padding {
+                    left: 10,
+                    right: 10,
+                    top: 10,
+                    bottom: 10,
+                },
         }
     }
 }
@@ -165,10 +166,10 @@ impl<T> View<T> for VStack<T> {
     }
 
     fn padding(mut self, left: u32, right: u32, top: u32, bottom: u32) -> Self {
-        self.data.padding.left = left;
-        self.data.padding.right = right;
-        self.data.padding.top = top;
-        self.data.padding.bottom = bottom;
+        self.padding.left = left;
+        self.padding.right = right;
+        self.padding.top = top;
+        self.padding.bottom = bottom;
         self
     }
 
@@ -237,7 +238,7 @@ impl<T> View<T> for VStack<T> {
             }
         }
 
-        max_width + self.data.padding.right + self.data.padding.left
+        max_width + self.padding.right + self.padding.left
     }
 
     fn draw_height(&self) -> u32 {
@@ -265,7 +266,7 @@ impl<T> View<T> for VStack<T> {
             }
         }
 
-        max_height + self.data.padding.top + self.data.padding.bottom
+        max_height + self.padding.top + self.padding.bottom
     }
 }
 

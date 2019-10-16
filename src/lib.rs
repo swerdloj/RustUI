@@ -2,6 +2,8 @@
 
 Rust GUI library
 
+by Jonathan Swerdlow
+
 */
 
 // TODO: Create a build file & include SDL libraries (Windows)
@@ -75,6 +77,7 @@ pub use backend::system::state;
 /// Imports items required by macros
 /// - Required Traits
 /// - Required Enums
+/// These requirements are never exposed to the user, thus this macro is a convenience
 #[macro_export]
 macro_rules! macro_imports {
     () => {

@@ -162,18 +162,14 @@ impl<T> Widget<T> for Text<T> {
         self.id
     }
 
-    fn on_click(&mut self, state: &mut T) {
-
-    }
-
     // TODO: Resize the text surface on update
-    fn update(&mut self, state: &mut T, event: &sdl2::event::Event) {
+    fn update(&mut self, state: &mut T, _event: &sdl2::event::Event) {
         if let Some(ref update_callback) = self.update_fn {
             self.text = (update_callback)(state);
         }
     }
 
-    fn render(&self, window: &mut Window<T>, widget_state: WidgetState)
+    fn render(&self, window: &mut Window<T>, _widget_state: WidgetState)
     where T: super::GenerateView<T> {
         // FIXME: Allocating texture_creator here is probably bad if we use it each render
         let texture_creator = window.canvas.texture_creator();
