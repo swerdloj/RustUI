@@ -19,6 +19,7 @@ extern crate sdl2;
 pub mod system {    
     pub mod state {
         use crate::view_components::views::view::View;
+        use sdl2::mouse::Cursor;
 
         // TODO: Flesh this out and utilize appropriately. Or move event handling to Widget
         /// Holds application state relating to window events
@@ -34,6 +35,9 @@ pub mod system {
             pub focused: Option<&'static str>,
             /// User state to be passed to widgets
             pub user_state: &'a mut T,
+
+            /// Mouse cursor -> set when hovering over a widget
+            pub cursor: Option<Cursor>,
         }
 
         impl<'a, T> ApplicationState<'a, T> {
@@ -43,6 +47,7 @@ pub mod system {
                     clicking: None,
                     focused: None,
                     user_state: user_state,
+                    cursor: None,
                 }
             }
         }
@@ -163,6 +168,16 @@ pub mod system {
             // pub fn start<V: View<T> + Sized>(mut self, mut view: V) {
             /// Begin UI window main loop
             pub fn start(mut self) {
+                /* TODO: Use this pattern to implement cursors for widgets
+                    Note that cursor is reset when dropped (when exits scope)
+                
+                use sdl2::mouse;
+                let cursor = mouse::Cursor::from_system(mouse::SystemCursor::Hand).unwrap();
+                cursor.set();
+                
+                */
+
+
                 /* Initialize here */
 
                 // Used to detect state changes, triggering view generation
@@ -233,6 +248,7 @@ pub mod system {
                                         break; // don't need to check other widgets
                                     }
                                 }
+                                self.window_state.cursor = None;
                             }
 
                             Event::MouseButtonDown { mouse_btn: MouseButton::Left, x, y, .. } => {

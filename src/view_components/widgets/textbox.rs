@@ -137,7 +137,7 @@ impl<T> Widget<T> for TextBox<T> {
             } else {
                 self.user_text.rect().x + self.user_text.text_width as i32 + 1
             };
-            
+
             window.canvas.set_draw_color(colors::BLACK);
             window.canvas.fill_rect(
                 Rect::new(
@@ -187,6 +187,9 @@ impl<T> Widget<T> for TextBox<T> {
     }
 
     // TODO: Implement https://docs.rs/sdl2/0.32.2/sdl2/clipboard/struct.ClipboardUtil.html
+    // TODO: Listen for events that might move the cursor. Then account for cursor location.
+    //       Such as arrow keys, mouse clicks, etc.
+    //       Also would need to account for highlighting text
     fn update(&mut self, state: &mut T, event: &Event) {
         // TODO: Do something else to avoid mutable state
         // TODO: Avoid using .clone()
@@ -201,9 +204,11 @@ impl<T> Widget<T> for TextBox<T> {
             }
             Event::KeyDown { keycode: Some(Keycode::Backspace), .. } => {
                 if let Some(on_text_changed) = &self.on_text_changed {
-                    let text = if let Some(_) = self.input_buffer.pop() {
+                    let text = if self.input_buffer.pop().is_some() {
+                        // Delete last character from input buffer
                         self.user_text.text.clone() + &self.input_buffer
                     } else {
+                        // Delete last character from text (empty buffer)
                         let mut temp = self.user_text.text.clone();
                         temp.pop();
                         temp

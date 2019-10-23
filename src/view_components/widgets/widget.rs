@@ -88,6 +88,10 @@ pub trait Widget<T> {
     fn update(&mut self, _state: &mut T, _event: &Event) {
     }
 
+    fn cursor(&self) -> sdl2::mouse::Cursor {
+        sdl2::mouse::Cursor::from_system(sdl2::mouse::SystemCursor::Hand).expect("Failed to create mouse cursor")
+    }
+
     /// Translate the widget by the given x & y differences
     fn translate(&mut self, dx: i32, dy: i32);
     
