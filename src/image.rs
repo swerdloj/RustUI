@@ -15,30 +15,34 @@ pub fn load_image(path: &Path) -> Result<Surface, String> {
     return match path.extension() {
         Some(os_str) => {
             match os_str.to_str() {
-                Some("jpg") |
-                Some("jpeg") => {
+                None => {
+                    // FIXME: This should never be reacehd
+                    Err(format!("No extension was found"))
+                }
+
+                Some("jpg") | Some("jpeg") => {
                     // Ok(load_jpeg(&path))
                     Err("Not implemented".to_owned())
                 }
+
                 Some("bmp") => {
                     Ok(load_bitmap(&path))
                 }
+
                 Some("png") => {
                     // Ok(load_png(&path))
                     Err("Not implemented".to_owned())
                 }
-                None => {
-                    // TODO: Change this. Did something go wrong?
-                    Err(format!("No extension was found"))
-                }
+
                 _ => {
                     // TODO: Print only file suffix?
-                    Err(format!("File at {:?} is of unsupported type", path))
+                    Err(format!("File '{:?}' has unsupported extension, '{:?}'", path, os_str))
                 }
             }
         }
-        None => {
-            Err(format!("File {:?} has no suffix", path))
+
+        None => { // No extension
+            Err(format!("File '{:?}' has no extension", path))
         }
     }
 }
