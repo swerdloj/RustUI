@@ -31,6 +31,10 @@ Check for distribution-specific development packages/repos for the required libr
 
 ## TODOs:
 - See [Projects](https://github.com/swerdloj/RustUI/projects)
+- Font Management:
+  - When a font is needed, query font map
+  - if not found, load font and store for future use
+  - 90% of this library's CPU usage is font loading each frame
 - Persistent State:
   - Persist widget state between view-generation cycles
     - User would no longer need to maintain that widget's state

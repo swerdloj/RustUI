@@ -11,7 +11,7 @@ macro_imports!();
 
 use RustUI::state::GenerateView;
 use RustUI::{Window, colors, Alignment, Orientation};
-use RustUI::widgets::{Text, Button, TextBox, CheckBox, ScrollBar};
+use RustUI::widgets::{Text, Button, TextBox, CheckBox, ScrollBar, Image};
 use RustUI::views::{HStack, VStack};
 use RustUI::view_components::components::divider::Divider;
 
@@ -39,6 +39,24 @@ impl GenerateView<State> for State {
     fn generate_view(&self) -> Box<dyn View<State>> {
         // TODO: Need a way to handle loops/if statements for view generation (within macros)
         let view = VStack!(
+            // TODO: Test different images & formats
+            HStack!(
+                Image::new("TestImage", "./res/logo/temp_logo_low_quality.bmp", (100, 100))
+                .with_on_click(|state: &mut State| {
+                    println!("Clicked the image");
+                }),
+
+                Image::new("TestImage2", "./res/logo/temp_logo_low_quality.bmp", (120, 120))
+                .with_on_click(|state: &mut State| {
+                    println!("Clicked the image2");
+                }),
+
+                Image::new("TestImage3", "./res/logo/temp_logo_low_quality.bmp", (self.counter as u32, self.counter as u32))
+                .with_on_click(|state: &mut State| {
+                    println!("Clicked the image3");
+                })
+            ),
+
             Text::new("CounterText", 
                     format!("Counter: {}", self.counter).as_str())
                 .with_point_size(35)

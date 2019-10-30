@@ -5,6 +5,7 @@ pub mod checkbox;
 pub mod text;
 pub mod textbox;
 pub mod scrollbar;
+pub mod image;
 
 pub use crate::backend::system::state::GenerateView;
 
@@ -15,3 +16,4 @@ pub use checkbox::CheckBox;
 pub use text::Text;
 pub use textbox::TextBox;
 pub use scrollbar::ScrollBar;
+pub use image::Image;
