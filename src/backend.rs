@@ -72,6 +72,7 @@ pub mod system {
         use sdl2::rect::Point;
         use crate::view_components::widgets::widget::WidgetState;
         use crate::font::{FontParams, Fonts};
+        use crate::image;
         use super::state::{ApplicationState, GenerateView};
         
         // Expected lifetime ('a) -> the initializing function containing the .start() call
@@ -131,7 +132,7 @@ pub mod system {
 
                 // FIXME: This is temporary. See TODO below
                 let path = std::path::Path::new(resource_path);
-                let surface = sdl2::surface::Surface::load_bmp(path).expect("Failed to load resource");
+                let surface = image::load_image(path).unwrap();
 
                 let window = self.canvas.window_mut();
                 window.set_icon(surface);

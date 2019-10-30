@@ -59,6 +59,8 @@ pub mod backend;
 pub mod view_components;
 /// Font table
 pub mod font;
+/// Image functionality
+pub mod image;
 
 // ========================== Convenience Re-Exports ========================== //
 pub use view_components::{views, widgets};
