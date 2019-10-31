@@ -3,6 +3,13 @@ use sdl2::surface::Surface;
 
 use std::path::Path;
 
+/* TODO: Consider allowing transparent color keys for bitmaps (and others?):
+
+See https://docs.rs/sdl2/0.32.2/sdl2/surface/struct.SurfaceRef.html#method.set_color_key
+and https://wiki.libsdl.org/SDL_SetColorKey
+
+*/
+
 // TODO: Error enum (e.g.: Unsupported, LoadFailed, etc.)
 
 
@@ -55,6 +62,7 @@ pub fn load_image(path: &Path) -> Result<Surface, String> {
 
 // }
 
+// TODO: Implement
 fn load_bitmap(path: &Path) -> Surface {
     Surface::load_bmp(path).expect("Failed to load bitmap")
 }

@@ -12,12 +12,6 @@ use crate::images;
 
 use std::path::Path;
 
-/* TODO: Consider allowing transparent color keys:
-
-See https://docs.rs/sdl2/0.32.2/sdl2/surface/struct.SurfaceRef.html#method.set_color_key
-and https://wiki.libsdl.org/SDL_SetColorKey
-
-*/
 
 /// Image Widget
 /// - Displays an image
@@ -37,7 +31,7 @@ pub struct Image<T> {
     on_click: Option<Box<dyn Fn(&mut T)>>,
 }
 
-impl<'a, T> Image<T> {
+impl<T> Image<T> {
     /// - `resource_path`: Path to image resource as static string
     /// - `bounds`: (width, height) bounds for image
     pub fn new(id: &'static str, resource_path: &'static str, bounds: (u32, u32)) -> Self {
@@ -120,6 +114,7 @@ impl<T> Widget<T> for Image<T> {
 
     fn render(&self, window: &mut Window<T>, widget_state: WidgetState)
     where T: super::GenerateView<T> {
+        let mut draw_highlight = false;
         match widget_state {
             WidgetState::Hovering => {
                 window.canvas.set_draw_color(self.hover_color);
@@ -128,7 +123,8 @@ impl<T> Widget<T> for Image<T> {
                                            self.rect.width() + self.hover_border_width * 2, self.rect.height() + self.hover_border_width * 2);
                     window.canvas.fill_rect(border).unwrap();
                 } else { // highlight
-                    window.canvas.fill_rect(self.rect).unwrap();
+                    // TODO: Blitting can allow for layering -> don't need this bool
+                    draw_highlight = true;
                 }
             }
             WidgetState::Active => {
@@ -150,6 +146,15 @@ impl<T> Widget<T> for Image<T> {
         let target = Rect::new(self.rect.x(), self.rect.y(), self.rect.width(), self.rect.height());
 
         window.canvas.copy(&texture, None, Some(target)).expect("Failed to copy texture to target");
+    
+        if draw_highlight {
+            // FIXME: This is very wrong. Render colored RGBA rect as surface, then blit with image.
+            window.canvas.set_blend_mode(sdl2::render::BlendMode::Blend);
+            let temp_transparent_color = Color::RGBA(30, 30, 80, 100);
+            window.canvas.set_draw_color(temp_transparent_color);
+            window.canvas.fill_rect(self.rect).unwrap();
+            window.canvas.set_blend_mode(sdl2::render::BlendMode::None);
+        }
     }
 
     fn translate(&mut self, dx: i32, dy: i32) {

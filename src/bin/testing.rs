@@ -47,6 +47,7 @@ impl GenerateView<State> for State {
                 }),
 
                 Image::new("TestImage2", "./res/logo/temp_logo_low_quality.bmp", (120, 120))
+                .with_hover_shade()
                 .with_on_click(|state: &mut State| {
                     println!("Clicked the image2");
                 }),
