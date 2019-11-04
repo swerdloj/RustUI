@@ -20,6 +20,8 @@ Furthermore, the backend does not currently have the capability to handle
 anything other than widgets, meaning `Overlay` does not receive events and
 is never updated
 
+SOLUTION: Make overlay a view type?
+
 */
 
 pub struct Overlay<T> {
