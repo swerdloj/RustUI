@@ -55,7 +55,12 @@ pub mod system {
         // TODO: Is here the correct place for this trait?
         // FIXME: Box is a workaround
         pub trait GenerateView<T> {
+            /// Returns the view to be utilized
             fn generate_view(&self) -> Box<dyn View<T>>;
+
+            fn spawn_overlay(&mut self) {
+
+            }
         }
     } // end mod state
 
@@ -127,7 +132,7 @@ pub mod system {
                 }
             }
 
-            /// Set the window icon to the specified image
+            /// Set the window icon to the specified image resource
             pub fn set_icon(&mut self, resource_path: &str) {
 
                 // FIXME: This is temporary. See TODO below
@@ -136,18 +141,6 @@ pub mod system {
 
                 let window = self.canvas.window_mut();
                 window.set_icon(surface);
-
-                /*  TODO:
-                    1. Convert str to Path
-                    2. Match on path ending (.jpg, .bmp, .png, etc.)
-                    3. Load surface
-                    4. Consider creating a generic 'load surface' function that takes str and returns surface
-                    
-                    For now, use the sdl2::surface::Surface::load_bmp(path) method
-                */
-
-                // It looks like a `SurfaceRef` is simply a `&Surface`
-                // window.set_icon(SurfaceRef)
             }
 
             /// Used for scaling to device independent resolutions
@@ -338,9 +331,6 @@ pub mod system {
 
                     // TODO: Create 'Render' trait and get all renderables, not just widgets
                     
-                    for comp in view.child_comps() {
-                        comp.render(&mut self, last_window_size);
-                    }
                     
                     // Render each widget
                     for widget in view.child_widgets_mut() {
@@ -367,6 +357,10 @@ pub mod system {
                         widget.render(&mut self, widget_state);
                     }
 
+                    for comp in view.child_comps() {
+                        comp.render(&mut self, last_window_size);
+                    }
+                    
                     self.canvas.present();
 
                     // FIXME: Replace this with delta time for use in animations & frame rate limiting

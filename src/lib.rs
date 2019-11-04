@@ -63,12 +63,13 @@ pub mod font;
 pub mod images;
 
 // ========================== Convenience Re-Exports ========================== //
-pub use view_components::{views, widgets};
+pub use view_components::{views, widgets, components};
 pub use view_components::colors;
 // TODO: This may not be necessary
 pub use view_components::{
     widgets::widget::Widget, 
-    views::view::View
+    views::view::View,
+    components::Component,
 };
 pub use view_components::views::view::Alignment;
 pub use view_components::Orientation;

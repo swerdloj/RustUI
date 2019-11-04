@@ -3,7 +3,7 @@ use sdl2::pixels::Color;
 use sdl2::rect::Rect;
 
 use crate::{Window, colors};
-use super::component::Component;
+use super::Component;
 use super::super::{Orientation, IntoViewComponent, ViewComponent};
 
 

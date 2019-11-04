@@ -5,7 +5,7 @@ use crate::font::Fonts;
 
 use crate::view_components::{ViewComponent, IntoViewComponent, Padding};
 use crate::view_components::widgets::widget::Widget;
-use crate::view_components::components::component::Component;
+use crate::view_components::components::Component;
 use crate::view_components::views::view::{View, ViewData, Alignment};
 
 

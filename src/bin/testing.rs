@@ -13,7 +13,7 @@ use RustUI::state::GenerateView;
 use RustUI::{Window, colors, Alignment, Orientation};
 use RustUI::widgets::{Text, Button, TextBox, CheckBox, ScrollBar, Image};
 use RustUI::views::{HStack, VStack};
-use RustUI::view_components::components::divider::Divider;
+use RustUI::components::{Divider, Overlay};
 
 
 #[derive(Clone, PartialEq)]
@@ -22,6 +22,8 @@ struct State {
     is_locked: bool,
     text_input: String,
     slider_val: i32,
+
+    show_overlay: bool,
 }
 
 impl State {
@@ -31,6 +33,8 @@ impl State {
             is_locked: false,
             text_input: String::new(),
             slider_val: 1,
+
+            show_overlay: false,
         }
     }
 }
@@ -40,23 +44,11 @@ impl GenerateView<State> for State {
         // TODO: Need a way to handle loops/if statements for view generation (within macros)
         let view = VStack!(
             // TODO: Test different images & formats
-            HStack!(
-                Image::new("TestImage", "./res/logo/temp_logo_low_quality.bmp", (100, 100))
-                .with_on_click(|state: &mut State| {
+            Image::new("TestImage", "./res/logo/temp_logo_low_quality.bmp", (100, 100))
+                .with_hover_shade()
+                .with_on_click(|_state: &mut State| {
                     println!("Clicked the image");
                 }),
-
-                Image::new("TestImage2", "./res/logo/temp_logo_low_quality.bmp", (120, 120))
-                .with_hover_shade()
-                .with_on_click(|state: &mut State| {
-                    println!("Clicked the image2");
-                }),
-
-                Image::new("TestImage3", "./res/logo/temp_logo_low_quality.bmp", (self.counter as u32, self.counter as u32))
-                .with_on_click(|state: &mut State| {
-                    println!("Clicked the image3");
-                })
-            ),
 
             Text::new("CounterText", 
                     format!("Counter: {}", self.counter).as_str())
@@ -123,7 +115,26 @@ impl GenerateView<State> for State {
                         println!("The counter is locked");
                     }
                 })
-                .with_text("Reset")
+                .with_text("Reset"),
+
+            Button::new("OverlayButton")
+                .with_text("Overlay")
+                .with_on_click(|state: &mut State| {
+                    state.show_overlay = !state.show_overlay;
+                }),
+
+            // TODO: Handle `if` statements properly.
+            //  Macros should be able to handle different return types so long as
+            //  IntoViewComponent is satisfied (or if return type is `()`)
+            if self.show_overlay {
+                Overlay::new(VStack!(
+                    Text::new("Test123", "This is an overlay test")
+                        .with_color(colors::WHITE)
+                ))
+            } else {
+                Overlay::new(VStack!(Text::new("EmptyText", " ")))
+                    .with_color(sdl2::pixels::Color::RGBA(0, 0, 0, 0))
+            }
         )
         // .fixed_width(400)
         .alignment(Alignment::Center);

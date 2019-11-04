@@ -24,7 +24,7 @@ pub fn load_image(path: &Path) -> Result<Surface, String> {
             match os_str.to_str() {
                 None => {
                     // FIXME: This should never be reacehd
-                    Err(format!("No extension was found"))
+                    Err("No extension was found".to_owned())
                 }
 
                 Some("jpg") | Some("jpeg") => {

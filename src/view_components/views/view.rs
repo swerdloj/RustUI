@@ -14,7 +14,7 @@ use std::collections::HashMap;
 
 use crate::view_components::ViewComponent;
 use crate::view_components::widgets::widget::Widget;
-use crate::view_components::components::component::Component;
+use crate::view_components::components::Component;
 
 // ========================== Alignment enum ========================== //
 

@@ -8,7 +8,7 @@ pub mod components;
 pub enum ViewComponent<T> {
     Widget(Box<dyn widgets::widget::Widget<T>>),
     View(Box<dyn views::view::View<T>>),
-    Component(Box<dyn components::component::Component<T>>),
+    Component(Box<dyn components::Component<T>>),
 }
 
 // ========================== Orientation enum ========================== //
@@ -21,6 +21,7 @@ pub enum Orientation {
 
 // ========================== IntoViewComponent trait ========================== //
 
+// TODO: Look into the `Into` trait
 /// Trait utilized for storing `Widget` and `View` types together
 pub trait IntoViewComponent<T> {
     fn as_component(self) -> ViewComponent<T>;

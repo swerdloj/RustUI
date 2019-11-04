@@ -26,6 +26,7 @@ pub struct Image<T> {
     hover_border: bool,
     hover_border_width: u32,
     hover_color: Color,
+    click_color: Color,
     
     // Interact with state when image is clicked
     on_click: Option<Box<dyn Fn(&mut T)>>,
@@ -49,6 +50,7 @@ impl<T> Image<T> {
             hover_border: true,
             hover_border_width: 6,
             hover_color: colors::DARKER_PURPLE,
+            click_color: colors::BLACK,
             on_click: None,
         }
     }
@@ -72,14 +74,23 @@ impl<T> Image<T> {
     }
 
     /// Shade the image when hovered
+    // TODO: Consider having user pass colors here
     pub fn with_hover_shade(mut self) -> Self {
         self.hover_border = false;
+        self.hover_color = Color::RGBA(30, 30, 80, 100);
+        self.click_color = Color::RGBA(20, 20, 50, 160);
         self
     }
 
     /// On-hover border or shade color (with alpha channel)
     pub fn with_hover_color(mut self, color: Color) -> Self {
         self.hover_color = color;
+        self
+    }
+    
+    /// On-click border or shade color (with alpha channel)
+    pub fn with_click_color(mut self, color: Color) -> Self {
+        self.click_color = color;
         self
     }
 }
@@ -114,25 +125,35 @@ impl<T> Widget<T> for Image<T> {
 
     fn render(&self, window: &mut Window<T>, widget_state: WidgetState)
     where T: super::GenerateView<T> {
+        // FIXME: There is a lot here that can be refactored and made more efficient
+
         let mut draw_highlight = false;
+        let mut clicking = false;
+
         match widget_state {
             WidgetState::Hovering => {
                 window.canvas.set_draw_color(self.hover_color);
-                if self.hover_border { // border
-                    let border = Rect::new(self.rect.x() - self.hover_border_width as i32,  self.rect.y() - self.hover_border_width as i32,
-                                           self.rect.width() + self.hover_border_width * 2, self.rect.height() + self.hover_border_width * 2);
-                    window.canvas.fill_rect(border).unwrap();
-                } else { // highlight
-                    // TODO: Blitting can allow for layering -> don't need this bool
+
+                if !self.hover_border {
                     draw_highlight = true;
                 }
             }
             WidgetState::Active => {
-                // TODO: Implement another color for clicking (darker, etc.)
+                window.canvas.set_draw_color(self.click_color);
+
+                if !self.hover_border {
+                    draw_highlight = true;
+                    clicking = true;
+                }
             }
             _ => {}
         }
 
+        if !draw_highlight { // border
+            let border = Rect::new(self.rect.x() - self.hover_border_width as i32,  self.rect.y() - self.hover_border_width as i32,
+                                   self.rect.width() + self.hover_border_width * 2, self.rect.height() + self.hover_border_width * 2);
+            window.canvas.fill_rect(border).unwrap();
+        }
 
         // FIXME: Clean up rendering (no memory leaks apparent)
 
@@ -148,10 +169,8 @@ impl<T> Widget<T> for Image<T> {
         window.canvas.copy(&texture, None, Some(target)).expect("Failed to copy texture to target");
     
         if draw_highlight {
-            // FIXME: This is very wrong. Render colored RGBA rect as surface, then blit with image.
+            // FIXME: Instead, render colored RGBA rect as surface, then blit with image.
             window.canvas.set_blend_mode(sdl2::render::BlendMode::Blend);
-            let temp_transparent_color = Color::RGBA(30, 30, 80, 100);
-            window.canvas.set_draw_color(temp_transparent_color);
             window.canvas.fill_rect(self.rect).unwrap();
             window.canvas.set_blend_mode(sdl2::render::BlendMode::None);
         }
