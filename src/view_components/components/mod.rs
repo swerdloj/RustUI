@@ -1,12 +1,9 @@
 pub mod divider;
-pub mod overlay;
 
 use crate::Window;
 
 
 pub use divider::Divider;
-pub use overlay::Overlay;
-
 
 /// Base trait from which view components are derived
 pub trait Component<T> {

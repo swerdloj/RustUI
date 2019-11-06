@@ -74,6 +74,10 @@ impl<T> View<T> for VStack<T> {
         //self.align(self.data.alignment.clone());
     }
 
+    fn overlay(&mut self, overlay: super::Overlay<T>) where T: 'static{
+        self.data.components.push(overlay.as_component());
+    }
+
     fn view_size(&self) -> (u32, u32) {
         (self.data.view_width, self.data.view_height)
     }
@@ -204,7 +208,6 @@ impl<T> View<T> for VStack<T> {
                         }
                         // Shift subview to center of current view
                         ViewComponent::View(subview) => {
-                            // FIXME: Padding? Why the -5? Half padding?
                             let shift_x = (width / 2) as i32 - (subview.draw_width() / 2) as i32;
                             subview.translate(shift_x, 0);
                         }

@@ -3,9 +3,11 @@
 pub mod view;
 pub mod vstack;
 pub mod hstack;
+pub mod overlay;
 
 pub use vstack::VStack;
 pub use hstack::HStack;
+pub use overlay::Overlay;
 
 
 // ========================== Example macro ========================== //

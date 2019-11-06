@@ -49,19 +49,40 @@ impl<T> Button<T> {
         self
     }
 
+    /// Assign specific width to button
     pub fn with_width(mut self, width: u32) -> Self {
         self.rect.set_width(width);
         self
     }
 
+    /// Assign specific height to button
     pub fn with_height(mut self, height: u32) -> Self {
         self.rect.set_height(height);
         self
     }
 
+    /// Assign width and height to button
     pub fn with_dimensions(mut self, width: u32, height: u32) -> Self {
         self.rect.set_width(width);
         self.rect.set_height(height);
+        self
+    }
+
+    /// Assign base button color
+    pub fn with_base_color(mut self, color: Color) -> Self {
+        self.passive_color = color;
+        self
+    }
+
+    /// Assign color on hover
+    pub fn with_hover_color(mut self, color: Color) -> Self {
+        self.hover_color = color;
+        self
+    }
+
+    /// Assign click color
+    pub fn with_click_color(mut self, color: Color) -> Self {
+        self.clicking_color = color;
         self
     }
 }

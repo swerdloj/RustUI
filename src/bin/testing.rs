@@ -12,8 +12,8 @@ macro_imports!();
 use RustUI::state::GenerateView;
 use RustUI::{Window, colors, Alignment, Orientation};
 use RustUI::widgets::{Text, Button, TextBox, CheckBox, ScrollBar, Image};
-use RustUI::views::{HStack, VStack};
-use RustUI::components::{Divider, Overlay};
+use RustUI::views::{HStack, VStack, Overlay};
+use RustUI::components::{Divider};
 
 
 #[derive(Clone, PartialEq)]
@@ -42,7 +42,7 @@ impl State {
 impl GenerateView<State> for State {
     fn generate_view(&self) -> Box<dyn View<State>> {
         // TODO: Need a way to handle loops/if statements for view generation (within macros)
-        let view = VStack!(
+        let mut view = VStack!(
             // TODO: Test different images & formats
             Image::new("TestImage", "./res/logo/temp_logo_low_quality.bmp", (100, 100))
                 .with_hover_shade()
@@ -121,25 +121,28 @@ impl GenerateView<State> for State {
                 .with_text("Overlay")
                 .with_on_click(|state: &mut State| {
                     state.show_overlay = !state.show_overlay;
-                }),
-
-            // TODO: Handle `if` statements properly.
-            //  Macros should be able to handle different return types so long as
-            //  IntoViewComponent is satisfied (or if return type is `()`)
-            if self.show_overlay {
-                Overlay::new(VStack!(
-                    Text::new("Test123", "This is an overlay test")
-                        .with_color(colors::WHITE)
-                ))
-            } else {
-                Overlay::new(VStack!(Text::new("EmptyText", " ")))
-                    .with_color(sdl2::pixels::Color::RGBA(0, 0, 0, 0))
-            }
+                })
         )
         // .fixed_width(400)
         .alignment(Alignment::Center);
 
-        Box::new(view)
+        // TODO: Handle `if` statements properly.
+        //  Macros should be able to handle different return types so long as
+        //  IntoViewComponent is satisfied (or if return type is `()`)
+        if self.show_overlay {
+            view.overlay(
+                VOverlay!(
+                    VStack!(
+                        Text::new("OverlayText", "This is an overlay test")
+                            .with_color(colors::WHITE),
+                        TextBox::new("OverlayTextBox", "")
+                            .with_default_text("Overlay...")
+                    )
+                )
+            )
+        }
+
+        return Box::new(view);
     }
 }
 

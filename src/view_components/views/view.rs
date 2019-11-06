@@ -16,6 +16,8 @@ use crate::view_components::ViewComponent;
 use crate::view_components::widgets::widget::Widget;
 use crate::view_components::components::Component;
 
+use super::Overlay;
+
 // ========================== Alignment enum ========================== //
 
 /// View alignments
@@ -62,6 +64,9 @@ pub trait View<T> {
     // TODO: rename/fix this
     fn child_comps(&self) -> Vec<&Box<dyn Component<T>>>;
     
+    // --------- 'Special' Functions --------- //
+    fn overlay(&mut self, overlay: Overlay<T>) where T: 'static;
+
 
     // --------- Builder Functions --------- //
 

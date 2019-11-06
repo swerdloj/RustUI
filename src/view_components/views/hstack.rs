@@ -73,6 +73,10 @@ impl<T> View<T> for HStack<T> {
         //self.align(self.data.alignment.clone());
     }
 
+    fn overlay(&mut self, overlay: super::Overlay<T>) where T: 'static{
+        self.data.components.push(overlay.as_component());
+    }
+
     fn view_size(&self) -> (u32, u32) {
         (self.data.view_width, self.data.view_height)
     }
