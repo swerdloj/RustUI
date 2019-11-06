@@ -52,14 +52,17 @@ impl<T> Divider<T> {
 impl<T> Component<T> for Divider<T> {
     fn render(&self, window: &mut Window<T>, parent_dimensions: (u32, u32))
     where T: crate::state::GenerateView<T> {
+        
+        window.canvas.set_draw_color(self.color);
+        
         match self.orientation {
             Orientation::Horizontal => {
-                window.canvas.set_draw_color(self.color);
                 let y = self.y + (self.draw_height() as i32 / 2);
                 window.canvas.fill_rect(Rect::new(self.x, y, parent_dimensions.0, self.thickness)).unwrap();
             }
             Orientation::Vertical => {
-
+                let x = self.x + (self.draw_width() as i32 / 2);
+                window.canvas.fill_rect(Rect::new(x, self.y, self.thickness, parent_dimensions.1)).unwrap();
             }
         }
     }

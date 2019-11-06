@@ -293,8 +293,6 @@ impl<T> View<T> for Overlay<T> {
     fn padding(mut self, left: u32, right: u32, top: u32, bottom: u32) -> Self {
         self
     }
-
-
 }
 
 impl<T> IntoViewComponent<T> for Overlay<T> where T: 'static {

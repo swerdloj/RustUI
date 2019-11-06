@@ -6,6 +6,7 @@ use sdl2::event::Event;
 use crate::view_components::{ViewComponent, IntoViewComponent};
 use crate::backend::system::window::Window;
 use crate::colors;
+use crate::Orientation;
 
 use super::widget::{Widget, WidgetState};
 use super::Text;
@@ -29,7 +30,11 @@ pub struct ScrollBar<T> {
     slider_active_color: Color,
     rail_passive_color: Color,
     rail_hover_color: Color,
+
+    orientation: Orientation,
 }
+
+// TODO: Finish implementing orientations
 
 impl<T> ScrollBar<T> {
     pub fn new(id: &'static str, from: i32, to: i32, current: i32) -> Self {
@@ -52,7 +57,14 @@ impl<T> ScrollBar<T> {
             slider_active_color: colors::DARK_GRAY,
             rail_passive_color: colors::LIGHT_GRAY,
             rail_hover_color: colors::WHITE,
+            
+            orientation: Orientation::Horizontal,
         }
+    }
+
+    pub fn with_orientation(mut self, orientation: Orientation) -> Self {
+        self.orientation = orientation;
+        self
     }
 
     pub fn with_length(mut self, length: u32) -> Self {
@@ -73,15 +85,30 @@ impl<T> ScrollBar<T> {
 
     /// Maps slider location relative to the rail to slider value
     fn pixel_to_value(&self, pixel: i32) -> i32 {
-        let value = ((pixel-self.rail.x) * (self.to - self.from)) / self.rail.width() as i32;
-        
-        return if value < self.from {
-            self.from
-        } else if value > self.to {
-            self.to
-        } else {
-            value
-        };
+        match self.orientation {
+            Orientation::Horizontal => {
+                let value = ((pixel-self.rail.x) * (self.to - self.from)) / self.rail.width() as i32;
+                
+                return if value < self.from {
+                    self.from
+                } else if value > self.to {
+                    self.to
+                } else {
+                    value
+                };
+            }
+            Orientation::Vertical => {
+                let value = ((pixel-self.rail.y) * (self.to - self.from)) / self.rail.height() as i32;
+            
+                return if value < self.from {
+                    self.from
+                } else if value > self.to {
+                    self.to
+                } else {
+                    value
+                };
+            }
+        }
     }
 
     /// Maps slider value to slider location relative to the rail

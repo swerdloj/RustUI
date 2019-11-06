@@ -46,8 +46,9 @@ impl GenerateView<State> for State {
             // TODO: Test different images & formats
             Image::new("TestImage", "./res/logo/temp_logo_low_quality.bmp", (100, 100))
                 .with_hover_shade()
-                .with_on_click(|_state: &mut State| {
+                .with_on_click(|state: &mut State| {
                     println!("Clicked the image");
+                    state.text_input = "Rust".to_owned();
                 }),
 
             Text::new("CounterText", 
@@ -55,7 +56,8 @@ impl GenerateView<State> for State {
                 .with_point_size(35)
                 .with_color(colors::WHITE),
 
-            Divider::new(Orientation::Horizontal),
+            Divider::new(Orientation::Horizontal)
+                .with_thickness(6),
 
             ScrollBar::new("TestScroll", 0, 10, self.slider_val)
                 .with_length(200)
