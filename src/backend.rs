@@ -232,14 +232,16 @@ pub mod system {
 
                                 for widget in view.child_widgets_mut() {
                                     if widget.rect().contains_point(event_location) {
-                                        if let Some(active_id) = self.window_state.clicking {
-                                            if active_id == widget.id() {
-                                                break; // Hovering over already active widget
+                                        if let Some(clicking_id) = self.window_state.clicking {
+                                            if clicking_id == widget.id() {
+                                                break; // Actually clicking a widget
                                             }
                                         }
+
                                         // Hovering over inactive widget -> set it as hover
                                         self.window_state.hovering = Some(widget.id());
-                                        break; // don't need to check other widgets
+                                        // Commented for layer-checking (topmost is drawn last)
+                                        //break; // don't need to check other widgets
                                     }
                                 }
                                 self.window_state.cursor = None;
@@ -252,23 +254,30 @@ pub mod system {
                                 let mut clicked_widget = false;
 
                                 self.window_state.clicking = None;
+
                                 for widget in view.child_widgets_mut() {
                                     if widget.rect().contains_point(event_location) {
-                                        clicked_widget = true;
-
-                                        if let Some(focus_id) = self.window_state.focused {
-                                            if focus_id != widget.id() { // Did not click previously active widget
-                                                self.window_state.focused = None; // That widget is no longer active
-                                            }
-                                        }
-
                                         if let Some(hover_id) = self.window_state.hovering {
+                                            // Cannot click a widget without hovering over it
                                             if hover_id == widget.id() {
-                                                self.window_state.hovering = None; // Cannot be both hover & active
+                                                clicked_widget = true;
+                                                
+                                                // Cannot be both hover & active
+                                                self.window_state.hovering = None;
+                                                // Now clicking
+                                                self.window_state.clicking = Some(widget.id());
+
+                                                // Focus if possible, otherwise nothing should be focused
+                                                if widget.can_focus() {
+                                                    self.window_state.focused = Some(widget.id());
+                                                } else {
+                                                    self.window_state.focused = None;
+                                                }
+                                                
+                                                // Commented for layer-checking
+                                                //break; // Found a widget, don't need to keep checking
                                             }
                                         }
-                                        self.window_state.clicking = Some(widget.id());
-                                        break; // Found a widget, don't need to keep checking
                                     }
                                 }
 
@@ -286,14 +295,10 @@ pub mod system {
                                         if widget.rect().contains_point(event_location) { // If the mouse was released on any widget
                                             if active_id == widget.id() { // Trigger the callback if that widget was active
                                                 widget.on_click(self.window_state.user_state);
-
-                                                //FIXME: Clicking nothing should also defocus
-                                                if widget.can_focus() {
-                                                    self.window_state.focused = Some(widget.id());
-                                                }
                                             }
                                             self.window_state.hovering = Some(widget.id()); // If the mouse is on a widget, it is now hovering
-                                            break; // Already handled click. Can stop checking for collision.
+                                            // Commented for layer-checking
+                                            //break; // Already handled click. Can stop checking for collision.
                                         }
                                     }
                                     self.window_state.clicking = None; // Mouse was released, so nothing should be active

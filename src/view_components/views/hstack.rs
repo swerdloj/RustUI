@@ -288,6 +288,8 @@ impl<T> IntoViewComponent<T> for HStack<T> where T: 'static {
 macro_rules! HStack {
     ( $($x:expr), + ) => {
         {
+            macro_imports!();
+
             let mut components = Vec::new();
 
             let default_padding = 10;

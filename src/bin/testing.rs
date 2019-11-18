@@ -7,10 +7,10 @@ It will be structured as though creating a real project using this library.
 
 #[macro_use]
 extern crate RustUI;
-macro_imports!();
+// macro_imports!();
 
 use RustUI::state::GenerateView;
-use RustUI::{Window, colors, Alignment, Orientation};
+use RustUI::{View, Window, colors, Alignment, Orientation};
 use RustUI::widgets::{Text, Button, TextBox, CheckBox, ScrollBar, Image};
 use RustUI::views::{HStack, VStack, Overlay};
 use RustUI::components::{Divider};
@@ -24,6 +24,7 @@ struct State {
     slider_val: i32,
 
     show_overlay: bool,
+    overlay_text: String,
 }
 
 impl State {
@@ -35,6 +36,7 @@ impl State {
             slider_val: 1,
 
             show_overlay: false,
+            overlay_text: String::new(),
         }
     }
 }
@@ -51,8 +53,7 @@ impl GenerateView<State> for State {
                     state.text_input = "Rust".to_owned();
                 }),
 
-            Text::new("CounterText", 
-                    format!("Counter: {}", self.counter).as_str())
+            Text::new("CounterText", &format!("Counter: {}", self.counter))
                 .with_point_size(35)
                 .with_color(colors::WHITE),
 
@@ -137,8 +138,11 @@ impl GenerateView<State> for State {
                     VStack!(
                         Text::new("OverlayText", "This is an overlay test")
                             .with_color(colors::WHITE),
-                        TextBox::new("OverlayTextBox", "")
+                        TextBox::new("OverlayTextBox", &self.overlay_text)
                             .with_default_text("Overlay...")
+                            .with_on_text_changed(|state: &mut State, text| {
+                                state.overlay_text = text;
+                            })
                     )
                 )
             )

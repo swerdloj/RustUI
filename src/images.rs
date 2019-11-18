@@ -22,6 +22,7 @@ and https://wiki.libsdl.org/SDL_SetColorKey
 pub fn load_image(path: &Path) -> Result<Surface, String> {
     return match path.extension() {
         Some(os_str) => {
+            // TODO: This shouldn't be case sensitive
             match os_str.to_str() {
                 None => {
                     // FIXME: This should never be reacehd

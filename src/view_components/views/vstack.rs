@@ -283,6 +283,8 @@ impl<T> IntoViewComponent<T> for VStack<T> where T: 'static {
 macro_rules! VStack {
     ( $($x:expr), + ) => {
         {
+            macro_imports!();
+
             let mut components = Vec::new();
             // let mut vstack = VStack::new(components);
             let default_padding = 10;
