@@ -41,12 +41,11 @@ pub struct Overlay<T> {
 impl<T> Overlay<T> {
     pub fn new(mut components: Vec<ViewComponent<T>>) -> Self 
     where T: 'static {
-        components.push(Button::new("__overlayButton")
-                            // .with_dimensions(width: u32, height: u32)
-                            // .color..
-                            .with_dimensions(0, 0)
-                            .as_component()
-        );
+        // components.push(Button::new("__overlayButton")
+        //                     // .color..
+        //                     .with_dimensions(0, 0)
+        //                     .as_component()
+        // );
 
         Overlay {
             overlay_color: Color::RGBA(0, 0, 0, 180),
@@ -66,6 +65,7 @@ impl<T> Overlay<T> {
         self
     }
 }
+
 // fn render(&self, window: &mut Window<T>, parent_dimensions: (u32, u32))
 // where T: crate::state::GenerateView<T> {
 //     let (width, height) = window.canvas.output_size().expect("Failed to query canvas size");
@@ -132,6 +132,7 @@ impl<T> View<T> for Overlay<T> {
 
     fn align(&mut self) {
         let width = self.data.view_width;
+        // let height = self.data.view_height;
 
         // Always cenetered within the screen
         for component in &mut self.data.components {
@@ -156,22 +157,22 @@ impl<T> View<T> for Overlay<T> {
             match component {
                 ViewComponent::Widget(widget) => {
                     if widget.draw_width() > max_width {
-                        max_width = widget.draw_width();
+                        max_width += widget.draw_width();
                     }
                 }
 
                 ViewComponent::View(subview) => {
                     if subview.draw_width() > max_width {
-                        max_width = subview.draw_width();
+                        max_width += subview.draw_width();
                     }
                 }
                 _ => {}
             }
         }
 
-        max_width;
+        max_width
 
-        0
+        // 0
     }
 
     fn draw_height(&self) -> u32 {

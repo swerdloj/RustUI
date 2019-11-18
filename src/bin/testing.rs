@@ -7,7 +7,6 @@ It will be structured as though creating a real project using this library.
 
 #[macro_use]
 extern crate RustUI;
-// macro_imports!();
 
 use RustUI::state::GenerateView;
 use RustUI::{View, Window, colors, Alignment, Orientation};
@@ -135,15 +134,13 @@ impl GenerateView<State> for State {
         if self.show_overlay {
             view.overlay(
                 VOverlay!(
-                    VStack!(
-                        Text::new("OverlayText", "This is an overlay test")
-                            .with_color(colors::WHITE),
-                        TextBox::new("OverlayTextBox", &self.overlay_text)
-                            .with_default_text("Overlay...")
-                            .with_on_text_changed(|state: &mut State, text| {
-                                state.overlay_text = text;
-                            })
-                    )
+                    Text::new("OverlayText", "This is an overlay test")
+                        .with_color(colors::WHITE),
+                    TextBox::new("OverlayTextBox", &self.overlay_text)
+                        .with_default_text("Overlay...")
+                        .with_on_text_changed(|state: &mut State, text| {
+                            state.overlay_text = text;
+                        })
                 )
             )
         }
