@@ -67,11 +67,11 @@ pub use view_components::{views, widgets, components};
 pub use view_components::colors;
 // TODO: This may not be necessary
 pub use view_components::{
-    widgets::widget::Widget, 
-    views::view::View,
+    widgets::Widget, 
+    views::View,
     components::Component,
 };
-pub use view_components::views::view::Alignment;
+pub use view_components::views::Alignment;
 pub use view_components::Orientation;
 pub use backend::system::window::Window;
 pub use backend::system::state;
@@ -85,6 +85,6 @@ pub use backend::system::state;
 macro_rules! macro_imports {
     () => {
         use RustUI::view_components::{ViewComponent, IntoViewComponent};
-        use RustUI::view_components::views::view::View;
+        use RustUI::view_components::views::View;
     };
 }

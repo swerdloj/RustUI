@@ -8,7 +8,8 @@
 - Query the view using Widget id
   - Such as obtaining TextBox text via `get_widget("id")`
     - but how to account for differing types? (want specific fields, etc.)
-        - is there a way to use the `::<>` operator as in `get_widget::<`T`>("id")`?
+        - is there a way to use the `::<>` operator as in `get_widget::<T>("id")`?
+        - or use `Any` for downcasting `Widget<T>` to specific `Widget` type
   - Use this to update state, modify widgets, etc.
 - Hopefully allows animation states
 * Create a layout function allowing views to re-layout without the need for reinstantiating each widget

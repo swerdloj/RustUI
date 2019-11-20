@@ -5,9 +5,9 @@ use sdl2::ttf;
 use crate::font::{Fonts};
 
 use crate::view_components::{ViewComponent, IntoViewComponent, Padding};
-use crate::view_components::widgets::widget::Widget;
+use crate::view_components::widgets::Widget;
 use crate::view_components::components::Component;
-use crate::view_components::views::view::{View, ViewData, Alignment};
+use crate::view_components::views::{View, ViewData, Alignment};
 
 
 pub struct VStack<T> {

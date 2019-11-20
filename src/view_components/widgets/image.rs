@@ -6,7 +6,7 @@ use sdl2::event::Event;
 
 use crate::{colors, Window};
 
-use super::widget::{Widget, WidgetState};
+use super::{Widget, WidgetState};
 use crate::view_components::{IntoViewComponent, ViewComponent};
 use crate::images;
 

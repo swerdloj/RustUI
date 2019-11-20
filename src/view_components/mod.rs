@@ -6,8 +6,8 @@ pub mod components;
 
 /// Contains either a Widget or a View. Handle via `match`.
 pub enum ViewComponent<T> {
-    Widget(Box<dyn widgets::widget::Widget<T>>),
-    View(Box<dyn views::view::View<T>>),
+    Widget(Box<dyn widgets::Widget<T>>),
+    View(Box<dyn views::View<T>>),
     Component(Box<dyn components::Component<T>>),
 }
 

@@ -8,7 +8,7 @@ use crate::backend::system::window::Window;
 use crate::colors;
 use crate::Orientation;
 
-use super::widget::{Widget, WidgetState};
+use super::{Widget, WidgetState};
 use super::Text;
 
 pub struct ScrollBar<T> {

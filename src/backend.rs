@@ -18,7 +18,7 @@ extern crate sdl2;
 // TODO: Call this 'context' instead of 'system'?
 pub mod system {    
     pub mod state {
-        use crate::view_components::views::view::View;
+        use crate::view_components::views::View;
         use sdl2::mouse::Cursor;
 
         // TODO: Flesh this out and utilize appropriately. Or move event handling to Widget
@@ -75,7 +75,7 @@ pub mod system {
         use sdl2::keyboard::Keycode;
         use sdl2::mouse::MouseButton;
         use sdl2::rect::Point;
-        use crate::view_components::widgets::widget::WidgetState;
+        use crate::view_components::widgets::WidgetState;
         use crate::font::{FontParams, Fonts};
         use crate::images;
         use super::state::{ApplicationState, GenerateView};
@@ -134,7 +134,6 @@ pub mod system {
 
             /// Set the window icon to the specified image resource
             pub fn set_icon(&mut self, resource_path: &str) {
-
                 // FIXME: This is temporary. See TODO below
                 let path = std::path::Path::new(resource_path);
                 let surface = images::load_image(path).unwrap();
@@ -146,7 +145,7 @@ pub mod system {
             /// Used for scaling to device independent resolutions
             /// - Accepts tuple: `(width, height)`
             // TODO: See this: https://gamedev.stackexchange.com/questions/119414/resolution-scaling
-            pub fn set_logical_size(&mut self, dimensions:(u32, u32)) {
+            pub fn set_logical_size(&mut self, dimensions: (u32, u32)) {
                 self.canvas.set_logical_size(dimensions.0, dimensions.1).expect("Failed to set logical size");
             }
 

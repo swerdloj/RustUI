@@ -14,7 +14,7 @@ use crate::font::Fonts;
 
 use crate::widgets::Button;
 
-use super::view::ViewData;
+use super::ViewData;
 use super::super::{IntoViewComponent, ViewComponent};
 
 /* TODO:
