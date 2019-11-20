@@ -11,3 +11,5 @@
         - is there a way to use the `::<>` operator as in `get_widget::<`T`>("id")`?
   - Use this to update state, modify widgets, etc.
 - Hopefully allows animation states
+* Create a layout function allowing views to re-layout without the need for reinstantiating each widget
+  * Use this function or similar to initialize views to clean up the view macros significantly (their sole purpose should be to receive views/widgets, nothing more)
