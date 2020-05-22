@@ -1,7 +1,20 @@
 # RustUI
 Rust GUI library inspired by SwiftUI.
 
-This library emphasises the usage of declarative syntax for clean & simple UI development.
+This library emphasises the usage of declarative syntax for clean & simple UI development.  
+
+[Read the project writeup](https://github.com/swerdloj/RustUI/blob/master/writeup.pdf)
+
+![](demo.gif)
+
+## Disclaimer
+This project was created as a means of exploring declarative UI syntax.  
+RustUI is **not** intended for real-world use.  
+I created RustUI to learn Rust, SDL2, and to explore UI libraries. Much refactoring is needed for further development.
+
+## Examples
+See [testing.rs](https://github.com/swerdloj/RustUI/blob/master/src/bin/testing.rs) for library capabilities and syntax.  
+Note that you will need a custom bitmap image to replace both instances of "temp_logo_low_quality.bmp" (simply change that string to the new image path).
 
 ## Testing Binaries
 Different executables can be tested by including them in /src/bin.  
@@ -34,7 +47,7 @@ Check for distribution-specific development packages/repos for the required libr
 - Font Management:
   - When a font is needed, query font map
   - if not found, load font and store for future use
-  - 90% of this library's CPU usage is font loading each frame
+  - 90% of this library's CPU usage is font loading each frame (caused by Rust's SDL2 library lifetime usage)
 - Persistent State:
   - Persist widget state between view-generation cycles
     - User would no longer need to maintain that widget's state
@@ -56,7 +69,6 @@ Check for distribution-specific development packages/repos for the required libr
   - Circles
   - Cursors
 - Basic Widgets:
-  - Slider (horizontal + vertical)
   - Drop Menu
   - Radio Buttons
 - Basic Views:
